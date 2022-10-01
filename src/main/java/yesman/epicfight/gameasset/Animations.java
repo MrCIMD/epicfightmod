@@ -348,6 +348,7 @@ public class Animations {
 	public static StaticAnimation DAGGER_DUAL_AUTO4;
 	public static StaticAnimation DAGGER_DUAL_DASH;
 	public static StaticAnimation DAGGER_DUAL_AIR_SLASH;
+	public static StaticAnimation TRIDENT_AUTO1;
 	public static StaticAnimation GUILLOTINE_AXE;
 	public static StaticAnimation SWEEPING_EDGE;
 	public static StaticAnimation DANCING_EDGE;
