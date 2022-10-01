@@ -23,7 +23,9 @@ public class TridentCapability extends RangedWeaponCapability {
 		
 		if (attackMotion == null) {
 			attackMotion = new ArrayList<StaticAnimation> ();
-			attackMotion.add(Animations.SPEAR_ONEHAND_AUTO);
+			attackMotion.add(Animations.TRIDENT_AUTO1);
+			attackMotion.add(Animations.TRIDENT_AUTO2);
+			attackMotion.add(Animations.TRIDENT_AUTO3);
 			attackMotion.add(Animations.SPEAR_DASH);
 			attackMotion.add(Animations.SPEAR_ONEHAND_AIR_SLASH);
 		}
