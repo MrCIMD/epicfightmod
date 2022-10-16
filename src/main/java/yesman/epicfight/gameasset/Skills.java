@@ -113,6 +113,7 @@ public class Skills {
 	public static Skill LIECHTENAUER;
 	public static Skill EVISCERATE;
 	public static Skill BLADE_RUSH;
+	public static Skill THUNER_PUNISHMENT;
 	/** etc skills **/
 	public static Skill CHARGING_JUMP;
 	public static Skill GROUND_SLAM;
