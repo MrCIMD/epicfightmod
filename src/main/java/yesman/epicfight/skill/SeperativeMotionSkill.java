@@ -11,13 +11,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import yesman.epicfight.api.animation.property.AnimationProperty.AttackPhaseProperty;
 import yesman.epicfight.api.animation.types.AttackAnimation;
-import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.animation.types.AttackAnimation.Phase;
+import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 
-public class SeperativeMotionSkill extends SpecialAttackSkill {
+public abstract class SeperativeMotionSkill extends WeaponInnateSkill {
 	protected final StaticAnimation[] attackAnimations;
 	protected final Function<ServerPlayerPatch, Integer> selector;
 	
@@ -37,7 +37,7 @@ public class SeperativeMotionSkill extends SpecialAttackSkill {
 	}
 	
 	@Override
-	public SpecialAttackSkill registerPropertiesToAnimation() {
+	public WeaponInnateSkill registerPropertiesToAnimation() {
 		for (StaticAnimation animation : this.attackAnimations) {
 			AttackAnimation anim = ((AttackAnimation)animation);
 			for (Phase phase : anim.phases) {

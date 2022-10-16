@@ -1,9 +1,10 @@
 package yesman.epicfight.world.capabilities.entitypatch;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -16,7 +17,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -41,8 +41,7 @@ import yesman.epicfight.api.client.animation.ClientAnimator;
 import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.api.model.Model;
 import yesman.epicfight.api.utils.AttackResult;
-import yesman.epicfight.api.utils.ExtendedDamageSource;
-import yesman.epicfight.api.utils.ExtendedDamageSource.StunType;
+import yesman.epicfight.api.utils.AttackResult.ResultType;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.gameasset.Models;
@@ -52,9 +51,10 @@ import yesman.epicfight.network.server.SPPlayAnimation;
 import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
+import yesman.epicfight.world.damagesource.EpicFightDamageSource;
+import yesman.epicfight.world.damagesource.StunType;
 import yesman.epicfight.world.entity.ai.attribute.EpicFightAttributeSupplier;
 import yesman.epicfight.world.entity.ai.attribute.EpicFightAttributes;
-import yesman.epicfight.world.entity.eventlistener.HurtEvent;
 
 public abstract class LivingEntityPatch<T extends LivingEntity> extends EntityPatch<T> {
 	public static final EntityDataAccessor<Float> STUN_SHIELD = new EntityDataAccessor<Float> (251, EntityDataSerializers.FLOAT);
@@ -65,15 +65,20 @@ public abstract class LivingEntityPatch<T extends LivingEntity> extends EntityPa
 	protected Animator animator;
 	public LivingMotion currentLivingMotion = LivingMotions.IDLE;
 	public LivingMotion currentCompositeMotion = LivingMotions.IDLE;
+	
 	public List<LivingEntity> currentlyAttackedEntity;
 	protected Vec3 lastAttackPosition;
+	protected EpicFightDamageSource animationDamageSource;
+	private Entity lastTryHurtEntity;
+	private ResultType lastResultType;
+	private float lastDealDamage;
 	
 	@Override
 	public void onConstructed(T entityIn) {
 		super.onConstructed(entityIn);
 		this.animator = EpicFightMod.getAnimator(this);
 		this.animator.init();
-		this.currentlyAttackedEntity = new ArrayList<LivingEntity>();
+		this.currentlyAttackedEntity = Lists.newArrayList();
 		this.original.getEntityData().define(STUN_SHIELD, Float.valueOf(0.0F));
 		this.original.getEntityData().define(MAX_STUN_SHIELD, Float.valueOf(0.0F));
 	}
@@ -154,22 +159,12 @@ public abstract class LivingEntityPatch<T extends LivingEntity> extends EntityPa
 		}
 	}
 	
-	public ExtendedDamageSource getDamageSource(StunType stunType, StaticAnimation animation, InteractionHand hand) {
-		return ExtendedDamageSource.causeMobDamage(this.original, stunType, animation);
-	}
-	
-	public float getDamageTo(@Nullable Entity targetEntity, @Nullable ExtendedDamageSource source, InteractionHand hand) {
-		float damage = 0;
+	public EpicFightDamageSource getDamageSource(StaticAnimation animation, InteractionHand hand) {
+		EpicFightDamageSource damagesource = EpicFightDamageSource.commonEntityDamageSource("mob", this.original, animation);
+		damagesource.setImpact(this.getImpact(hand));
+		damagesource.setArmorNegation(this.getArmorNegation(hand));
 		
-		if (hand == InteractionHand.MAIN_HAND) {
-			damage = (float) this.original.getAttributeValue(Attributes.ATTACK_DAMAGE);
-		} else {
-			damage = this.isOffhandItemValid() ? (float) this.original.getAttributeValue(EpicFightAttributes.OFFHAND_ATTACK_DAMAGE.get()) : (float) this.original.getAttribute(Attributes.ATTACK_DAMAGE).getBaseValue();
-		}
-		
-		damage += EnchantmentHelper.getDamageBonus(this.getValidItemInHand(hand), (targetEntity instanceof LivingEntity) ? ((LivingEntity)targetEntity).getMobType() : MobType.UNDEFINED);
-		
-		return damage;
+		return damagesource;
 	}
 	
 	public AttackResult tryHurt(DamageSource damageSource, float amount) {
@@ -180,29 +175,59 @@ public abstract class LivingEntityPatch<T extends LivingEntity> extends EntityPa
 		return new AttackResult(AttackResult.ResultType.SUCCESS, amount);
 	}
 	
-	public AttackResult tryHarm(Entity target, ExtendedDamageSource damagesource, float amount) {
-		LivingEntityPatch<?> entitypatch = (LivingEntityPatch<?>)target.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).orElse(null);
+	public AttackResult tryHarm(Entity target, EpicFightDamageSource damagesource, float amount) {
+		LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(target, LivingEntityPatch.class);
 		AttackResult result = (entitypatch != null) ? entitypatch.tryHurt((DamageSource)damagesource, amount) : new AttackResult(AttackResult.ResultType.SUCCESS, amount);
 		return result;
 	}
 	
-	public void onHurtSomeone(Entity target, InteractionHand handIn, ExtendedDamageSource damagesource, float amount, boolean succeed) {
-		int j = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, this.getValidItemInHand(handIn));
+	public void setLastAttackResult(Entity tryHurtEntity, AttackResult attackResult) {
+		this.lastTryHurtEntity = tryHurtEntity;
+		this.lastResultType = attackResult.resultType;
+		this.lastDealDamage = attackResult.damage;
+	}
+	
+	@Nullable
+	public EpicFightDamageSource getAnimationDamageSource() {
+		return this.animationDamageSource;
+	}
+	
+	public boolean attackSuccess(Entity target) {
+		boolean success = target.is(this.lastTryHurtEntity);
+		this.lastTryHurtEntity = null;
 		
-		if (target instanceof LivingEntity) {
-			this.getOriginal().doEnchantDamageEffects(this.getOriginal(), target);
-			
-			if (j > 0 && !target.isOnFire()) {
-				target.setSecondsOnFire(j * 4);
-			}
+		return success;
+	}
+	
+	/**
+	 * This method swap the ATTACK_DAMAGE and OFFHAND_ATTACK_DAMAGE in a very unsafe way.
+	 * You must call this method again after finishing the damaging process.
+	 */
+	protected void swapHandAttackDamage(boolean shouldSwap) {
+		if (!shouldSwap) {
+			return;
 		}
+		
+		AttributeInstance mainhandDamage = this.original.getAttribute(Attributes.ATTACK_DAMAGE);
+		AttributeInstance offhandDamage = this.original.getAttribute(EpicFightAttributes.OFFHAND_ATTACK_DAMAGE.get());
+		
+		this.original.getAttributes().attributes.put(Attributes.ATTACK_DAMAGE, offhandDamage);
+		this.original.getAttributes().attributes.put(EpicFightAttributes.OFFHAND_ATTACK_DAMAGE.get(), mainhandDamage);
+	}
+	
+	public AttackResult getLastAttackResult() {
+		return new AttackResult(this.lastResultType, this.lastDealDamage);
+	}
+	
+	public AttackResult attack(EpicFightDamageSource damageSource, Entity target, InteractionHand hand) {
+		return this.attackSuccess(target) ? this.getLastAttackResult() : AttackResult.failed();
 	}
 	
 	public boolean onDrop(LivingDropsEvent event) {
 		return false;
 	}
 	
-	public void gatherDamageDealt(ExtendedDamageSource source, float amount) {}
+	public void gatherDamageDealt(EpicFightDamageSource source, float amount) {}
 	
 	public void setStunReductionOnHit() {
 		this.stunTimeReduction += Math.max((1.0F - this.stunTimeReduction) * 0.8F, 0.5F);
@@ -426,7 +451,7 @@ public abstract class LivingEntityPatch<T extends LivingEntity> extends EntityPa
 	public void updateArmor(CapabilityItem fromCap, CapabilityItem toCap, EquipmentSlot slotType) {
 	}
 	
-	public void onAttackBlocked(HurtEvent.Pre hurtEvent, LivingEntityPatch<?> opponent) {
+	public void onAttackBlocked(DamageSource damageSource, LivingEntityPatch<?> opponent) {
 	}
 	
 	public void onMount(boolean isMountOrDismount, Entity ridingEntity) {
@@ -525,16 +550,19 @@ public abstract class LivingEntityPatch<T extends LivingEntity> extends EntityPa
 	
 	private boolean isRideOrBeingRidden(Entity entityIn) {
 		LivingEntity orgEntity = this.getOriginal();
+		
 		for (Entity passanger : orgEntity.getPassengers()) {
 			if (passanger.equals(entityIn)) {
 				return true;
 			}
 		}
+		
 		for (Entity passanger : entityIn.getPassengers()) {
 			if (passanger.equals(orgEntity)) {
 				return true;
 			}
 		}
+		
 		return false;
 	}
 	

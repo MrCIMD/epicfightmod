@@ -7,6 +7,7 @@ import com.google.common.collect.Sets;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,11 +22,13 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.client.animation.Layer;
+import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.network.EpicFightNetworkManager;
 import yesman.epicfight.network.server.SPSetAttackTarget;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
+import yesman.epicfight.world.damagesource.EpicFightDamageSource;
 import yesman.epicfight.world.entity.ai.attribute.EpicFightAttributes;
 import yesman.epicfight.world.entity.ai.goal.AnimatedAttackGoal;
 import yesman.epicfight.world.entity.ai.goal.TargetChasingGoal;
@@ -145,7 +148,7 @@ public abstract class MobPatch<T extends Mob> extends LivingEntityPatch<T> {
 	
 	@Override
 	public boolean isTeammate(Entity entityIn) {
-		EntityPatch<?> cap = entityIn.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).orElse(null);
+		EntityPatch<?> cap = EpicFightCapabilities.getEntityPatch(entityIn, EntityPatch.class);
 		
 		if (cap != null && cap instanceof MobPatch) {
 			if (((MobPatch<?>) cap).mobFaction.equals(this.mobFaction)) {
@@ -155,6 +158,19 @@ public abstract class MobPatch<T extends Mob> extends LivingEntityPatch<T> {
 		}
 		
 		return super.isTeammate(entityIn);
+	}
+	
+	@Override
+	public AttackResult attack(EpicFightDamageSource damageSource, Entity target, InteractionHand hand) {
+		boolean shouldSwap = hand == InteractionHand.OFF_HAND;
+		
+		this.animationDamageSource = damageSource;
+		this.swapHandAttackDamage(shouldSwap);
+		this.original.doHurtTarget(target);
+		this.swapHandAttackDamage(shouldSwap);
+		this.animationDamageSource = null;
+		
+		return super.attack(damageSource, target, hand);
 	}
 	
 	@Override

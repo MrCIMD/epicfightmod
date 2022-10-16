@@ -20,7 +20,6 @@ import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.AttackResult;
-import yesman.epicfight.api.utils.ExtendedDamageSource;
 import yesman.epicfight.network.EpicFightNetworkManager;
 import yesman.epicfight.network.server.SPAddSkill;
 import yesman.epicfight.network.server.SPChangeLivingMotion;
@@ -33,6 +32,7 @@ import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.skill.CapabilitySkill;
+import yesman.epicfight.world.damagesource.EpicFightDamageSource;
 import yesman.epicfight.world.entity.ai.attribute.EpicFightAttributes;
 import yesman.epicfight.world.entity.eventlistener.HurtEvent;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener.EventType;
@@ -73,15 +73,15 @@ public class ServerPlayerPatch extends PlayerPatch<ServerPlayer> {
 	}
 	
 	@Override
-	public void gatherDamageDealt(ExtendedDamageSource source, float amount) {
+	public void gatherDamageDealt(EpicFightDamageSource source, float amount) {
 		if (source.isBasicAttack()) {
-			SkillContainer container = this.getSkill(SkillCategories.WEAPON_SPECIAL_ATTACK);
+			SkillContainer container = this.getSkill(SkillCategories.WEAPON_INNATE);
 			
-			if (!container.isFull() && container.hasSkill(this.getHoldingItemCapability(InteractionHand.MAIN_HAND).getSpecialAttack(this))) {
+			if (!container.isFull() && container.hasSkill(this.getHoldingItemCapability(InteractionHand.MAIN_HAND).getInnateSkill(this))) {
 				float value = container.getResource() + amount;
 				
 				if (value > 0.0F) {
-					this.getSkill(SkillCategories.WEAPON_SPECIAL_ATTACK).getSkill().setConsumptionSynchronize(this, value);
+					this.getSkill(SkillCategories.WEAPON_INNATE).getSkill().setConsumptionSynchronize(this, value);
 				}
 			}
 		}
@@ -100,7 +100,7 @@ public class ServerPlayerPatch extends PlayerPatch<ServerPlayer> {
 	@Override
 	public void updateHeldItem(CapabilityItem fromCap, CapabilityItem toCap, ItemStack from, ItemStack to, InteractionHand hand) {
 		CapabilityItem mainHandCap = (hand == InteractionHand.MAIN_HAND) ? toCap : this.getHoldingItemCapability(InteractionHand.MAIN_HAND);
-		mainHandCap.changeWeaponSpecialSkill(this);
+		mainHandCap.changeWeaponInnateSkill(this);
 		
 		if (hand == InteractionHand.OFF_HAND) {
 			if (!from.isEmpty()) {

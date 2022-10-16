@@ -103,7 +103,7 @@ public class SPChangeLivingMotion {
 			Entity entity = mc.player.level.getEntity(msg.entityId);
 			
 			if (entity != null) {
-				LivingEntityPatch<?> entitypatch = (LivingEntityPatch<?>) entity.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY, null).orElse(null);
+				LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entity, LivingEntityPatch.class);
 				ClientAnimator animator = entitypatch.getClientAnimator();
 				animator.resetMotions();
 				animator.resetCompositeMotion();

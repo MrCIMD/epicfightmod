@@ -13,7 +13,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobType;
@@ -26,20 +25,20 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.property.AnimationProperty.AttackPhaseProperty;
-import yesman.epicfight.api.utils.ExtendedDamageSource.StunType;
-import yesman.epicfight.api.utils.math.ValueCorrector;
+import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
+import yesman.epicfight.world.damagesource.StunType;
 import yesman.epicfight.world.entity.ai.attribute.EpicFightAttributes;
 
-public abstract class SpecialAttackSkill extends Skill {
-	public static Skill.Builder<? extends SpecialAttackSkill> createBuilder(ResourceLocation resourceLocation) {
-		return (new Skill.Builder<SpecialAttackSkill>(resourceLocation)).setCategory(SkillCategories.WEAPON_SPECIAL_ATTACK).setResource(Resource.SPECIAL_GAUAGE);
+public abstract class WeaponInnateSkill extends Skill {
+	public static Skill.Builder<WeaponInnateSkill> createWeaponInnateBuilder() {
+		return (new Skill.Builder<WeaponInnateSkill>()).setCategory(SkillCategories.WEAPON_INNATE).setResource(Resource.WEAPON_INNATE_ENERGY);
 	}
 	
 	protected List<Map<AttackPhaseProperty<?>, Object>> properties;
 	
-	public SpecialAttackSkill(Builder<? extends Skill> builder) {
+	public WeaponInnateSkill(Builder<? extends Skill> builder) {
 		super(builder);
 		this.properties = Lists.newArrayList();
 	}
@@ -49,7 +48,7 @@ public abstract class SpecialAttackSkill extends Skill {
 		if (executer.isLogicalClient()) {
 			return executer.getSkill(this.getCategory()).isReady() || executer.getOriginal().isCreative();
 		} else {
-			return executer.getHoldingItemCapability(InteractionHand.MAIN_HAND).getSpecialAttack(executer) == this && executer.getOriginal().getVehicle() == null && (!executer.getSkill(this.category).isActivated() || this.activateType == ActivateType.TOGGLE);
+			return executer.getHoldingItemCapability(InteractionHand.MAIN_HAND).getInnateSkill(executer) == this && executer.getOriginal().getVehicle() == null && (!executer.getSkill(this.category).isActivated() || this.activateType == ActivateType.TOGGLE);
 		}
 	}
 	
@@ -64,17 +63,17 @@ public abstract class SpecialAttackSkill extends Skill {
 		return list;
 	}
 	
-	protected void generateTooltipforPhase(List<Component> list, ItemStack itemStack, CapabilityItem cap, PlayerPatch<?> playerpatch, Map<AttackPhaseProperty<?>, Object> propertyMap, String title) {
-		Multimap<Attribute, AttributeModifier> attributes = itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND);
+	protected void generateTooltipforPhase(List<Component> list, ItemStack itemstack, CapabilityItem cap, PlayerPatch<?> playerpatch, Map<AttackPhaseProperty<?>, Object> propertyMap, String title) {
+		Multimap<Attribute, AttributeModifier> attributes = itemstack.getAttributeModifiers(EquipmentSlot.MAINHAND);
 		Multimap<Attribute, AttributeModifier> capAttributes = cap.getAttributeModifiers(EquipmentSlot.MAINHAND, playerpatch);
-		double damage = playerpatch.getOriginal().getAttribute(Attributes.ATTACK_DAMAGE).getBaseValue() + EnchantmentHelper.getDamageBonus(itemStack, MobType.UNDEFINED);
+		double damage = playerpatch.getOriginal().getAttribute(Attributes.ATTACK_DAMAGE).getBaseValue() + EnchantmentHelper.getDamageBonus(itemstack, MobType.UNDEFINED);
 		double armorNegation = playerpatch.getOriginal().getAttribute(EpicFightAttributes.ARMOR_NEGATION.get()).getBaseValue();
 		double impact = playerpatch.getOriginal().getAttribute(EpicFightAttributes.IMPACT.get()).getBaseValue();
 		double maxStrikes = playerpatch.getOriginal().getAttribute(EpicFightAttributes.MAX_STRIKES.get()).getBaseValue();
-		ValueCorrector damageCorrector = ValueCorrector.empty();
-		ValueCorrector armorNegationCorrector = ValueCorrector.empty();
-		ValueCorrector impactCorrector = ValueCorrector.empty();
-		ValueCorrector maxStrikesCorrector = ValueCorrector.empty();
+		ValueModifier damageModifier = ValueModifier.empty();
+		ValueModifier armorNegationModifier = ValueModifier.empty();
+		ValueModifier impactModifier = ValueModifier.empty();
+		ValueModifier maxStrikesModifier = ValueModifier.empty();
 		
 		for (AttributeModifier modifier : attributes.get(Attributes.ATTACK_DAMAGE)) {
 			damage += modifier.getAmount();
@@ -89,35 +88,37 @@ public abstract class SpecialAttackSkill extends Skill {
 			maxStrikes += modifier.getAmount();
 		}
 		
-		this.getProperty(AttackPhaseProperty.DAMAGE, propertyMap).ifPresent(damageCorrector::merge);
-		this.getProperty(AttackPhaseProperty.ARMOR_NEGATION, propertyMap).ifPresent(armorNegationCorrector::merge);
-		this.getProperty(AttackPhaseProperty.IMPACT, propertyMap).ifPresent(impactCorrector::merge);
-		this.getProperty(AttackPhaseProperty.MAX_STRIKES, propertyMap).ifPresent(maxStrikesCorrector::merge);
+		this.getProperty(AttackPhaseProperty.DAMAGE_MODIFIER, propertyMap).ifPresent(damageModifier::merge);
+		this.getProperty(AttackPhaseProperty.ARMOR_NEGATION_MODIFIER, propertyMap).ifPresent(armorNegationModifier::merge);
+		this.getProperty(AttackPhaseProperty.IMPACT_MODIFIER, propertyMap).ifPresent(impactModifier::merge);
+		this.getProperty(AttackPhaseProperty.MAX_STRIKES_MODIFIER, propertyMap).ifPresent(maxStrikesModifier::merge);
 		
-		impactCorrector.merge(ValueCorrector.multiplier(1.0F + EnchantmentHelper.getItemEnchantmentLevel(Enchantments.KNOCKBACK, itemStack) * 0.12F));
+		impactModifier.merge(ValueModifier.multiplier(1.0F + EnchantmentHelper.getItemEnchantmentLevel(Enchantments.KNOCKBACK, itemstack) * 0.12F));
 		
-		damage = damageCorrector.getTotalValue(playerpatch.getModifiedDamage(null, null, (float)damage));
-		armorNegation = armorNegationCorrector.getTotalValue((float)armorNegation);
-		impact = impactCorrector.getTotalValue((float)impact);
-		maxStrikes = maxStrikesCorrector.getTotalValue((float)maxStrikes);
+		Double baseDamage = Double.valueOf(damage);
+		
+		damage = damageModifier.getTotalValue(playerpatch.getModifiedDamage(null, null, (float)damage));
+		armorNegation = armorNegationModifier.getTotalValue((float)armorNegation);
+		impact = impactModifier.getTotalValue((float)impact);
+		maxStrikes = maxStrikesModifier.getTotalValue((float)maxStrikes);
 		
 		list.add(new TextComponent(title).withStyle(ChatFormatting.UNDERLINE).withStyle(ChatFormatting.GRAY));
 		
-		MutableComponent damageComponent = new TranslatableComponent("skill.epicfight.damage",
-				new TextComponent(ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(damage)).withStyle(ChatFormatting.RED)
-		).withStyle(ChatFormatting.DARK_GRAY);
+		MutableComponent damageComponent = new TranslatableComponent("damage.epicfight.damage",
+					new TextComponent(ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(damage)).withStyle(ChatFormatting.RED)
+				).withStyle(ChatFormatting.DARK_GRAY);
 		
-		this.getProperty(AttackPhaseProperty.EXTRA_DAMAGE, propertyMap).ifPresent((extraDamage) -> {
-			damageComponent.append(new TranslatableComponent(extraDamage.toString(),
-					new TextComponent(ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(extraDamage.getArgument() * 100F) + "%").withStyle(ChatFormatting.RED)))
-				.withStyle(ChatFormatting.DARK_GRAY);
+		this.getProperty(AttackPhaseProperty.EXTRA_DAMAGE, propertyMap).ifPresent((extraDamageSet) -> {
+			extraDamageSet.forEach((extraDamage) -> {
+				extraDamage.setTooltips(itemstack, damageComponent, baseDamage);
+			});
 		});
 		
 		list.add(damageComponent);
 		
 		if (armorNegation != 0.0D) {
 			list.add(new TranslatableComponent(EpicFightAttributes.ARMOR_NEGATION.get().getDescriptionId(),
-					new TextComponent(ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(armorNegation)).withStyle(ChatFormatting.GOLD)
+					new TextComponent(ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(armorNegation) + "%").withStyle(ChatFormatting.GOLD)
 			).withStyle(ChatFormatting.DARK_GRAY));
 		}
 		
@@ -136,25 +137,28 @@ public abstract class SpecialAttackSkill extends Skill {
 		stunOption.ifPresent((stunType) -> {
 			list.add(new TextComponent(ChatFormatting.DARK_GRAY + "Apply " + stunType.toString()));
 		});
+		
 		if (!stunOption.isPresent()) {
 			list.add(new TextComponent(ChatFormatting.DARK_GRAY + "Apply " + StunType.SHORT.toString()));
 		}	
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected <V> Optional<V> getProperty(AttackPhaseProperty<V> propertyType, Map<AttackPhaseProperty<?>, Object> map) {
-		return (Optional<V>) Optional.ofNullable(map.get(propertyType));
+	protected <V> Optional<V> getProperty(AttackPhaseProperty<V> propertyKey, Map<AttackPhaseProperty<?>, Object> map) {
+		return (Optional<V>) Optional.ofNullable(map.get(propertyKey));
 	}
 	
-	public SpecialAttackSkill newPropertyLine() {
+	public WeaponInnateSkill newProperty() {
 		this.properties.add(Maps.<AttackPhaseProperty<?>, Object>newHashMap());
+		
 		return this;
 	}
 	
-	public <T> SpecialAttackSkill addProperty(AttackPhaseProperty<T> attribute, T object) {
-		this.properties.get(properties.size()-1).put(attribute, object);
+	public <T> WeaponInnateSkill addProperty(AttackPhaseProperty<T> propertyKey, T object) {
+		this.properties.get(properties.size() - 1).put(propertyKey, object);
+		
 		return this;
 	}
 	
-	public abstract SpecialAttackSkill registerPropertiesToAnimation();
+	public abstract WeaponInnateSkill registerPropertiesToAnimation();
 }

@@ -4,13 +4,11 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.utils.AttackResult;
-import yesman.epicfight.api.utils.ExtendedDamageSource;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.Skills;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
@@ -19,11 +17,13 @@ import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.Styles;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
+import yesman.epicfight.world.damagesource.EpicFightDamageSource;
+import yesman.epicfight.world.damagesource.StunType;
 import yesman.epicfight.world.entity.eventlistener.HurtEvent;
 
 public class EnergizingGuardSkill extends GuardSkill {
-	public static GuardSkill.Builder createBuilder(ResourceLocation resourceLocation) {
-		return GuardSkill.createBuilder(resourceLocation)
+	public static GuardSkill.Builder createEnergizingGuardBuilder() {
+		return GuardSkill.createGuardBuilder()
 				.addAdvancedGuardMotion(WeaponCategories.LONGSWORD, (item, player) -> Animations.LONGSWORD_GUARD_HIT)
 				.addAdvancedGuardMotion(WeaponCategories.SPEAR, (item, player) -> item.getStyle(player) == Styles.TWO_HAND ? Animations.SPEAR_GUARD_HIT : null)
 				.addAdvancedGuardMotion(WeaponCategories.TACHI, (item, player) -> Animations.LONGSWORD_GUARD_HIT)
@@ -51,16 +51,16 @@ public class EnergizingGuardSkill extends GuardSkill {
 		event.setAmount(isSpecialSource ? event.getAmount() * 0.2F : 0.0F);
 		event.setResult(isSpecialSource ? AttackResult.ResultType.SUCCESS : AttackResult.ResultType.BLOCKED);
 		
-		if (event.getDamageSource() instanceof ExtendedDamageSource) {
-			((ExtendedDamageSource)event.getDamageSource()).setStunType(ExtendedDamageSource.StunType.NONE);
+		if (event.getDamageSource() instanceof EpicFightDamageSource) {
+			((EpicFightDamageSource)event.getDamageSource()).setStunType(StunType.NONE);
 		}
 		
 		event.setCanceled(true);
 		Entity directEntity = event.getDamageSource().getDirectEntity();
-		LivingEntityPatch<?> entitypatch = (LivingEntityPatch<?>)directEntity.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).orElse(null);
+		LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(directEntity, LivingEntityPatch.class);
 		
 		if (entitypatch != null) {
-			entitypatch.onAttackBlocked(event, playerpatch);
+			entitypatch.onAttackBlocked(event.getDamageSource(), playerpatch);
 		}
 	}
 	

@@ -12,7 +12,6 @@ import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -26,7 +25,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.AttackResult;
-import yesman.epicfight.api.utils.ExtendedDamageSource;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.EpicFightSounds;
@@ -41,6 +39,7 @@ import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.Styles;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
+import yesman.epicfight.world.damagesource.EpicFightDamageSource;
 import yesman.epicfight.world.entity.eventlistener.HurtEvent;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener.EventType;
 
@@ -53,10 +52,6 @@ public class GuardSkill extends Skill {
 		protected final Map<WeaponCategory, BiFunction<CapabilityItem, PlayerPatch<?>, ?>> guardMotions = Maps.newHashMap();
 		protected final Map<WeaponCategory, BiFunction<CapabilityItem, PlayerPatch<?>, ?>> advancedGuardMotions = Maps.newHashMap();
 		protected final Map<WeaponCategory, BiFunction<CapabilityItem, PlayerPatch<?>, ?>> guardBreakMotions = Maps.newHashMap();
-		
-		public Builder(ResourceLocation resourceLocation) {
-			super(resourceLocation);
-		}
 		
 		public Builder setCategory(SkillCategory category) {
 			this.category = category;
@@ -109,8 +104,8 @@ public class GuardSkill extends Skill {
 		}
 	}
 	
-	public static GuardSkill.Builder createBuilder(ResourceLocation resourceLocation) {
-		return (new GuardSkill.Builder(resourceLocation))
+	public static GuardSkill.Builder createGuardBuilder() {
+		return (new GuardSkill.Builder())
 				.setCategory(SkillCategories.GUARD)
 				.setMaxStack(0)
 				.setActivateType(ActivateType.ONE_SHOT)
@@ -193,8 +188,8 @@ public class GuardSkill extends Skill {
 					float impact = 0.5F;
 					float knockback = 0.25F;
 					
-					if (event.getDamageSource() instanceof ExtendedDamageSource) {
-						impact = ((ExtendedDamageSource)event.getDamageSource()).getImpact();
+					if (event.getDamageSource() instanceof EpicFightDamageSource) {
+						impact = ((EpicFightDamageSource)event.getDamageSource()).getImpact();
 						knockback += Math.min(impact * 0.1F, 1.0F);
 					}
 					
@@ -244,10 +239,10 @@ public class GuardSkill extends Skill {
 		event.setResult(AttackResult.ResultType.BLOCKED);
 		
 		Entity directEntity = event.getDamageSource().getDirectEntity();
-		LivingEntityPatch<?> entitypatch = (LivingEntityPatch<?>)directEntity.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).orElse(null);
+		LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(directEntity, LivingEntityPatch.class);
 		
 		if (entitypatch != null) {
-			entitypatch.onAttackBlocked(event, playerpatch);
+			entitypatch.onAttackBlocked(event.getDamageSource(), playerpatch);
 		}
 	}
 	

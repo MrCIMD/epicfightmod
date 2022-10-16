@@ -1,5 +1,6 @@
 package yesman.epicfight.world.capabilities;
 
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -26,5 +27,27 @@ public class EpicFightCapabilities {
 	
 	public static CapabilityItem getItemStackCapability(ItemStack stack) {
 		return stack.isEmpty() ? CapabilityItem.EMPTY : stack.getCapability(CAPABILITY_ITEM, null).orElse(CapabilityItem.EMPTY);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T extends EntityPatch> T getEntityPatch(Entity entity, Class<T> type) {
+		EntityPatch<?> entitypatch = entity.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).orElse(null);
+		
+		if (entitypatch != null && type.isAssignableFrom(entitypatch.getClass())) {
+			return (T)entitypatch;
+		}
+		
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T extends ProjectilePatch> T getProjectilePatch(Entity entity, Class<T> type) {
+		ProjectilePatch<?> entitypatch = entity.getCapability(EpicFightCapabilities.CAPABILITY_PROJECTILE).orElse(null);
+		
+		if (entitypatch != null && type.isAssignableFrom(entitypatch.getClass())) {
+			return (T)entitypatch;
+		}
+		
+		return null;
 	}
 }

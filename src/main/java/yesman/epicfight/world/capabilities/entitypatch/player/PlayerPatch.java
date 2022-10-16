@@ -18,8 +18,7 @@ import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.ClientAnimator;
 import yesman.epicfight.api.model.Model;
-import yesman.epicfight.api.utils.ExtendedDamageSource;
-import yesman.epicfight.api.utils.ExtendedDamageSource.StunType;
+import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.math.Formulars;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.Models;
@@ -32,6 +31,8 @@ import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.skill.CapabilitySkill;
+import yesman.epicfight.world.damagesource.EpicFightDamageSource;
+import yesman.epicfight.world.damagesource.StunType;
 import yesman.epicfight.world.entity.ai.attribute.EpicFightAttributes;
 import yesman.epicfight.world.entity.eventlistener.AttackSpeedModifyEvent;
 import yesman.epicfight.world.entity.eventlistener.DealtDamageEvent;
@@ -174,13 +175,7 @@ public abstract class PlayerPatch<T extends Player> extends LivingEntityPatch<T>
 		return this.original.getCapability(EpicFightCapabilities.CAPABILITY_SKILL).orElse(CapabilitySkill.EMPTY);
 	}
 	
-	@Override
-	public float getDamageTo(@Nullable Entity targetEntity, @Nullable ExtendedDamageSource source, InteractionHand hand) {
-		return this.getModifiedDamage(targetEntity, source, super.getDamageTo(targetEntity, source, hand));
-	}
-	
-	public float getModifiedDamage(@Nullable Entity targetEntity, @Nullable ExtendedDamageSource source, float baseDamage) {
-		
+	public float getModifiedDamage(@Nullable Entity targetEntity, @Nullable EpicFightDamageSource source, float baseDamage) {
 		DealtDamageEvent<PlayerPatch<?>> event = new DealtDamageEvent<>(this, this.original, source, baseDamage);
 		this.getEventListener().triggerEvents(EventType.DEALT_DAMAGE_EVENT_PRE, event);
 		return event.getAttackDamage();
@@ -192,7 +187,8 @@ public abstract class PlayerPatch<T extends Player> extends LivingEntityPatch<T>
 		if (hand == InteractionHand.MAIN_HAND) {
 			baseSpeed = (float)this.original.getAttributeValue(Attributes.ATTACK_SPEED);
 		} else {
-			baseSpeed = (float) (this.isOffhandItemValid() ? this.original.getAttributeValue(Attributes.ATTACK_SPEED) : this.original.getAttributeBaseValue(Attributes.ATTACK_SPEED));
+			baseSpeed = (float)(this.isOffhandItemValid() ? 
+					this.original.getAttributeValue(EpicFightAttributes.OFFHAND_ATTACK_SPEED.get()) : this.original.getAttributeBaseValue(Attributes.ATTACK_SPEED));
 		}
 		
 		return this.getModifiedAttackSpeed(this.getAdvancedHoldingItemCapability(hand), baseSpeed);
@@ -210,12 +206,38 @@ public abstract class PlayerPatch<T extends Player> extends LivingEntityPatch<T>
 	}
 	
 	@Override
-	public ExtendedDamageSource getDamageSource(StunType stunType, StaticAnimation animation, InteractionHand hand) {
-		return ExtendedDamageSource.causePlayerDamage(this.original, stunType, animation, hand);
+	public AttackResult attack(EpicFightDamageSource damageSource, Entity target, InteractionHand hand) {
+		float fallDist = this.original.fallDistance;
+		boolean isOnGround = this.original.onGround;
+		boolean shouldSwap = hand == InteractionHand.OFF_HAND;
+		
+		// Prevents crit and sweeping edge effect
+		this.animationDamageSource = damageSource;
+		this.original.attackStrengthTicker = Integer.MAX_VALUE;
+		this.original.fallDistance = 0.0F;
+		this.original.onGround = false;
+		this.swapHandAttackDamage(shouldSwap);
+		this.original.attack(target);
+		this.swapHandAttackDamage(shouldSwap);
+		this.animationDamageSource = null;
+		this.original.fallDistance = fallDist;
+		this.original.onGround = isOnGround;
+		
+		return super.attack(damageSource, target, hand);
+	}
+	
+	@Override
+	public EpicFightDamageSource getDamageSource(StaticAnimation animation, InteractionHand hand) {
+		EpicFightDamageSource damagesource = EpicFightDamageSource.commonEntityDamageSource("player", this.original, animation);
+		damagesource.setImpact(this.getImpact(hand));
+		damagesource.setArmorNegation(this.getArmorNegation(hand));
+		
+		return damagesource;
 	}
 	
 	public float getMaxStamina() {
 		AttributeInstance stun_resistance = this.original.getAttribute(EpicFightAttributes.MAX_STAMINA.get());
+		
 		return (float)(stun_resistance == null ? 0 : stun_resistance.getValue());
 	}
 	

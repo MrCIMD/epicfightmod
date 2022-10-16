@@ -15,11 +15,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -38,10 +36,7 @@ import yesman.epicfight.api.animation.property.AnimationProperty.StaticAnimation
 import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.api.model.Model;
 import yesman.epicfight.api.utils.AttackResult;
-import yesman.epicfight.api.utils.ExtendedDamageSource;
-import yesman.epicfight.api.utils.ExtendedDamageSource.StunType;
 import yesman.epicfight.api.utils.HitEntityList;
-import yesman.epicfight.api.utils.math.ExtraDamageType;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
@@ -52,6 +47,7 @@ import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.MobPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
+import yesman.epicfight.world.damagesource.EpicFightDamageSource;
 import yesman.epicfight.world.entity.eventlistener.AttackEndEvent;
 import yesman.epicfight.world.entity.eventlistener.DealtDamageEvent;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener.EventType;
@@ -194,46 +190,32 @@ public class AttackAnimation extends ActionAnimation {
 		
 		if (list.size() > 0) {
 			HitEntityList hitEntities = new HitEntityList(entitypatch, list, phase.getProperty(AttackPhaseProperty.HIT_PRIORITY).orElse(HitEntityList.Priority.DISTANCE));
-			boolean flag1 = true;
 			int maxStrikes = this.getMaxStrikes(entitypatch, phase);
-			entitypatch.getOriginal().setLastHurtMob(list.get(0));
 			
 			while (entitypatch.currentlyAttackedEntity.size() < maxStrikes && hitEntities.next()) {
 				Entity e = hitEntities.getEntity();
 				LivingEntity trueEntity = this.getTrueEntity(e);
 				
-				if (!entitypatch.currentlyAttackedEntity.contains(trueEntity) && !entitypatch.isTeammate(e)) {
+				if (trueEntity != null && trueEntity.isAlive() && !entitypatch.currentlyAttackedEntity.contains(trueEntity) && !entitypatch.isTeammate(e)) {
 					if (e instanceof LivingEntity || e instanceof PartEntity) {
 						if (entity.hasLineOfSight(e)) {
-							ExtendedDamageSource source = this.getExtendedDamageSource(entitypatch, e, phase);
-							AttackResult attackResult = entitypatch.tryHarm(e, source, this.getDamageTo(entitypatch, trueEntity, phase, source));
-							boolean count = attackResult.resultType.count();
+							EpicFightDamageSource source = this.getEpicFightDamageSource(entitypatch, e, phase);
+							int prevInvulTime = e.invulnerableTime;
+							e.invulnerableTime = 0;
+							AttackResult attackResult = entitypatch.attack(source, e, phase.hand);
+							e.invulnerableTime = prevInvulTime;
 							
 							if (attackResult.resultType.dealtDamage()) {
-								int temp = e.invulnerableTime;
-								trueEntity.invulnerableTime = 0;
-								boolean attackSuccess = e.hurt((DamageSource)source, attackResult.damage);
-								trueEntity.invulnerableTime = temp;
-								count = attackSuccess || trueEntity.isDamageSourceBlocked((DamageSource)source);
-								entitypatch.onHurtSomeone(e, phase.hand, source, attackResult.damage, attackSuccess);
-								
-								if (attackSuccess) {
-									if (entitypatch instanceof ServerPlayerPatch) {
-										ServerPlayerPatch playerpatch = ((ServerPlayerPatch)entitypatch);
-										playerpatch.getEventListener().triggerEvents(EventType.DEALT_DAMAGE_EVENT_POST, new DealtDamageEvent<>(playerpatch, trueEntity, source, attackResult.damage));
-									}
-									
-									if (flag1 && entitypatch instanceof PlayerPatch) {
-										entity.getItemInHand(phase.hand).hurtEnemy(trueEntity, (Player)entity);
-										flag1 = false;
-									}
-									
-									e.level.playSound(null, e.getX(), e.getY(), e.getZ(), this.getHitSound(entitypatch, phase), e.getSoundSource(), 1.0F, 1.0F);
-									this.spawnHitParticle(((ServerLevel)e.level), entitypatch, e, phase);
+								if (entitypatch instanceof ServerPlayerPatch) {
+									ServerPlayerPatch playerpatch = ((ServerPlayerPatch) entitypatch);
+									playerpatch.getEventListener().triggerEvents(EventType.DEALT_DAMAGE_EVENT_POST, new DealtDamageEvent<>(playerpatch, trueEntity, source, attackResult.damage));
 								}
+								
+								e.level.playSound(null, e.getX(), e.getY(), e.getZ(), this.getHitSound(entitypatch, phase), e.getSoundSource(), 1.0F, 1.0F);
+								this.spawnHitParticle(((ServerLevel) e.level), entitypatch, e, phase);
 							}
 							
-							if (count) {
+							if (attackResult.resultType.shouldCount()) {
 								entitypatch.currentlyAttackedEntity.add(trueEntity);
 							}
 						}
@@ -273,18 +255,7 @@ public class AttackAnimation extends ActionAnimation {
 	}
 	
 	protected int getMaxStrikes(LivingEntityPatch<?> entitypatch, Phase phase) {
-		return phase.getProperty(AttackPhaseProperty.MAX_STRIKES).map((valueCorrector) -> valueCorrector.getTotalValue(entitypatch.getMaxStrikes(phase.hand))).orElse(Float.valueOf(entitypatch.getMaxStrikes(phase.hand))).intValue();
-	}
-	
-	protected float getDamageTo(LivingEntityPatch<?> entitypatch, LivingEntity target, Phase phase, ExtendedDamageSource source) {
-		float totalDamage = phase.getProperty(AttackPhaseProperty.DAMAGE).map((valueCorrector) -> valueCorrector.getTotalValue(entitypatch.getDamageTo(target, source, phase.hand))).orElse(entitypatch.getDamageTo(target, source, phase.hand));
-		ExtraDamageType extraCalculator = phase.getProperty(AttackPhaseProperty.EXTRA_DAMAGE).orElse(null);
-		
-		if (extraCalculator != null) {
-			totalDamage += extraCalculator.get(entitypatch.getOriginal(), target);
-		}
-		
-		return totalDamage;
+		return phase.getProperty(AttackPhaseProperty.MAX_STRIKES_MODIFIER).map((valueCorrector) -> valueCorrector.getTotalValue(entitypatch.getMaxStrikes(phase.hand))).orElse(Float.valueOf(entitypatch.getMaxStrikes(phase.hand))).intValue();
 	}
 	
 	protected SoundEvent getSwingSound(LivingEntityPatch<?> entitypatch, Phase phase) {
@@ -295,19 +266,32 @@ public class AttackAnimation extends ActionAnimation {
 		return phase.getProperty(AttackPhaseProperty.HIT_SOUND).orElse(entitypatch.getWeaponHitSound(phase.hand));
 	}
 	
-	protected ExtendedDamageSource getExtendedDamageSource(LivingEntityPatch<?> entitypatch, Entity target, Phase phase) {
-		StunType stunType = phase.getProperty(AttackPhaseProperty.STUN_TYPE).orElse(StunType.SHORT);
-		ExtendedDamageSource extendedSource = entitypatch.getDamageSource(stunType, this, phase.hand);
+	protected EpicFightDamageSource getEpicFightDamageSource(LivingEntityPatch<?> entitypatch, Entity target, Phase phase) {
 		
-		phase.getProperty(AttackPhaseProperty.ARMOR_NEGATION).ifPresent((opt) -> {
+		EpicFightDamageSource extendedSource = entitypatch.getDamageSource(this, phase.hand);
+		
+		phase.getProperty(AttackPhaseProperty.DAMAGE_MODIFIER).ifPresent((opt) -> {
+			extendedSource.setDamageModifier(opt);
+		});
+		
+		phase.getProperty(AttackPhaseProperty.ARMOR_NEGATION_MODIFIER).ifPresent((opt) -> {
 			extendedSource.setArmorNegation(opt.getTotalValue(extendedSource.getArmorNegation()));
 		});
-		phase.getProperty(AttackPhaseProperty.IMPACT).ifPresent((opt) -> {
+		
+		phase.getProperty(AttackPhaseProperty.IMPACT_MODIFIER).ifPresent((opt) -> {
 			extendedSource.setImpact(opt.getTotalValue(extendedSource.getImpact()));
 		});
 		
-		phase.getProperty(AttackPhaseProperty.FINISHER).ifPresent((opt) -> {
-			extendedSource.setFinisher(opt);
+		phase.getProperty(AttackPhaseProperty.STUN_TYPE).ifPresent((opt) -> {
+			extendedSource.setStunType(opt);
+		});
+		
+		phase.getProperty(AttackPhaseProperty.SOURCE_TAG).ifPresent((opt) -> {
+			opt.forEach(extendedSource::addTag);
+		});
+		
+		phase.getProperty(AttackPhaseProperty.EXTRA_DAMAGE).ifPresent((opt) -> {
+			opt.forEach(extendedSource::addExtraDamage);
 		});
 		
 		phase.getProperty(AttackPhaseProperty.SOURCE_LOCATION_PROVIDER).ifPresent((opt) -> {
@@ -420,7 +404,7 @@ public class AttackAnimation extends ActionAnimation {
 		protected final float end;
 		protected final String jointName;
 		protected final InteractionHand hand;
-		protected Collider collider;
+		protected /*final*/ Collider collider;
 		
 		public Phase(float start, float antic, float contact, float recovery, float end, String jointName, Collider collider) {
 			this(start, antic, contact, recovery, end, InteractionHand.MAIN_HAND, jointName, collider);
