@@ -369,6 +369,7 @@ public class Animations {
 	public static StaticAnimation BLADE_RUSH_SECOND;
 	public static StaticAnimation BLADE_RUSH_THIRD;
 	public static StaticAnimation BLADE_RUSH_FINISHER;
+	public static StaticAnimation THUNDER_PUNISHMENT;
 	public static StaticAnimation OFF_ANIMATION_HIGHEST;
 	public static StaticAnimation OFF_ANIMATION_MIDDLE;
 	
@@ -576,7 +577,7 @@ public class Animations {
 		
 		TRIDENT_AUTO1 = new BasicAttackAnimation(0.3F, 0.05F, 0.16F, 0.45F, null, "Tool_R", "biped/combat/trident_auto1", biped);
 		TRIDENT_AUTO2 = new BasicAttackAnimation(0.05F, 0.25F, 0.36F, 0.5F, null, "Tool_R", "biped/combat/trident_auto2", biped);
-		TRIDENT_AUTO3 = new BasicAttackAnimation(0.2F, 0.3F, 0.46F, 0.9F, null, "Tool_R", "biped/combat/trident_auto3", biped);
+		TRIDENT_AUTO3 = new BasicAttackAnimation(0.2F, 0.3F, 0.46F, 0.9F, null, "Tool_R", "biped/skill/thunder_punishment", biped);
 		
 		SWORD_AIR_SLASH = new AirSlashAnimation(0.1F, 0.15F, 0.26F, 0.5F, null, "Tool_R", "biped/combat/sword_airslash", biped);
 		SWORD_DUAL_AIR_SLASH = new AirSlashAnimation(0.1F, 0.15F, 0.26F, 0.5F, ColliderPreset.DUAL_SWORD_AIR_SLASH, "Torso", "biped/combat/sword_dual_airslash", biped);
@@ -1337,6 +1338,10 @@ public class Animations {
 		BLADE_RUSH_FINISHER = new SpecialAttackAnimation(0.15F, 0.0F, 0.1F, 0.16F, 0.65F, ColliderPreset.BLADE_RUSH, "Root", "biped/skill/blade_rush_finisher", biped)
 				.addProperty(AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
 				.addProperty(AttackPhaseProperty.HIT_PRIORITY, Priority.TARGET)
+				.addProperty(StaticAnimationProperty.PLAY_SPEED, 1.0F);
+		
+		THUNDER_PUNISHMENT = new AttackAnimation(0.15F, 0.0F, 0.1F, 0.16F, 0.65F, null, "Tool_R", "biped/skill/thunder_punishment", biped)
+				.addProperty(AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
 				.addProperty(StaticAnimationProperty.PLAY_SPEED, 1.0F);
 	}
 	
