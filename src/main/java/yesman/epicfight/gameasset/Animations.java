@@ -10,18 +10,27 @@ import com.google.common.collect.Lists;
 import com.mojang.math.Quaternion;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.DragonFireball;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -71,6 +80,7 @@ import yesman.epicfight.api.client.model.ClientModels;
 import yesman.epicfight.api.collider.OBBCollider;
 import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
 import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.utils.HitEntityList;
 import yesman.epicfight.api.utils.HitEntityList.Priority;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
@@ -578,7 +588,7 @@ public class Animations {
 		
 		TRIDENT_AUTO1 = new BasicAttackAnimation(0.3F, 0.05F, 0.16F, 0.45F, null, "Tool_R", "biped/combat/trident_auto1", biped);
 		TRIDENT_AUTO2 = new BasicAttackAnimation(0.05F, 0.25F, 0.36F, 0.5F, null, "Tool_R", "biped/combat/trident_auto2", biped);
-		TRIDENT_AUTO3 = new BasicAttackAnimation(0.2F, 0.3F, 0.46F, 0.9F, null, "Tool_R", "biped/skill/thunder_punishment", biped);
+		TRIDENT_AUTO3 = new BasicAttackAnimation(0.2F, 0.3F, 0.46F, 0.9F, null, "Tool_R", "biped/combat/trident_auto3", biped);
 		
 		SWORD_AIR_SLASH = new AirSlashAnimation(0.1F, 0.15F, 0.26F, 0.5F, null, "Tool_R", "biped/combat/sword_airslash", biped);
 		SWORD_DUAL_AIR_SLASH = new AirSlashAnimation(0.1F, 0.15F, 0.26F, 0.5F, ColliderPreset.DUAL_SWORD_AIR_SLASH, "Torso", "biped/combat/sword_dual_airslash", biped);
@@ -1339,9 +1349,45 @@ public class Animations {
 				.addProperty(AttackPhaseProperty.HIT_PRIORITY, Priority.TARGET)
 				.addProperty(StaticAnimationProperty.PLAY_SPEED, 1.0F);
 		
-		THUNDER_PUNISHMENT = new AttackAnimation(0.15F, 0.0F, 0.1F, 0.16F, 0.65F, null, "Tool_R", "biped/skill/thunder_punishment", biped)
+		THUNDER_PUNISHMENT = new AttackAnimation(0.15F, 0.0F, 0.3F, 0.36F, 1.0F, null, "Tool_R", "biped/skill/thunder_punishment", biped)
 				.addProperty(AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
-				.addProperty(StaticAnimationProperty.PLAY_SPEED, 1.0F);
+				.addProperty(StaticAnimationProperty.PLAY_SPEED, 1.0F)
+				.addProperty(StaticAnimationProperty.EVENTS, new Event[] {Event.create(0.35F, (entitypatch) -> {
+					int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.SWEEPING_EDGE, entitypatch.getOriginal()) + 3;
+					LivingEntity original = entitypatch.getOriginal();
+					Level level = original.level;
+					
+					List<Entity> list = level.getEntities(original, original.getBoundingBox().inflate(10.0D, 4.0D, 10.0D), (e) -> {
+						if (e.distanceToSqr(original) > 100.0D || e.isAlliedTo(original)) {
+							return false;
+						}
+						
+						return true;
+					});
+					
+					list = HitEntityList.Priority.HOSTILITY.sort(entitypatch, list);
+					
+					int count = 0;
+					
+					while (count < i && count < list.size()) {
+						Entity e = list.get(count++);
+						BlockPos blockpos = e.blockPosition();
+						LightningBolt lightningbolt = EntityType.LIGHTNING_BOLT.create(level);
+						lightningbolt.setDamage(8.0F);
+						lightningbolt.moveTo(Vec3.atBottomCenterOf(blockpos));
+						lightningbolt.setCause(entitypatch.getOriginal() instanceof ServerPlayer ? (ServerPlayer)entitypatch.getOriginal() : null);
+						level.addFreshEntity(lightningbolt);
+					}
+					
+					if (count > 0) {
+						if (level.getGameRules().getBoolean(GameRules.RULE_WEATHER_CYCLE) && level.random.nextFloat() < 0.08F && level.getThunderLevel(1.0F) < 1.0F) {
+							((ServerLevel)level).setWeatherParameters(0, Mth.randomBetweenInclusive(level.random, 12000, 180000), true, true);
+						}
+						
+						original.playSound(SoundEvents.TRIDENT_THUNDER, 5.0F, 1.0F);
+					}
+					
+				}, Event.Side.SERVER)});
 	}
 	
 	private static class ReuseableEvents {

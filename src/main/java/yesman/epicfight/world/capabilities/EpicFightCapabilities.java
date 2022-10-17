@@ -31,10 +31,12 @@ public class EpicFightCapabilities {
 	
 	@SuppressWarnings("unchecked")
 	public static <T extends EntityPatch> T getEntityPatch(Entity entity, Class<T> type) {
-		EntityPatch<?> entitypatch = entity.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).orElse(null);
-		
-		if (entitypatch != null && type.isAssignableFrom(entitypatch.getClass())) {
-			return (T)entitypatch;
+		if (entity != null) {
+			EntityPatch<?> entitypatch = entity.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).orElse(null);
+			
+			if (entitypatch != null && type.isAssignableFrom(entitypatch.getClass())) {
+				return (T)entitypatch;
+			}
 		}
 		
 		return null;

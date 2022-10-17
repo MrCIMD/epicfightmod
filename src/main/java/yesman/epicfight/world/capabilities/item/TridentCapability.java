@@ -3,14 +3,18 @@ package yesman.epicfight.world.capabilities.item;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.sounds.SoundEvent;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.ColliderPreset;
 import yesman.epicfight.gameasset.EpicFightSounds;
+import yesman.epicfight.gameasset.Skills;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.particle.HitParticleType;
+import yesman.epicfight.skill.Skill;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
@@ -64,5 +68,10 @@ public class TridentCapability extends RangedWeaponCapability {
 	@Override
 	public List<StaticAnimation> getMountAttackMotion() {
 		return mountAttackMotion;
+	}
+	
+	@Nullable
+	public Skill getInnateSkill(PlayerPatch<?> playerpatch) {
+		return Skills.THUNDER_PUNISHMENT;
 	}
 }

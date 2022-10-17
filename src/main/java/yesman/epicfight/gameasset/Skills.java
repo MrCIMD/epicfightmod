@@ -42,6 +42,7 @@ import yesman.epicfight.skill.StaminaPillagerSkill;
 import yesman.epicfight.skill.StepSkill;
 import yesman.epicfight.skill.SwordmasterSkill;
 import yesman.epicfight.skill.TechnicianSkill;
+import yesman.epicfight.skill.ThunderPunishment;
 import yesman.epicfight.skill.WeaponInnateSkill;
 import yesman.epicfight.world.damagesource.ExtraDamageInstance;
 import yesman.epicfight.world.damagesource.StunType;
@@ -110,7 +111,7 @@ public class Skills {
 	public static Skill LIECHTENAUER;
 	public static Skill EVISCERATE;
 	public static Skill BLADE_RUSH;
-	public static Skill THUNER_PUNISHMENT;
+	public static Skill THUNDER_PUNISHMENT;
 	/** etc skills **/
 	public static Skill CHARGING_JUMP;
 	public static Skill GROUND_SLAM;
@@ -146,6 +147,7 @@ public class Skills {
 		onRegister.register(LiechtenauerSkill::new, WeaponInnateSkill.createWeaponInnateBuilder().setConsumption(40.0F).setMaxDuration(4).setActivateType(ActivateType.DURATION_INFINITE), EpicFightMod.MODID, "liechtenauer");
 		onRegister.register(EviscerateSkill::new, WeaponInnateSkill.createWeaponInnateBuilder().setConsumption(25.0F), EpicFightMod.MODID, "eviscerate");
 		onRegister.register(BladeRushSkill::new, WeaponInnateSkill.createWeaponInnateBuilder().setConsumption(25.0F).setMaxDuration(1).setMaxStack(4).setActivateType(ActivateType.TOGGLE), EpicFightMod.MODID, "blade_rush");
+		onRegister.register(ThunderPunishment::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setConsumption(50.0F).setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/thunder_punishment")), EpicFightMod.MODID, "thunder_punishment");
 		
 		ModLoader.get().postEvent(onRegister);
 	}
@@ -289,6 +291,15 @@ public class Skills {
 					.addProperty(AttackPhaseProperty.PARTICLE, EpicFightParticles.BLADE_RUSH_SKILL)
 				.registerPropertiesToAnimation();
 		BLADE_RUSH = bladeRush;
+		
+		WeaponInnateSkill thunderPunishment = onBuild.build(EpicFightMod.MODID, "thunder_punishment");
+		thunderPunishment.newProperty()
+					.addProperty(AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(1))
+					.newProperty()
+					.addProperty(AttackPhaseProperty.ARMOR_NEGATION_MODIFIER, ValueModifier.adder(100.0F))
+					.addProperty(AttackPhaseProperty.STUN_TYPE, StunType.KNOCKDOWN)
+				.registerPropertiesToAnimation();
+		THUNDER_PUNISHMENT = thunderPunishment;
 		
 		ModLoader.get().postEvent(onBuild);
 	}

@@ -304,7 +304,7 @@ public class EntityEvents {
 			} else if (event.getAmount() != result.damage) {
 				event.setCanceled(true);
 				
-				DamageSource damagesource = new DamageSource( event.getSource().getMsgId() );
+				DamageSource damagesource = new DamageSource(event.getSource().getMsgId());
 				damagesource.bypassInvul();
 				
 				event.getEntity().hurt(damagesource, result.damage);
@@ -339,7 +339,7 @@ public class EntityEvents {
 			
 			if (rayresult.getEntity() != null) {
 				if (rayresult.getEntity() instanceof ServerPlayer) {
-					ServerPlayerPatch playerpatch = EpicFightCapabilities.getEntityPatch(event.getEntity(), ServerPlayerPatch.class);
+					ServerPlayerPatch playerpatch = EpicFightCapabilities.getEntityPatch(rayresult.getEntity(), ServerPlayerPatch.class);
 					boolean canceled = playerpatch.getEventListener().triggerEvents(EventType.PROJECTILE_HIT_EVENT, new ProjectileHitEvent(playerpatch, event));
 					
 					if (canceled) {
