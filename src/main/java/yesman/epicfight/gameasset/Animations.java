@@ -381,6 +381,7 @@ public class Animations {
 	public static StaticAnimation BLADE_RUSH_THIRD;
 	public static StaticAnimation BLADE_RUSH_FINISHER;
 	public static StaticAnimation THUNDER_PUNISHMENT;
+	public static StaticAnimation TSUNAMI;
 	public static StaticAnimation OFF_ANIMATION_HIGHEST;
 	public static StaticAnimation OFF_ANIMATION_MIDDLE;
 	
@@ -1388,6 +1389,10 @@ public class Animations {
 					}
 					
 				}, Event.Side.SERVER)});
+		
+		TSUNAMI = new AttackAnimation(0.2F, 0.2F, 0.35F, 1.0F, 1.8F, ColliderPreset.BLADE_RUSH, "Root", "biped/skill/tsunami", biped)
+				.addProperty(AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
+				.addProperty(StaticAnimationProperty.PLAY_SPEED, 1.0F);
 	}
 	
 	private static class ReuseableEvents {

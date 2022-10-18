@@ -147,7 +147,7 @@ public class Skills {
 		onRegister.register(LiechtenauerSkill::new, WeaponInnateSkill.createWeaponInnateBuilder().setConsumption(40.0F).setMaxDuration(4).setActivateType(ActivateType.DURATION_INFINITE), EpicFightMod.MODID, "liechtenauer");
 		onRegister.register(EviscerateSkill::new, WeaponInnateSkill.createWeaponInnateBuilder().setConsumption(25.0F), EpicFightMod.MODID, "eviscerate");
 		onRegister.register(BladeRushSkill::new, WeaponInnateSkill.createWeaponInnateBuilder().setConsumption(25.0F).setMaxDuration(1).setMaxStack(4).setActivateType(ActivateType.TOGGLE), EpicFightMod.MODID, "blade_rush");
-		onRegister.register(ThunderPunishment::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setConsumption(50.0F).setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/thunder_punishment")), EpicFightMod.MODID, "thunder_punishment");
+		onRegister.register(ThunderPunishment::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setConsumption(50.0F).setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/tsunami")), EpicFightMod.MODID, "thunder_punishment");
 		
 		ModLoader.get().postEvent(onRegister);
 	}

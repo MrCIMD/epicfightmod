@@ -117,7 +117,7 @@ mixin {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.18.2-40.1.80'
     
-    implementation fg.deobf("curse.maven:fps-333287:3919332")
+    //implementation fg.deobf("curse.maven:firstperson-333287:3919332")
     //implementation fg.deobf("curse.maven:mantle-74924:3829975")
     
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
