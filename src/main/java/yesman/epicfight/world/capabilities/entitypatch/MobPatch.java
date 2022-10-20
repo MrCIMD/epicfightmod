@@ -78,7 +78,7 @@ public abstract class MobPatch<T extends Mob> extends LivingEntityPatch<T> {
 			if (original.getVehicle() != null)
 				currentLivingMotion = LivingMotions.MOUNT;
 			else
-				if (this.original.getDeltaMovement().y < -0.55F)
+				if (this.original.getDeltaMovement().y < -0.55F || this.airborne)
 					currentLivingMotion = LivingMotions.FALL;
 				else if (original.animationSpeed > 0.01F)
 					currentLivingMotion = LivingMotions.WALK;
@@ -98,7 +98,7 @@ public abstract class MobPatch<T extends Mob> extends LivingEntityPatch<T> {
 			if (original.getVehicle() != null) {
 				currentLivingMotion = LivingMotions.MOUNT;
 			} else {
-				if (this.original.getDeltaMovement().y < -0.55F)
+				if (this.original.getDeltaMovement().y < -0.55F || this.airborne)
 					currentLivingMotion = LivingMotions.FALL;
 				else if (original.animationSpeed > 0.01F)
 					if (original.isAggressive())
@@ -175,6 +175,7 @@ public abstract class MobPatch<T extends Mob> extends LivingEntityPatch<T> {
 	
 	@Override
 	public LivingEntity getTarget() {
+		System.out.println(this.isLogicalClient() + " gettarget last " + this.original.getTarget());
 		return this.original.getTarget();
 	}
 	

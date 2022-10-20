@@ -4,8 +4,6 @@ package yesman.epicfight.api.animation.types;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import com.google.common.collect.Maps;
 
@@ -17,6 +15,7 @@ import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.property.AnimationProperty.StaticAnimationProperty;
+import yesman.epicfight.api.animation.types.AnimationEvent.TimeStampedEvent;
 import yesman.epicfight.api.client.animation.ClientAnimationProperties;
 import yesman.epicfight.api.client.animation.JointMask;
 import yesman.epicfight.api.client.animation.JointMask.BindModifier;
@@ -100,22 +99,18 @@ public class StaticAnimation extends DynamicAnimation {
 	
 	@Override
 	public void begin(LivingEntityPatch<?> entitypatch) {
-		this.getProperty(StaticAnimationProperty.EVENTS).ifPresent((events) -> {
-			for (Event event : events) {
-				if (event.time == Event.ON_BEGIN) {
-					event.testAndExecute(entitypatch);
-				}
+		this.getProperty(StaticAnimationProperty.ON_BEGIN_EVENTS).ifPresent((events) -> {
+			for (AnimationEvent event : events) {
+				event.executeIfRightSide(entitypatch);
 			}
 		});
 	}
 	
 	@Override
 	public void end(LivingEntityPatch<?> entitypatch, boolean isEnd) {
-		this.getProperty(StaticAnimationProperty.EVENTS).ifPresent((events) -> {
-			for (Event event : events) {
-				if (event.time == Event.ON_END) {
-					event.testAndExecute(entitypatch);
-				}
+		this.getProperty(StaticAnimationProperty.ON_END_EVENTS).ifPresent((events) -> {
+			for (AnimationEvent event : events) {
+				event.executeIfRightSide(entitypatch);
 			}
 		});
 	}
@@ -123,20 +118,20 @@ public class StaticAnimation extends DynamicAnimation {
 	@Override
 	public void tick(LivingEntityPatch<?> entitypatch) {
 		this.getProperty(StaticAnimationProperty.EVENTS).ifPresent((events) -> {
+			for (AnimationEvent event : events) {
+				event.executeIfRightSide(entitypatch);
+			}
+		});
+		
+		this.getProperty(StaticAnimationProperty.TIME_STAMPED_EVENTS).ifPresent((events) -> {
 			AnimationPlayer player = entitypatch.getAnimator().getPlayerFor(this);
 			
 			if (player != null) {
 				float prevElapsed = player.getPrevElapsedTime();
 				float elapsed = player.getElapsedTime();
 				
-				for (Event event : events) {
-					if (event.time != Event.ON_BEGIN && event.time != Event.ON_END) {
-						if (event.time < prevElapsed || event.time >= elapsed) {
-							continue;
-						} else {
-							event.testAndExecute(entitypatch);
-						}
-					}
+				for (TimeStampedEvent event : events) {
+					event.executeIfRightSide(entitypatch, prevElapsed, elapsed);
 				}
 			}
 		});
@@ -212,6 +207,16 @@ public class StaticAnimation extends DynamicAnimation {
 		return this;
 	}
 	
+	public StaticAnimation addEvents(StaticAnimationProperty<?> key, AnimationEvent... events) {
+		this.properties.put(key, events);
+		return this;
+	}
+	
+	public <V extends AnimationEvent> StaticAnimation addEvents(TimeStampedEvent... events) {
+		this.properties.put(StaticAnimationProperty.TIME_STAMPED_EVENTS, events);
+		return this;
+	}
+	
 	public StateSpectrum.Blueprint getStateSpectrumBP() {
 		return this.stateSpectrumBlueprint;
 	}
@@ -230,48 +235,5 @@ public class StaticAnimation extends DynamicAnimation {
 	@OnlyIn(Dist.CLIENT)
 	public Layer.LayerType getLayerType() {
 		return this.getProperty(ClientAnimationProperties.LAYER_TYPE).orElse(LayerType.BASE_LAYER);
-	}
-	
-	public static class Event implements Comparable<Event> {
-		public static final float ON_BEGIN = Float.MIN_VALUE;
-		public static final float ON_END = Float.MAX_VALUE;
-		final float time;
-		final Side executionSide;
-		final Consumer<LivingEntityPatch<?>> event;
-		
-		private Event(float time, Side executionSide, Consumer<LivingEntityPatch<?>> event) {
-			this.time = time;
-			this.executionSide = executionSide;
-			this.event = event;
-		}
-		
-		@Override
-		public int compareTo(Event arg0) {
-			if(this.time == arg0.time) {
-				return 0;
-			} else {
-				return this.time > arg0.time ? 1 : -1;
-			}
-		}
-		
-		public void testAndExecute(LivingEntityPatch<?> entitypatch) {
-			if (this.executionSide.predicate.test(entitypatch.isLogicalClient())) {
-				this.event.accept(entitypatch);
-			}
-		}
-		
-		public static Event create(float time, Consumer<LivingEntityPatch<?>> event, Side isRemote) {
-			return new Event(time, isRemote, event);
-		}
-		
-		public enum Side {
-			CLIENT((isLogicalClient) -> isLogicalClient), SERVER((isLogicalClient) -> !isLogicalClient), BOTH((isLogicalClient) -> true);
-			
-			Predicate<Boolean> predicate;
-			
-			Side(Predicate<Boolean> predicate) {
-				this.predicate = predicate;
-			}
-		}
 	}
 }

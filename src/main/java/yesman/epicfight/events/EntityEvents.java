@@ -39,6 +39,7 @@ import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.living.PotionEvent.PotionAddedEvent;
 import net.minecraftforge.event.entity.living.PotionEvent.PotionExpiryEvent;
 import net.minecraftforge.event.entity.living.PotionEvent.PotionRemoveEvent;
+import net.minecraftforge.event.entity.player.PlayerFlyableFallEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.api.animation.types.StaticAnimation;
@@ -53,6 +54,7 @@ import yesman.epicfight.world.capabilities.entitypatch.EntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.HumanoidMobPatch;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.mob.EndermanPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.projectile.ProjectilePatch;
@@ -63,7 +65,6 @@ import yesman.epicfight.world.effect.EpicFightMobEffects;
 import yesman.epicfight.world.entity.eventlistener.HurtEvent;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener.EventType;
 import yesman.epicfight.world.entity.eventlistener.ProjectileHitEvent;
-import yesman.epicfight.world.gamerule.EpicFightGamerules;
 
 @Mod.EventBusSubscriber(modid=EpicFightMod.MODID)
 public class EntityEvents {
@@ -480,22 +481,22 @@ public class EntityEvents {
 		}
 	}
 	
+	
 	@SubscribeEvent
 	public static void fallEvent(LivingFallEvent event) {
-		if (event.getEntity().level.getGameRules().getBoolean(EpicFightGamerules.HAS_FALL_ANIMATION) && !event.getEntity().level.isClientSide() && event.getDamageMultiplier() > 0.0F) {
-			LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(event.getEntity(), LivingEntityPatch.class);
-			
-			if (entitypatch != null && !entitypatch.getEntityState().inaction()) {
-				float distance = event.getDistance();
-				
-				if (distance > 5.0F) {
-					StaticAnimation fallAnimation = entitypatch.getHitAnimation(StunType.FALL);
-					
-					if (fallAnimation != null) {
-						entitypatch.playAnimationSynchronized(fallAnimation, 0);
-					}
-				}
-			}
+		LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(event.getEntity(), LivingEntityPatch.class);
+		
+		if (entitypatch != null) {
+			entitypatch.onFall(event);
+		}
+	}
+
+	@SubscribeEvent
+	public static void playerFallEvent(PlayerFlyableFallEvent event) {
+		PlayerPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(event.getEntity(), PlayerPatch.class);
+		
+		if (entitypatch != null) {
+			entitypatch.onFall(event);
 		}
 	}
 }

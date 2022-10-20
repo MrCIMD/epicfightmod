@@ -91,7 +91,7 @@ public class AbstractClientPlayerPatch<T extends AbstractClientPlayer> extends P
 			} else {
 				if (original.isUnderWater() && (original.yCloak - original.yCloakO) < -0.005)
 					currentLivingMotion = LivingMotions.FLOAT;
-				else if (original.yCloak - original.yCloakO < -0.25F)
+				else if (original.yCloak - original.yCloakO < -0.25F || this.airborne)
 					currentLivingMotion = LivingMotions.FALL;
 				else if (original.animationSpeed > 0.01F) {
 					if (original.isShiftKeyDown())

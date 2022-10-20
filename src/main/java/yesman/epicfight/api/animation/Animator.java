@@ -56,6 +56,10 @@ public abstract class Animator {
 		this.livingAnimations.put(livingMotion, animation);
 	}
 	
+	public StaticAnimation getLivingAnimation(LivingMotion livingMotion, StaticAnimation defaultGetter) {
+		return this.livingAnimations.getOrDefault(livingMotion, defaultGetter);
+	}
+	
 	public Set<Map.Entry<LivingMotion, StaticAnimation>> getLivingAnimationEntrySet() {
 		return this.livingAnimations.entrySet();
 	}

@@ -9,8 +9,9 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.RegistryObject;
 import yesman.epicfight.api.animation.TransformSheet;
 import yesman.epicfight.api.animation.types.ActionAnimation;
+import yesman.epicfight.api.animation.types.AnimationEvent;
+import yesman.epicfight.api.animation.types.AnimationEvent.TimeStampedEvent;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
-import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.HitEntityList.Priority;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.particle.HitParticleType;
@@ -22,9 +23,24 @@ import yesman.epicfight.world.damagesource.StunType;
 public abstract class AnimationProperty<T> {
 	public static class StaticAnimationProperty<T> extends AnimationProperty<T> {
 		/**
-		 * You can put the various events in animation. Must be registered in order of time.
+		 * Events that are fired in every tick.
 		 */
-		public static final StaticAnimationProperty<StaticAnimation.Event[]> EVENTS = new StaticAnimationProperty<StaticAnimation.Event[]> ();
+		public static final StaticAnimationProperty<AnimationEvent[]> EVENTS = new StaticAnimationProperty<AnimationEvent[]> ();
+		
+		/**
+		 * Events that are fired in specific time.
+		 */
+		public static final StaticAnimationProperty<TimeStampedEvent[]> TIME_STAMPED_EVENTS = new StaticAnimationProperty<TimeStampedEvent[]> ();
+		
+		/**
+		 * Events that are fired when the animation starts.
+		 */
+		public static final StaticAnimationProperty<AnimationEvent[]> ON_BEGIN_EVENTS = new StaticAnimationProperty<AnimationEvent[]> ();
+		
+		/**
+		 * Events that are fired when the animation ends.
+		 */
+		public static final StaticAnimationProperty<AnimationEvent[]> ON_END_EVENTS = new StaticAnimationProperty<AnimationEvent[]> ();
 		
 		/**
 		 * You can set the fixed play speed of the animation.
@@ -39,7 +55,7 @@ public abstract class AnimationProperty<T> {
 		public static final ActionAnimationProperty<Boolean> STOP_MOVEMENT = new ActionAnimationProperty<Boolean> ();
 		
 		/**
-		 * This property will move entity's coord of y axis according to animation's coord if true.
+		 * This property will move entity's coord also as y axis if true.
 		 */
 		public static final ActionAnimationProperty<Boolean> MOVE_VERTICAL = new ActionAnimationProperty<Boolean> ();
 		

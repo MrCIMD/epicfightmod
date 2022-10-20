@@ -41,6 +41,7 @@ public class DodgeAnimation extends ActionAnimation {
 			});
 		
 		this.addProperty(ActionAnimationProperty.AFFECT_SPEED, true);
+		//this.addEvents(Event.create(Event.ON_BEGIN, (entitypatch) -> {}, Event.Side.BOTH));
 	}
 	
 	@Override

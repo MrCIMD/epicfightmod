@@ -31,6 +31,7 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 import yesman.epicfight.api.animation.Animator;
 import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.LivingMotions;
@@ -55,6 +56,7 @@ import yesman.epicfight.world.damagesource.EpicFightDamageSource;
 import yesman.epicfight.world.damagesource.StunType;
 import yesman.epicfight.world.entity.ai.attribute.EpicFightAttributeSupplier;
 import yesman.epicfight.world.entity.ai.attribute.EpicFightAttributes;
+import yesman.epicfight.world.gamerule.EpicFightGamerules;
 
 public abstract class LivingEntityPatch<T extends LivingEntity> extends EntityPatch<T> {
 	public static final EntityDataAccessor<Float> STUN_SHIELD = new EntityDataAccessor<Float> (251, EntityDataSerializers.FLOAT);
@@ -69,6 +71,7 @@ public abstract class LivingEntityPatch<T extends LivingEntity> extends EntityPa
 	public List<LivingEntity> currentlyAttackedEntity;
 	protected Vec3 lastAttackPosition;
 	protected EpicFightDamageSource animationDamageSource;
+	protected boolean airborne;
 	private Entity lastTryHurtEntity;
 	private ResultType lastResultType;
 	private float lastDealDamage;
@@ -128,6 +131,22 @@ public abstract class LivingEntityPatch<T extends LivingEntity> extends EntityPa
 		if (this.original.deathTime == 19) {
 			this.aboutToDeath();
 		}
+	}
+	
+	public void onFall(LivingFallEvent event) {
+		if (!this.getOriginal().level.isClientSide() && (this.airborne || (this.getOriginal().level.getGameRules().getBoolean(EpicFightGamerules.HAS_FALL_ANIMATION) && event.getDamageMultiplier() > 0.0F)
+				  && !this.getEntityState().inaction())) {
+			
+			if (this.airborne || event.getDistance() > 5.0F) {
+				StaticAnimation fallAnimation = this.getAnimator().getLivingAnimation(LivingMotions.LANDING_RECOVERY, this.getHitAnimation(StunType.FALL));
+				
+				if (fallAnimation != null) {
+					this.playAnimationSynchronized(fallAnimation, 0);
+				}
+			}
+		}
+		
+		this.airborne = false;
 	}
 	
 	public void onDeath() {
@@ -564,6 +583,10 @@ public abstract class LivingEntityPatch<T extends LivingEntity> extends EntityPa
 		}
 		
 		return false;
+	}
+	
+	public void setAirborne() {
+		this.airborne = true;
 	}
 	
 	public boolean isFirstPerson() {
