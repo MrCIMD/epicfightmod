@@ -119,7 +119,7 @@ public class CapabilityItem {
 	}
 	
 	@Nullable
-	public Skill getInnateSkill(PlayerPatch<?> playerpatch) {
+	public Skill getInnateSkill(PlayerPatch<?> playerpatch, ItemStack itemstack) {
 		return null;
 	}
 	
@@ -132,8 +132,8 @@ public class CapabilityItem {
 		return this.weaponCategory;
 	}
 	
-	public void changeWeaponInnateSkill(PlayerPatch<?> playerpatch) {
-		Skill weaponInnateSkill = this.getInnateSkill(playerpatch);
+	public void changeWeaponInnateSkill(PlayerPatch<?> playerpatch, ItemStack itemstack) {
+		Skill weaponInnateSkill = this.getInnateSkill(playerpatch, itemstack);
 		String skillName = "";
 		SPChangeSkill.State state = SPChangeSkill.State.ENABLE;
 		SkillContainer weaponInnateSkillContainer = playerpatch.getSkill(SkillCategories.WEAPON_INNATE);

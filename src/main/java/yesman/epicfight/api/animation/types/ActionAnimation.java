@@ -2,9 +2,7 @@ package yesman.epicfight.api.animation.types;
 
 import java.util.Map;
 
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
@@ -14,6 +12,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.ForgeMod;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.animation.JointTransform;
 import yesman.epicfight.api.animation.Keyframe;
@@ -57,15 +56,17 @@ public class ActionAnimation extends MainFrameAnimation {
 		super.begin(entitypatch);
 		entitypatch.cancelUsingItem();
 		
-		if (this.getProperty(ActionAnimationProperty.STOP_MOVEMENT).orElse(false)) {
-			entitypatch.getOriginal().setDeltaMovement(0.0D, entitypatch.getOriginal().getDeltaMovement().y, 0.0D);
+		if (entitypatch.moveHere()) {
+			if (this.getProperty(ActionAnimationProperty.STOP_MOVEMENT).orElse(false)) {
+				entitypatch.getOriginal().setDeltaMovement(0.0D, entitypatch.getOriginal().getDeltaMovement().y, 0.0D);
+			}
+			
+			ActionAnimationCoordSetter actionCoordSetter = this.getProperty(ActionAnimationProperty.COORD_SET_BEGIN).orElse((self, entitypatch$2, transformSheet) -> {
+				transformSheet.readFrom(self.jointTransforms.get("Root"));
+			});
+			
+			entitypatch.getAnimator().getPlayerFor(this).setActionAnimationCoord(this, entitypatch, actionCoordSetter);
 		}
-		
-		ActionAnimationCoordSetter actionCoordSetter = this.getProperty(ActionAnimationProperty.COORD_SET_BEGIN).orElse((self, entitypatch$2, transformSheet) -> {
-			transformSheet.readFrom(self.jointTransforms.get("Root"));
-		});
-		
-		entitypatch.getAnimator().getPlayerFor(this).setActionAnimationCoord(this, entitypatch, actionCoordSetter);
 	}
 	
 	@Override
@@ -100,16 +101,8 @@ public class ActionAnimation extends MainFrameAnimation {
 	}
 	
 	private boolean validateMovement(LivingEntityPatch<?> entitypatch, DynamicAnimation animation) {
-		LivingEntity livingentity = entitypatch.getOriginal();
-		
-		if (entitypatch.isLogicalClient()) {
-			if (!(livingentity instanceof LocalPlayer)) {
-				return false;
-			}
-		} else {
-			if ((livingentity instanceof ServerPlayer)) {
-				return false;
-			}
+		if (!entitypatch.moveHere()) {
+			return false;
 		}
 		
 		if (animation instanceof LinkAnimation) {
@@ -169,10 +162,13 @@ public class ActionAnimation extends MainFrameAnimation {
 		dest.setNextAnimation(this);
 		Map<String, JointTransform> data1 = pose1.getJointTransformData();
 		Pose pose = this.getPoseByTime(entitypatch, nextStart, 1.0F);
-		JointTransform jt = pose.getOrDefaultTransform("Root");
-		Vec3f withPosition = entitypatch.getAnimator().getPlayerFor(this).getActionAnimationCoord().getInterpolatedTranslation(nextStart);
 		
-		jt.translation().set(withPosition);
+		if (entitypatch.moveHere()) {
+			JointTransform jt = pose.getOrDefaultTransform("Root");
+			Vec3f withPosition = entitypatch.getAnimator().getPlayerFor(this).getActionAnimationCoord().getInterpolatedTranslation(nextStart);
+			jt.translation().set(withPosition);
+		}
+		
 		Map<String, JointTransform> data2 = pose.getJointTransformData();
 		
 		for (String jointName : data1.keySet()) {
@@ -228,9 +224,10 @@ public class ActionAnimation extends MainFrameAnimation {
 		dx = Math.abs(dx) > 0.0000001F ? dx : 0.0F;
 		dz = Math.abs(dz) > 0.0000001F ? dz : 0.0F;
 		
-		if (moveVertical && currentpos.y > 0.0F && !hasNoGravity) {
+		if (moveVertical && dy >= -0.0001F && !hasNoGravity) {
 			Vec3 motion = livingentity.getDeltaMovement();
-			livingentity.setDeltaMovement(motion.x, motion.y <= 0 ? (motion.y + 0.08D) : motion.y, motion.z);
+			double gravity = livingentity.getAttribute(ForgeMod.ENTITY_GRAVITY.get()).getValue();
+			livingentity.setDeltaMovement(motion.x, motion.y <= 0 ? (motion.y + gravity) : motion.y, motion.z);
 		}
 		
 		return new Vec3f(dx, dy, dz);

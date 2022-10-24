@@ -44,7 +44,7 @@ public abstract class PlayerPatch<T extends Player> extends LivingEntityPatch<T>
 	private static final UUID ACTION_EVENT_UUID = UUID.fromString("e6beeac4-77d2-11eb-9439-0242ac130002");
 	public static final EntityDataAccessor<Float> STAMINA = new EntityDataAccessor<Float> (253, EntityDataSerializers.FLOAT);
 	
-	protected float yaw;
+	protected float modelYRot;
 	protected PlayerEventListener eventListeners;
 	protected int tickSinceLastAction;
 	protected PlayerMode playerMode = PlayerMode.MINING;
@@ -126,8 +126,8 @@ public abstract class PlayerPatch<T extends Player> extends LivingEntityPatch<T>
 		}
 	}
 	
-	public void changeYaw(float amount) {
-		this.yaw = amount;
+	public void changeModelYRot(float degree) {
+		this.modelYRot = degree;
 	}
 	
 	@Override
@@ -261,6 +261,11 @@ public abstract class PlayerPatch<T extends Player> extends LivingEntityPatch<T>
 	
 	public boolean isUnstable() {
 		return this.original.isFallFlying() || this.currentLivingMotion == LivingMotions.FALL;
+	}
+	
+	@Override
+	public boolean moveHere() {
+		return this.isLogicalClient();
 	}
 	
 	public void openSkillBook(ItemStack itemstack, InteractionHand hand) {

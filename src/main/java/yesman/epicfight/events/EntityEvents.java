@@ -367,10 +367,6 @@ public class EntityEvents {
 	
 	@SubscribeEvent
 	public static void equipChangeEvent(LivingEquipmentChangeEvent event) {
-		if (event.getFrom().getItem() == event.getTo().getItem()) {
-			return;
-		}
-		
 		LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(event.getEntity(), LivingEntityPatch.class);
 		CapabilityItem fromCap = EpicFightCapabilities.getItemStackCapability(event.getFrom());
 		CapabilityItem toCap = EpicFightCapabilities.getItemStackCapability(event.getTo());

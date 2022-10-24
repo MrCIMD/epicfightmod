@@ -28,4 +28,5 @@ public class EpicFightParticles {
 	public static final RegistryObject<SimpleParticleType> LASER = PARTICLES.register("laser", () -> new SimpleParticleType(true));
 	public static final RegistryObject<SimpleParticleType> NEUTRALIZE = PARTICLES.register("neutralize", () -> new SimpleParticleType(true));
 	public static final RegistryObject<SimpleParticleType> BOSS_CASTING = PARTICLES.register("boss_casting", () -> new SimpleParticleType(true));
+	public static final RegistryObject<SimpleParticleType> TSUNAMI_SWIRL = PARTICLES.register("tsunami_swirl", () -> new SimpleParticleType(true));
 }

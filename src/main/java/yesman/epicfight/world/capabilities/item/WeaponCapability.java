@@ -12,6 +12,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.LivingMotions;
@@ -34,7 +35,7 @@ public class WeaponCapability extends CapabilityItem {
 	protected final Collider weaponCollider;
 	protected final HitParticleType hitParticle;
 	protected final Map<Style, List<StaticAnimation>> autoAttackMotions;
-	protected final Map<Style, Skill> innateSkill;
+	protected final Map<Style, Function<ItemStack, Skill>> innateSkill;
 	protected final Map<Style, Map<LivingMotion, StaticAnimation>> livingMotionModifiers;
 	protected final boolean canBePlacedOffhand;
 	
@@ -63,8 +64,8 @@ public class WeaponCapability extends CapabilityItem {
 	}
 	
 	@Override
-	public final Skill getInnateSkill(PlayerPatch<?> playerpatch) {
-		return this.innateSkill.get(this.getStyle(playerpatch));
+	public final Skill getInnateSkill(PlayerPatch<?> playerpatch, ItemStack itemstack) {
+		return this.innateSkill.get(this.getStyle(playerpatch)).apply(itemstack);
 	}
 	
 	@Override
@@ -150,7 +151,7 @@ public class WeaponCapability extends CapabilityItem {
 		HitParticleType hitParticle;
 		Collider collider;
 		Map<Style, List<StaticAnimation>> autoAttackMotionMap;
-		Map<Style, Skill> innateSkillByStyle;
+		Map<Style, Function<ItemStack, Skill>> innateSkillByStyle;
 		Map<Style, Map<LivingMotion, StaticAnimation>> livingMotionModifiers;
 		boolean canBePlacedOffhand;
 		
@@ -239,7 +240,7 @@ public class WeaponCapability extends CapabilityItem {
 			return this;
 		}
 		
-		public Builder innateSkill(Style style, Skill innateSkill) {
+		public Builder innateSkill(Style style, Function<ItemStack, Skill> innateSkill) {
 			this.innateSkillByStyle.put(style, innateSkill);
 			return this;
 		}

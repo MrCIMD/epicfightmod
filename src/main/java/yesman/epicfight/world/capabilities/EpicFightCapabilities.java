@@ -26,7 +26,7 @@ public class EpicFightCapabilities {
 	}
 	
 	public static CapabilityItem getItemStackCapability(ItemStack stack) {
-		return stack.isEmpty() ? CapabilityItem.EMPTY : stack.getCapability(CAPABILITY_ITEM, null).orElse(CapabilityItem.EMPTY);
+		return stack.isEmpty() ? CapabilityItem.EMPTY : stack.getCapability(CAPABILITY_ITEM).orElse(CapabilityItem.EMPTY);
 	}
 	
 	@SuppressWarnings("unchecked")

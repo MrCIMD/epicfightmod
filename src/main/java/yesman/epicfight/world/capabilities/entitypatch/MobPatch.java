@@ -175,7 +175,6 @@ public abstract class MobPatch<T extends Mob> extends LivingEntityPatch<T> {
 	
 	@Override
 	public LivingEntity getTarget() {
-		System.out.println(this.isLogicalClient() + " gettarget last " + this.original.getTarget());
 		return this.original.getTarget();
 	}
 	

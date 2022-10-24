@@ -119,7 +119,7 @@ public class DodgeSkill extends Skill {
 		int i = args.readInt();
 		float yaw = args.readFloat();
 		executer.playAnimationSynchronized(this.animations[i], 0);
-		executer.changeYaw(yaw);
+		executer.changeModelYRot(yaw);
 	}
 	
 	@Override

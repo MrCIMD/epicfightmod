@@ -589,6 +589,10 @@ public abstract class LivingEntityPatch<T extends LivingEntity> extends EntityPa
 		this.airborne = true;
 	}
 	
+	public boolean moveHere() {
+		return !this.isLogicalClient();
+	}
+	
 	public boolean isFirstPerson() {
 		return false;
 	}

@@ -30,6 +30,7 @@ import yesman.epicfight.network.server.SPPlayAnimation;
 import yesman.epicfight.skill.SkillCategories;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillContainer;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.skill.CapabilitySkill;
 import yesman.epicfight.world.damagesource.EpicFightDamageSource;
@@ -76,8 +77,9 @@ public class ServerPlayerPatch extends PlayerPatch<ServerPlayer> {
 	public void gatherDamageDealt(EpicFightDamageSource source, float amount) {
 		if (source.isBasicAttack()) {
 			SkillContainer container = this.getSkill(SkillCategories.WEAPON_INNATE);
+			ItemStack mainHandItem = this.getOriginal().getMainHandItem();
 			
-			if (!container.isFull() && container.hasSkill(this.getHoldingItemCapability(InteractionHand.MAIN_HAND).getInnateSkill(this))) {
+			if (!container.isFull() && container.hasSkill(EpicFightCapabilities.getItemStackCapability(mainHandItem).getInnateSkill(this, mainHandItem))) {
 				float value = container.getResource() + amount;
 				
 				if (value > 0.0F) {
@@ -100,7 +102,7 @@ public class ServerPlayerPatch extends PlayerPatch<ServerPlayer> {
 	@Override
 	public void updateHeldItem(CapabilityItem fromCap, CapabilityItem toCap, ItemStack from, ItemStack to, InteractionHand hand) {
 		CapabilityItem mainHandCap = (hand == InteractionHand.MAIN_HAND) ? toCap : this.getHoldingItemCapability(InteractionHand.MAIN_HAND);
-		mainHandCap.changeWeaponInnateSkill(this);
+		mainHandCap.changeWeaponInnateSkill(this, to);
 		
 		if (hand == InteractionHand.OFF_HAND) {
 			if (!from.isEmpty()) {
@@ -168,9 +170,9 @@ public class ServerPlayerPatch extends PlayerPatch<ServerPlayer> {
 	}
 	
 	@Override
-	public void changeYaw(float amount) {
-		super.changeYaw(amount);
-		EpicFightNetworkManager.sendToAllPlayerTrackingThisEntityWithSelf(new SPChangePlayerYaw(this.original.getId(), this.yaw), this.original);
+	public void changeModelYRot(float amount) {
+		super.changeModelYRot(amount);
+		EpicFightNetworkManager.sendToAllPlayerTrackingThisEntityWithSelf(new SPChangePlayerYaw(this.original.getId(), this.modelYRot), this.original);
 	}
 	
 	@Override

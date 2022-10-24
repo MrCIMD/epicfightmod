@@ -31,6 +31,7 @@ public class ClientModels extends Models<ClientModel> implements PreparableReloa
 	/** Particles **/
 	public final ClientModel forceField;
 	public final ClientModel laser;
+	public final ClientModel tsunamiSwirl;
 	
 	public ClientModels() {
 		this.biped = register(new ResourceLocation(EpicFightMod.MODID, "entity/biped"));
@@ -64,6 +65,7 @@ public class ClientModels extends Models<ClientModel> implements PreparableReloa
 		
 		this.forceField = register(new ResourceLocation(EpicFightMod.MODID, "particle/force_field"));
 		this.laser = register(new ResourceLocation(EpicFightMod.MODID, "particle/laser"));
+		this.tsunamiSwirl = register(new ResourceLocation(EpicFightMod.MODID, "particle/tsunami_swirl"));
 	}
 	
 	@Override

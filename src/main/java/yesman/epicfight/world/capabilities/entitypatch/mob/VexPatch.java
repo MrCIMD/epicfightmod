@@ -152,7 +152,6 @@ public class VexPatch extends MobPatch<Vex> {
 		
 		@Override
 		public void tick() {
-			System.out.println(VexPatch.this.original.getTarget());
 			--this.chargingCounter;
 		}
 	}

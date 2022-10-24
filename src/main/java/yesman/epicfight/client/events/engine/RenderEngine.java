@@ -97,6 +97,7 @@ import yesman.epicfight.client.renderer.patched.item.RenderShield;
 import yesman.epicfight.client.renderer.patched.item.RenderTrident;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.main.EpicFightMod;
+import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
@@ -443,9 +444,11 @@ public class RenderEngine {
 				
 				if (cap != null && playerpatch != null) {
 					if (ClientEngine.instance.controllEngine.isKeyDown(EpicFightKeyMappings.WEAPON_INNATE_SKILL_TOOLTIP)) {
-						if (cap.getInnateSkill(playerpatch) != null) {
+						Skill weaponInnateSkill = cap.getInnateSkill(playerpatch, event.getItemStack());
+						
+						if (weaponInnateSkill != null) {
 							event.getToolTip().clear();
-							List<Component> skilltooltip = cap.getInnateSkill(playerpatch).getTooltipOnItem(event.getItemStack(), cap, playerpatch);
+							List<Component> skilltooltip = weaponInnateSkill.getTooltipOnItem(event.getItemStack(), cap, playerpatch);
 							
 							for (Component s : skilltooltip) {
 								event.getToolTip().add(s);

@@ -57,9 +57,9 @@ public abstract class CustomModelParticle extends Particle {
 		float roll = Mth.lerp(partialTicks, this.oRoll, this.roll);
 		float pitch = Mth.lerp(partialTicks, this.pitchO, this.pitch);
 		float yaw = Mth.lerp(partialTicks, this.yawO, this.yaw);
-		rotation.mul(Vector3f.YP.rotation(yaw));
-		rotation.mul(Vector3f.XP.rotation(pitch));
-		rotation.mul(Vector3f.ZP.rotation(roll));
+		rotation.mul(Vector3f.YP.rotationDegrees(yaw));
+		rotation.mul(Vector3f.XP.rotationDegrees(pitch));
+		rotation.mul(Vector3f.ZP.rotationDegrees(roll));
 		
 		Vec3 vec3 = camera.getPosition();
 		float x = (float)(Mth.lerp((double)partialTicks, this.xo, this.x) - vec3.x());

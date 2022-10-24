@@ -6,8 +6,8 @@ import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.WitherSkeletonRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -27,6 +27,7 @@ import yesman.epicfight.client.particle.GroundSlamParticle;
 import yesman.epicfight.client.particle.HitBluntParticle;
 import yesman.epicfight.client.particle.HitCutParticle;
 import yesman.epicfight.client.particle.LaserParticle;
+import yesman.epicfight.client.particle.TsunamiSwirlParticle;
 import yesman.epicfight.client.renderer.entity.DroppedNetherStarRenderer;
 import yesman.epicfight.client.renderer.entity.WitherGhostRenderer;
 import yesman.epicfight.client.renderer.patched.layer.WearableItemLayer;
@@ -37,6 +38,7 @@ import yesman.epicfight.world.entity.EpicFightEntities;
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid=EpicFightMod.MODID, value=Dist.CLIENT, bus=EventBusSubscriber.Bus.MOD)
 public class ClientModBusEvent {
+	
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onParticleRegistry(final ParticleFactoryRegisterEvent event) {
 		Minecraft mc = Minecraft.getInstance();
@@ -59,6 +61,7 @@ public class ClientModBusEvent {
     	particleEngine.register(EpicFightParticles.LASER.get(), new LaserParticle.Provider());
     	particleEngine.register(EpicFightParticles.NEUTRALIZE.get(), new DustParticle.ExpansiveMetaParticle.Provider());
     	particleEngine.register(EpicFightParticles.BOSS_CASTING.get(), new DustParticle.ContractiveMetaParticle.Provider());
+    	particleEngine.register(EpicFightParticles.TSUNAMI_SWIRL.get(), new TsunamiSwirlParticle.Provider());
     }
 	
 	@SubscribeEvent

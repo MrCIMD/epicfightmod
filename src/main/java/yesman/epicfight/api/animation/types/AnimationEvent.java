@@ -21,11 +21,9 @@ public class AnimationEvent {
 		}
 	}
 	
-	public AnimationEvent withParams(Object... params) {
-		AnimationEvent event = new AnimationEvent(this.executionSide, this.event);
-		event.params = params;
-		
-		return event;
+	public AnimationEvent params(Object... params) {
+		this.params = params;
+		return this;
 	}
 	
 	public static AnimationEvent create(BiConsumer<LivingEntityPatch<?>, Object[]> event, AnimationEvent.Side isRemote) {

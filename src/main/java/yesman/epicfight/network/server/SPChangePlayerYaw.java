@@ -41,7 +41,7 @@ public class SPChangePlayerYaw {
 				PlayerPatch<?> playerpatch = EpicFightCapabilities.getEntityPatch(entity, PlayerPatch.class);
 				
 				if (playerpatch != null) {
-					playerpatch.changeYaw(msg.yaw);
+					playerpatch.changeModelYRot(msg.yaw);
 				}
 			}
 		});

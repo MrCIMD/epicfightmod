@@ -93,7 +93,7 @@ public class AbstractClientPlayerPatch<T extends AbstractClientPlayer> extends P
 					currentLivingMotion = LivingMotions.FLOAT;
 				else if (original.yCloak - original.yCloakO < -0.25F || this.airborne)
 					currentLivingMotion = LivingMotions.FALL;
-				else if (original.animationSpeed > 0.01F) {
+				else if (this.isMoving()) {
 					if (original.isShiftKeyDown())
 						currentLivingMotion = LivingMotions.SNEAK;
 					else if (original.isSprinting())
@@ -155,7 +155,7 @@ public class AbstractClientPlayerPatch<T extends AbstractClientPlayer> extends P
 	
 	@Override
 	protected void clientTick(LivingUpdateEvent event) {
-		this.prevYaw = this.yaw;
+		this.prevYaw = this.modelYRot;
 		this.prevBodyYaw = this.bodyYaw;
 		
 		if (this.getEntityState().inaction()) {
@@ -184,6 +184,10 @@ public class AbstractClientPlayerPatch<T extends AbstractClientPlayer> extends P
 		if (this.original.deathTime == 1) {
 			this.getClientAnimator().playDeathAnimation();
 		}
+	}
+	
+	protected boolean isMoving() {
+		return this.original.animationSpeed > 0.01F;
 	}
 	
 	public void updateHeldItem(CapabilityItem mainHandCap, CapabilityItem offHandCap) {
@@ -314,7 +318,7 @@ public class AbstractClientPlayerPatch<T extends AbstractClientPlayer> extends P
 				prevRotYaw = ridingEntity.yBodyRotO;
 				rotyaw = ridingEntity.yBodyRot;
 			} else {
-				yaw = MathUtils.lerpBetween(this.prevYaw, this.yaw, partialTick);
+				yaw = MathUtils.lerpBetween(this.prevYaw, this.modelYRot, partialTick);
 				prevRotYaw = this.prevBodyYaw + yaw;
 				rotyaw = this.bodyYaw + yaw;
 			}

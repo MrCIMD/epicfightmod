@@ -10,26 +10,26 @@ import yesman.epicfight.network.server.SPChangePlayerYaw;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
-public class CPRotatePlayerYaw {
-	private float yaw;
+public class CPRotateEntityModelYRot {
+	private float modelYRot;
 
-	public CPRotatePlayerYaw() {
-		this.yaw = 0F;
+	public CPRotateEntityModelYRot() {
+		this.modelYRot = 0F;
 	}
 
-	public CPRotatePlayerYaw(float yaw) {
-		this.yaw = yaw;
+	public CPRotateEntityModelYRot(float degree) {
+		this.modelYRot = degree;
 	}
 
-	public static CPRotatePlayerYaw fromBytes(FriendlyByteBuf buf) {
-		return new CPRotatePlayerYaw(buf.readFloat());
+	public static CPRotateEntityModelYRot fromBytes(FriendlyByteBuf buf) {
+		return new CPRotateEntityModelYRot(buf.readFloat());
 	}
 
-	public static void toBytes(CPRotatePlayerYaw msg, FriendlyByteBuf buf) {
-		buf.writeFloat(msg.yaw);
+	public static void toBytes(CPRotateEntityModelYRot msg, FriendlyByteBuf buf) {
+		buf.writeFloat(msg.modelYRot);
 	}
 
-	public static void handle(CPRotatePlayerYaw msg, Supplier<NetworkEvent.Context> ctx) {
+	public static void handle(CPRotateEntityModelYRot msg, Supplier<NetworkEvent.Context> ctx) {
 		ctx.get().enqueueWork(()->{
 			ServerPlayer player = ctx.get().getSender();
 			
@@ -37,7 +37,7 @@ public class CPRotatePlayerYaw {
 				PlayerPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(player, PlayerPatch.class);
 				
 				if (entitypatch != null) {
-					EpicFightNetworkManager.sendToAllPlayerTrackingThisEntity(new SPChangePlayerYaw(player.getId(), msg.yaw), player);
+					EpicFightNetworkManager.sendToAllPlayerTrackingThisEntity(new SPChangePlayerYaw(player.getId(), msg.modelYRot), player);
 				}
 			}
 		});

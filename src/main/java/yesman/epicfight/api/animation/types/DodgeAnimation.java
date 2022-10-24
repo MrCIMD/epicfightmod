@@ -3,27 +3,21 @@ package yesman.epicfight.api.animation.types;
 import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.entity.EntityDimensions;
 import yesman.epicfight.api.animation.property.AnimationProperty.ActionAnimationProperty;
+import yesman.epicfight.api.animation.property.AnimationProperty.StaticAnimationProperty;
 import yesman.epicfight.api.model.Model;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
+import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.network.EpicFightNetworkManager;
-import yesman.epicfight.network.client.CPRotatePlayerYaw;
+import yesman.epicfight.network.client.CPRotateEntityModelYRot;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class DodgeAnimation extends ActionAnimation {
-	private final EntityDimensions size;
-	
 	public DodgeAnimation(float convertTime, String path, float width, float height, Model model) {
 		this(convertTime, 0.0F, path, width, height, model);
 	}
 	
 	public DodgeAnimation(float convertTime, float delayTime, String path, float width, float height, Model model) {
 		super(convertTime, delayTime, path, model);
-		
-		if (width > 0.0F || height > 0.0F) {
-			this.size = EntityDimensions.scalable(width, height);
-		} else {
-			this.size = null;
-		}
 		
 		this.stateSpectrumBlueprint.clear()
 			.newTimePair(0.0F, 10.0F)
@@ -41,29 +35,17 @@ public class DodgeAnimation extends ActionAnimation {
 			});
 		
 		this.addProperty(ActionAnimationProperty.AFFECT_SPEED, true);
-		//this.addEvents(Event.create(Event.ON_BEGIN, (entitypatch) -> {}, Event.Side.BOTH));
-	}
-	
-	@Override
-	public void tick(LivingEntityPatch<?> entitypatch) {
-		super.tick(entitypatch);
-		
-		if (this.size != null) {
-			entitypatch.resetSize(this.size);
-		}
+		this.addEvents(StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create(Animations.ReuseableEvents.RESTORE_BOUNDING_BOX, AnimationEvent.Side.BOTH));
+		this.addEvents(StaticAnimationProperty.EVENTS, AnimationEvent.create(Animations.ReuseableEvents.RESIZE_BOUNDING_BOX, AnimationEvent.Side.BOTH).params(EntityDimensions.scalable(width, height)));
 	}
 	
 	@Override
 	public void end(LivingEntityPatch<?> entitypatch, boolean isEnd) {
 		super.end(entitypatch, isEnd);
 		
-		if (this.size != null) {
-			entitypatch.getOriginal().refreshDimensions();
-		}
-		
 		if (entitypatch.isLogicalClient() && entitypatch instanceof LocalPlayerPatch) {
-			((LocalPlayerPatch)entitypatch).changeYaw(0);
-			EpicFightNetworkManager.sendToServer(new CPRotatePlayerYaw(0));
+			((LocalPlayerPatch)entitypatch).changeModelYRot(0);
+			EpicFightNetworkManager.sendToServer(new CPRotateEntityModelYRot(0));
 		}
 	}
 }

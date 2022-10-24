@@ -6,6 +6,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.gameasset.Animations;
@@ -71,7 +73,14 @@ public class TridentCapability extends RangedWeaponCapability {
 	}
 	
 	@Nullable
-	public Skill getInnateSkill(PlayerPatch<?> playerpatch) {
-		return Skills.THUNDER_PUNISHMENT;
+	@Override
+	public Skill getInnateSkill(PlayerPatch<?> playerpatch, ItemStack itemstack) {
+		if (EnchantmentHelper.getRiptide(itemstack) > 0) {
+			return Skills.TSUNAMI;
+		} else if (EnchantmentHelper.hasChanneling(itemstack)) {
+			return Skills.THUNDER_PUNISHMENT;
+		} else {
+			return null;
+		}
 	}
 }
