@@ -281,12 +281,16 @@ public class EntityEvents {
 		DamageSource damageSource = null;
 		
 		if (entitypatch != null && event.getEntityLiving().getHealth() > 0.0F) {
+			LivingEntityPatch<?> attackerPatch = EpicFightCapabilities.getEntityPatch(event.getSource().getEntity(), LivingEntityPatch.class);
+			
 			if (event.getSource() instanceof IndirectEntityDamageSource && event.getSource().getDirectEntity() != null) {
 				ProjectilePatch<?> projectilepatch = EpicFightCapabilities.getProjectilePatch(event.getSource().getDirectEntity(), ProjectilePatch.class);
 				
 				if (projectilepatch != null) {
 					damageSource = projectilepatch.getEpicFightDamageSource(event.getSource());
 				}
+			} else if (attackerPatch != null && attackerPatch.getAnimationDamageSource() != null) {
+				damageSource = attackerPatch.getAnimationDamageSource().cast();
 			}
 			
 			if (damageSource == null) {
@@ -294,7 +298,6 @@ public class EntityEvents {
 			}
 			
 			AttackResult result = entitypatch.tryHurt(damageSource, event.getAmount());
-			LivingEntityPatch<?> attackerPatch = EpicFightCapabilities.getEntityPatch(damageSource.getEntity(), LivingEntityPatch.class);
 			
 			if (attackerPatch != null) {
 				attackerPatch.setLastAttackResult(event.getEntity(), result);
@@ -306,7 +309,7 @@ public class EntityEvents {
 				event.setCanceled(true);
 				
 				DamageSource damagesource = new DamageSource(event.getSource().getMsgId());
-				damagesource.bypassInvul();
+				damagesource.bypassArmor();
 				
 				event.getEntity().hurt(damagesource, result.damage);
 			}

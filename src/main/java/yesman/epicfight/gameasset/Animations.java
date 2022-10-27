@@ -1412,7 +1412,9 @@ public class Animations {
 	
 	public static class ReuseableEvents {
 		public static final BiConsumer<LivingEntityPatch<?>, Object[]> RESIZE_BOUNDING_BOX = (entitypatch, params) -> {
-			entitypatch.resetSize((EntityDimensions)params[0]);
+			if (params != null) {
+				entitypatch.resetSize((EntityDimensions)params[0]);
+			}
 		};
 		public static final BiConsumer<LivingEntityPatch<?>, Object[]> RESTORE_BOUNDING_BOX = (entitypatch, params) -> {
 			entitypatch.getOriginal().refreshDimensions();
