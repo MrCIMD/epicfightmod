@@ -309,15 +309,6 @@ public class EntityEvents {
 				damagesource.bypassInvul();
 				
 				event.getEntity().hurt(damagesource, result.damage);
-			} else {
-				if (attackerPatch != null) {
-					EpicFightDamageSource efDamageSource = attackerPatch.getAnimationDamageSource();
-					
-					if (efDamageSource != null && !(event.getSource() instanceof EpicFightDamageSource)) {
-						event.setCanceled(true);
-						event.getEntity().hurt((DamageSource)efDamageSource, event.getAmount());
-					}
-				}
 			}
 		}
 	}

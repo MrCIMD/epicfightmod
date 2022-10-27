@@ -67,12 +67,12 @@ public class EpicFightRenderTypes extends RenderType {
 	
 	private static final Function<ResourceLocation, RenderType> ENTITY_INDICATOR = Util.memoize((textureLocation) -> {
 		RenderType.CompositeState state = RenderType.CompositeState.builder()
-			.setShaderState(POSITION_TEX_SHADER)
-			.setTextureState(new RenderStateShard.TextureStateShard(textureLocation, false, false))
-			.setTransparencyState(NO_TRANSPARENCY)
-			.setLightmapState(NO_LIGHTMAP)
-			.setOverlayState(NO_OVERLAY)
-			.createCompositeState(true);
+				.setShaderState(POSITION_TEX_SHADER)
+				.setTextureState(new RenderStateShard.TextureStateShard(textureLocation, false, false))
+				.setTransparencyState(NO_TRANSPARENCY)
+				.setLightmapState(NO_LIGHTMAP)
+				.setOverlayState(NO_OVERLAY)
+				.createCompositeState(true);
 		return create(EpicFightMod.MODID + ":entity_indicator", DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.QUADS, 256, true, false, state);
 	});
 	
