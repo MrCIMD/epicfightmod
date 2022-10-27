@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.model.IronGolemModel;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.layers.IronGolemCrackinessLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +22,7 @@ import yesman.epicfight.world.capabilities.entitypatch.mob.IronGolemPatch;
 
 @OnlyIn(Dist.CLIENT)
 public class PatchedGolemCrackLayer extends PatchedLayer<IronGolem, IronGolemPatch, IronGolemModel<IronGolem>, IronGolemCrackinessLayer> {
+	
 	private static final Map<IronGolem.Crackiness, ResourceLocation> CRACK_MAP = ImmutableMap.of(
 			IronGolem.Crackiness.LOW, new ResourceLocation("textures/entity/iron_golem/iron_golem_crackiness_low.png"),
 			IronGolem.Crackiness.MEDIUM, new ResourceLocation("textures/entity/iron_golem/iron_golem_crackiness_medium.png"),
@@ -31,7 +33,7 @@ public class PatchedGolemCrackLayer extends PatchedLayer<IronGolem, IronGolemPat
 		IronGolem.Crackiness crack = entityGolem.getCrackiness();
 		
 		if (crack != IronGolem.Crackiness.NONE) {
-			VertexConsumer ivertexbuilder = bufferIn.getBuffer(EpicFightRenderTypes.animatedModel(CRACK_MAP.get(crack)));
+			VertexConsumer ivertexbuilder = bufferIn.getBuffer(EpicFightRenderTypes.triangles(RenderType.entityCutoutNoCull(CRACK_MAP.get(crack))));
 			entitypatch.getEntityModel(ClientModels.LOGICAL_CLIENT).drawAnimatedModel(matrixStackIn, ivertexbuilder, packedLightIn, 1.0F, 1.0F, 1.0F, 1.0F, OverlayTexture.NO_OVERLAY, poses);
 		}
 	}

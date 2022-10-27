@@ -26,7 +26,7 @@ import yesman.epicfight.world.entity.WitherGhostClone;
 public class WitherGhostCloneRenderer extends PatchedEntityRenderer<WitherGhostClone, WitherGhostPatch, NoopLivingEntityRenderer<WitherGhostClone>> {
 	@Override
 	public void render(WitherGhostClone entityIn, WitherGhostPatch entitypatch, NoopLivingEntityRenderer<WitherGhostClone> renderer, MultiBufferSource buffer, PoseStack poseStack, int packedLight, float partialTicks) {
-		RenderType renderType = EpicFightRenderTypes.entityTranslucentTriangles(PWitherRenderer.WITHER_INVULNERABLE_LOCATION);
+		RenderType renderType = EpicFightRenderTypes.triangles(RenderType.entityTranslucent(PWitherRenderer.WITHER_INVULNERABLE_LOCATION));
 		ClientModel model = entitypatch.getEntityModel(ClientModels.LOGICAL_CLIENT);
 		Armature armature = model.getArmature();
 		float tranparency = Mth.sin((entityIn.tickCount + partialTicks) / 40.0F * 3.1415F) * 0.6F;

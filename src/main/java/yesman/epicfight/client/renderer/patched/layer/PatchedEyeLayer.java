@@ -14,6 +14,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.client.model.ClientModel;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
+import yesman.epicfight.client.renderer.EpicFightRenderTypes;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 @OnlyIn(Dist.CLIENT)
@@ -22,7 +23,7 @@ public class PatchedEyeLayer<E extends LivingEntity, T extends LivingEntityPatch
 	private final ClientModel eyeModel;
 	
 	public PatchedEyeLayer(ResourceLocation eyeTexture, ClientModel eyeModel) {
-		this.renderType = RenderType.eyes(eyeTexture);
+		this.renderType = EpicFightRenderTypes.triangles(RenderType.eyes(eyeTexture));
 		this.eyeModel = eyeModel;
 	}
 	

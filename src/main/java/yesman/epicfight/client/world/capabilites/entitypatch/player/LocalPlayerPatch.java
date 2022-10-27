@@ -190,11 +190,6 @@ public class LocalPlayerPatch extends AbstractClientPlayerPatch<LocalPlayer> {
 	}
 	
 	@Override
-	protected boolean isMoving() {
-		return this.original.xxa > 0.0F || this.original.yya > 0.0F || this.original.zza > 0.0F;
-	}
-	
-	@Override
 	public boolean isFirstPerson() {
 		return this.minecraft.options.getCameraType() == CameraType.FIRST_PERSON;
 	}

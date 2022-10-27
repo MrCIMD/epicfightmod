@@ -1,5 +1,7 @@
 package yesman.epicfight.client.renderer.patched.entity;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -16,10 +18,10 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.client.animation.Layer;
 import yesman.epicfight.api.client.model.ClientModel;
@@ -29,10 +31,20 @@ import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.client.renderer.EpicFightRenderTypes;
 import yesman.epicfight.client.renderer.patched.layer.PatchedLayer;
+import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T extends LivingEntityPatch<E>, M extends EntityModel<E>> extends PatchedEntityRenderer<E, T, LivingEntityRenderer<E, M>> {
+	
+	protected static Method isBodyVisible;
+	protected static Method getRenderType;
+	
+	static {
+		isBodyVisible = ObfuscationReflectionHelper.findMethod(LivingEntityRenderer.class, "m_5933_", LivingEntity.class);
+		getRenderType = ObfuscationReflectionHelper.findMethod(LivingEntityRenderer.class, "m_7225_", LivingEntity.class, boolean.class, boolean.class, boolean.class);
+	}
+	
 	private Map<Class<?>, PatchedLayer<E, T, M, ? extends RenderLayer<E, M>>> patchedLayers = Maps.newHashMap();
 	
 	@Override
@@ -40,7 +52,7 @@ public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T exte
 		super.render(entityIn, entitypatch, renderer, buffer, poseStack, packedLight, partialTicks);
 		
 		Minecraft mc = Minecraft.getInstance();
-		boolean isVisible = this.isVisible(entityIn, entitypatch);
+		boolean isVisible = this.isVisible(renderer, entityIn);
 		boolean isVisibleToPlayer = !isVisible && !entityIn.isInvisibleTo(mc.player);
 		boolean isGlowing = mc.shouldEntityAppearGlowing(entityIn);
 		RenderType renderType = this.getRenderType(entityIn, entitypatch, renderer, isVisible, isVisibleToPlayer, isGlowing);
@@ -114,14 +126,28 @@ public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T exte
 	}
 	
 	public RenderType getRenderType(E entityIn, T entitypatch, LivingEntityRenderer<E, M> renderer, boolean isVisible, boolean isVisibleToPlayer, boolean isGlowing) {
-		ResourceLocation resourcelocation = this.getEntityTexture(entitypatch, renderer);
-		
-		if (isVisibleToPlayer) {
-			return EpicFightRenderTypes.itemEntityTranslucentCull(resourcelocation);
-		} else if (isVisible) {
-			return EpicFightRenderTypes.animatedModel(resourcelocation);
-		} else {
-			return isGlowing ? RenderType.outline(resourcelocation) : null;
+		try {
+			RenderType renderType = (RenderType)getRenderType.invoke(renderer, entityIn, isVisible, isVisibleToPlayer, isGlowing);
+			
+			if (renderType != null) {
+				renderType = EpicFightRenderTypes.triangles(renderType);
+			}
+			
+			return renderType;
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			EpicFightMod.LOGGER.error("Reflection Exception");
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	protected boolean isVisible(LivingEntityRenderer<E, M> renderer, E entityIn) {
+		try {
+			return (boolean) isBodyVisible.invoke(renderer, entityIn);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			EpicFightMod.LOGGER.error("Reflection Exception");
+			e.printStackTrace();
+			return true;
 		}
 	}
 	
@@ -140,10 +166,6 @@ public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T exte
 	
 	public void addPatchedLayer(Class<?> originalLayerClass, PatchedLayer<E, T, M, ? extends RenderLayer<E, M>> patchedLayer) {
 		this.patchedLayers.put(originalLayerClass, patchedLayer);
-	}
-	
-	protected boolean isVisible(E entityIn, T entitypatch) {
-		return !entityIn.isInvisible();
 	}
 	
 	protected int getRootJointIndex() {

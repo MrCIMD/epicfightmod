@@ -20,9 +20,6 @@ public class ClientModels extends Models<ClientModel> implements PreparableReloa
 	public final ClientModel playerFirstPerson;
 	public final ClientModel playerFirstPersonAlex;
 	public final ClientModel drownedOuterLayer;
-	/** Layers **/
-	public final ClientModel endermanEye;
-	public final ClientModel spiderEye;
 	/** Armors **/
 	public final ClientModel helmet;
 	public final ClientModel chestplate;
@@ -53,8 +50,6 @@ public class ClientModels extends Models<ClientModel> implements PreparableReloa
 		this.playerFirstPerson = register(new ResourceLocation(EpicFightMod.MODID, "entity/biped_firstperson"));
 		this.playerFirstPersonAlex = register(new ResourceLocation(EpicFightMod.MODID, "entity/biped_firstperson_slim"));
 		this.drownedOuterLayer = register(new ResourceLocation(EpicFightMod.MODID, "entity/biped_outer_layer"));
-		this.endermanEye = register(new ResourceLocation(EpicFightMod.MODID, "entity/enderman_face"));
-		this.spiderEye = register(new ResourceLocation(EpicFightMod.MODID, "entity/spider_face"));
 		this.dragon = register(new ResourceLocation(EpicFightMod.MODID, "entity/dragon"));
 		this.wither = register(new ResourceLocation(EpicFightMod.MODID, "entity/wither"));
 		

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.model.DrownedModel;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.DrownedOuterLayer;
 import net.minecraft.resources.ResourceLocation;
@@ -22,9 +23,9 @@ public class OuterLayerRenderer extends PatchedLayer<Drowned, DrownedPatch, Drow
 	
 	@Override
 	public void renderLayer(DrownedPatch entitypatch, Drowned entityliving, DrownedOuterLayer<Drowned> originalRenderer, PoseStack matrixStackIn, MultiBufferSource buffer, int packedLightIn, OpenMatrix4f[] poses, float netYawHead, float pitchHead, float partialTicks) {
-		matrixStackIn.pushPose();
+		
 		ClientModel model = ClientModels.LOGICAL_CLIENT.drownedOuterLayer;
-		model.drawAnimatedModel(matrixStackIn, buffer.getBuffer(EpicFightRenderTypes.animatedModel(DROWNED_OUTER_LAYER)), packedLightIn, 1.0F, 1.0F, 1.0F, 1.0F, LivingEntityRenderer.getOverlayCoords(entityliving, 0.0F), poses);
-		matrixStackIn.popPose();
+		
+		model.drawAnimatedModel(matrixStackIn, buffer.getBuffer(EpicFightRenderTypes.triangles(RenderType.entityCutoutNoCull(DROWNED_OUTER_LAYER))), packedLightIn, 1.0F, 1.0F, 1.0F, 1.0F, LivingEntityRenderer.getOverlayCoords(entityliving, 0.0F), poses);
 	}
 }

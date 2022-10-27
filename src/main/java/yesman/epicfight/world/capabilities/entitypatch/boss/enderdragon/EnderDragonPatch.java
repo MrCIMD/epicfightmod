@@ -276,6 +276,11 @@ public class EnderDragonPatch extends MobPatch<EnderDragon> {
 	}
 	
 	@Override
+	public boolean moveHere() {
+		return true;
+	}
+	
+	@Override
 	public SoundEvent getSwingSound(InteractionHand hand) {
 		return EpicFightSounds.WHOOSH_BIG;
 	}

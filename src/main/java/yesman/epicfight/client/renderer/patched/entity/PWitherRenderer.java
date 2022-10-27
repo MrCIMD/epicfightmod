@@ -63,11 +63,11 @@ public class PWitherRenderer extends PatchedLivingEntityRenderer<WitherBoss, Wit
 					transparency = 1.0F - transparency;
 				}
 				
-				renderType = EpicFightRenderTypes.entityTranslucentTriangles(WITHER_LOCATION);
+				renderType = EpicFightRenderTypes.triangles(RenderType.entityTranslucent(WITHER_LOCATION));//  EpicFightRenderTypes.entityTranslucentTriangles(WITHER_LOCATION);
 				VertexConsumer builder1 = buffer.getBuffer(renderType);
 				model.drawAnimatedModel(poseStack, builder1, packedLight, 1.0F, 1.0F, 1.0F, transparency, OverlayTexture.NO_OVERLAY, poseMatrices);
 				
-				renderType = EpicFightRenderTypes.entityTranslucentTriangles(WITHER_INVULNERABLE_LOCATION);
+				renderType = EpicFightRenderTypes.triangles(RenderType.entityTranslucent(WITHER_INVULNERABLE_LOCATION));
 				VertexConsumer builder2 = buffer.getBuffer(renderType);
 				model.drawAnimatedModel(poseStack, builder2, packedLight, 1.0F, 1.0F, 1.0F, Mth.sin(transparency * 3.1415F), OverlayTexture.NO_OVERLAY, poseMatrices);
 			}
@@ -88,7 +88,6 @@ public class PWitherRenderer extends PatchedLivingEntityRenderer<WitherBoss, Wit
 		poseStack.popPose();
 	}
 	
-	@Override
 	protected boolean isVisible(WitherBoss witherboss, WitherPatch witherpatch) {
 		return !witherpatch.isGhost() || witherpatch.getTransparency() != 0;
 	}

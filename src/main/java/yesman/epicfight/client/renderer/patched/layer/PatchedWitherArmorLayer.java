@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.model.WitherBossModel;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.layers.WitherArmorLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
@@ -48,7 +49,9 @@ public class PatchedWitherArmorLayer extends PatchedLayer<WitherBoss, WitherPatc
 				}
 			}
 			
-			VertexConsumer ivertexbuilder = buffer.getBuffer(EpicFightRenderTypes.energySwirlTrianlges(WITHER_ARMOR_LOCATION, Mth.cos(progress * 0.02F) * 3.0F % 1.0F, progress * 0.01F % 1.0F));
+			
+			
+			VertexConsumer ivertexbuilder = buffer.getBuffer(EpicFightRenderTypes.triangles(RenderType.energySwirl(WITHER_ARMOR_LOCATION, Mth.cos(progress * 0.02F) * 3.0F % 1.0F, progress * 0.01F % 1.0F)));
 			entitypatch.getEntityModel(ClientModels.LOGICAL_CLIENT).drawAnimatedModel(matrixStackIn, ivertexbuilder, packedLightIn, transparency * 0.5F, transparency * 0.5F, transparency * 0.5F, 1.0F, OverlayTexture.NO_OVERLAY, poses);
 			matrixStackIn.popPose();
 		}
