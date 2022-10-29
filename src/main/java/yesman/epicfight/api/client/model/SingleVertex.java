@@ -1,10 +1,12 @@
 package yesman.epicfight.api.client.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -12,7 +14,7 @@ import yesman.epicfight.api.utils.math.Vec2f;
 import yesman.epicfight.api.utils.math.Vec3f;
 
 @OnlyIn(Dist.CLIENT)
-public class CustomArmorVertex {
+public class SingleVertex {
 	private Vec3f position;
 	private Vec3f normal;
 	private Vec2f textureCoordinate;
@@ -20,45 +22,45 @@ public class CustomArmorVertex {
 	private Vec3f effectiveJointWeights;
 	private int effectiveJointNumber;
 	
-	public CustomArmorVertex() {
+	public SingleVertex() {
 		this.position = null;
 		this.normal = null;
 		this.textureCoordinate = null;
 	}
 	
-	public CustomArmorVertex(CustomArmorVertex vertex) {
+	public SingleVertex(SingleVertex vertex) {
 		this.position = vertex.position;
 		this.effectiveJointIDs = vertex.effectiveJointIDs;
 		this.effectiveJointWeights = vertex.effectiveJointWeights;
 		this.effectiveJointNumber = vertex.effectiveJointNumber;
 	}
 	
-	public CustomArmorVertex setPosition(Vec3f position) {
+	public SingleVertex setPosition(Vec3f position) {
 		this.position = position;
 		return this;
 	}
 	
-	public CustomArmorVertex setNormal(Vec3f vector) {
+	public SingleVertex setNormal(Vec3f vector) {
 		this.normal = vector;
 		return this;
 	}
 	
-	public CustomArmorVertex setTextureCoordinate(Vec2f vector) {
+	public SingleVertex setTextureCoordinate(Vec2f vector) {
 		this.textureCoordinate = vector;
 		return this;
 	}
 	
-	public CustomArmorVertex setEffectiveJointIDs(Vec3f effectiveJointIDs) {
+	public SingleVertex setEffectiveJointIDs(Vec3f effectiveJointIDs) {
 		this.effectiveJointIDs = effectiveJointIDs;
 		return this;
 	}
 	
-	public CustomArmorVertex setEffectiveJointWeights(Vec3f effectiveJointWeights) {
+	public SingleVertex setEffectiveJointWeights(Vec3f effectiveJointWeights) {
 		this.effectiveJointWeights = effectiveJointWeights;
 		return this;
 	}
 	
-	public CustomArmorVertex setEffectiveJointNumber(int count) {
+	public SingleVertex setEffectiveJointNumber(int count) {
 		this.effectiveJointNumber = count;
 		return this;
 	}
@@ -73,7 +75,7 @@ public class CustomArmorVertex {
 		}
 	}
 	
-	public static Mesh loadVertexInformation(List<CustomArmorVertex> vertices, int[] indices) {
+	public static Mesh loadVertexInformation(List<SingleVertex> vertices, Map<String, List<Integer>> indices) {
 		List<Float> positions = Lists.<Float>newArrayList();
 		List<Float> normals = Lists.<Float>newArrayList();
 		List<Float> texCoords = Lists.<Float>newArrayList();
@@ -82,7 +84,7 @@ public class CustomArmorVertex {
 		List<Integer> affectCountList = Lists.<Integer>newArrayList();
 		
 		for (int i = 0; i < vertices.size(); i++) {
-			CustomArmorVertex vertex = vertices.get(i);
+			SingleVertex vertex = vertices.get(i);
 			Vec3f position = vertex.position;
 			Vec3f normal = vertex.normal;
 			Vec2f texCoord = vertex.textureCoordinate;
@@ -129,7 +131,13 @@ public class CustomArmorVertex {
 		float[] jointWeightList = ArrayUtils.toPrimitive(jointWeights.toArray(new Float[0]));
 		int[] affectJointCounts = ArrayUtils.toPrimitive(affectCountList.toArray(new Integer[0]));
 		
-		return new Mesh(positionList, normalList, texCoordList, animationIndexList, jointWeightList, indices, affectJointCounts);
+		Map<String, MeshPart> meshMap = Maps.newHashMap();
+		
+		for (Map.Entry<String, List<Integer>> e : indices.entrySet()) {
+			meshMap.put(e.getKey(), new MeshPart(VertexIndicator.create(ArrayUtils.toPrimitive(e.getValue().toArray(new Integer[0])), affectJointCounts, animationIndexList)));
+		}
+		
+		return new Mesh(positionList, normalList, texCoordList, animationIndexList, jointWeightList, affectJointCounts, meshMap);
 	}
 	
 	public enum State {

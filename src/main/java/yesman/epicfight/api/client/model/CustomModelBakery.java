@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -41,19 +39,19 @@ public class CustomModelBakery {
 	static int indexCount = 0;
 	
 	static final Map<ResourceLocation, ClientModel> BAKED_MODELS = Maps.newHashMap();
-	static final ModelBaker HEAD = new SimpleBaker(9);
-	static final ModelBaker LEFT_FEET = new SimpleBaker(5);
-	static final ModelBaker RIGHT_FEET = new SimpleBaker(2);
-	static final ModelBaker LEFT_ARM = new Limb(16, 17, 19, 19.0F, false);
-	static final ModelBaker LEFT_ARM_CHILD = new SimpleSeparateBaker(16, 17, 19.0F);
-	static final ModelBaker RIGHT_ARM = new Limb(11, 12, 14, 19.0F, false);
-	static final ModelBaker RIGHT_ARM_CHILD = new SimpleSeparateBaker(11, 12, 19.0F);
-	static final ModelBaker LEFT_LEG = new Limb(4, 5, 6, 6.0F, true);
-	static final ModelBaker LEFT_LEG_CHILD = new SimpleSeparateBaker(4, 5, 6.0F);
-	static final ModelBaker RIGHT_LEG = new Limb(1, 2, 3, 6.0F, true);
-	static final ModelBaker RIGHT_LEG_CHILD = new SimpleSeparateBaker(1, 2, 6.0F);
-	static final ModelBaker CHEST = new Chest();
-	static final ModelBaker CHEST_CHILD = new SimpleSeparateBaker(8, 7, 18.0F);
+	static final ModelBaker HEAD = new SimpleBaker("head", 9);
+	static final ModelBaker LEFT_FEET = new SimpleBaker("leftBoots", 5);
+	static final ModelBaker RIGHT_FEET = new SimpleBaker("rightBoots", 2);
+	static final ModelBaker LEFT_ARM = new Limb("leftArm", 6, 17, 19, 19.0F, false);
+	static final ModelBaker LEFT_ARM_CHILD = new SimpleSeparateBaker("leftArm", 16, 17, 19.0F);
+	static final ModelBaker RIGHT_ARM = new Limb("rightArm", 11, 12, 14, 19.0F, false);
+	static final ModelBaker RIGHT_ARM_CHILD = new SimpleSeparateBaker("rightArm", 11, 12, 19.0F);
+	static final ModelBaker LEFT_LEG = new Limb("leftLeg", 4, 5, 6, 6.0F, true);
+	static final ModelBaker LEFT_LEG_CHILD = new SimpleSeparateBaker("leftLeg", 4, 5, 6.0F);
+	static final ModelBaker RIGHT_LEG = new Limb("rightLeg", 1, 2, 3, 6.0F, true);
+	static final ModelBaker RIGHT_LEG_CHILD = new SimpleSeparateBaker("rightLeg", 1, 2, 6.0F);
+	static final ModelBaker CHEST = new Chest("chest");
+	static final ModelBaker CHEST_CHILD = new SimpleSeparateBaker("chest", 8, 7, 18.0F);
 	
 	public static void exportModels(File resourcePackDirectory) throws IOException {
 		File zipFile = new File(resourcePackDirectory, "epicfight_custom_armors.zip");
@@ -123,8 +121,8 @@ public class CustomModelBakery {
 	}
 	
 	private static Mesh bakeMeshFromCubes(List<ModelPartition> partitions, boolean debuggingMode) {
-		List<CustomArmorVertex> vertices = Lists.newArrayList();
-		List<Integer> indices = Lists.newArrayList();
+		List<SingleVertex> vertices = Lists.newArrayList();
+		Map<String, List<Integer>> indices = Maps.newHashMap();
 		PoseStack poseStack = new PoseStack();
 		indexCount = 0;
 		poseStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
@@ -135,10 +133,10 @@ public class CustomModelBakery {
 			bake(poseStack, modelpartition, modelpartition.part, modelpartition.partBaker, vertices, indices, debuggingMode);
 		}
 		
-		return CustomArmorVertex.loadVertexInformation(vertices, ArrayUtils.toPrimitive(indices.toArray(new Integer[0])));
+		return SingleVertex.loadVertexInformation(vertices, indices);
 	}
 	
-	private static void bake(PoseStack poseStack, ModelPartition modelpartition, ModelPart part, ModelBaker partBaker, List<CustomArmorVertex> vertices, List<Integer> indices, boolean debuggingMode) {
+	private static void bake(PoseStack poseStack, ModelPartition modelpartition, ModelPart part, ModelBaker partBaker, List<SingleVertex> vertices, Map<String, List<Integer>> indices, boolean debuggingMode) {
 		poseStack.pushPose();
 		poseStack.translate(part.x, part.y, part.z);
 		
@@ -180,24 +178,33 @@ public class CustomModelBakery {
 	
 	@OnlyIn(Dist.CLIENT)
 	abstract static class ModelBaker {
-		public abstract void bakeCube(PoseStack poseStack, ModelPart.Cube cube, List<CustomArmorVertex> vertices, List<Integer> indices);
-	}
-	
-	static void putIndexCount(List<Integer> indices, int value) {
-		for (int i = 0; i < 3; i++) {
-			indices.add(value);
+		final String partName;
+		
+		public ModelBaker(String partName) {
+			this.partName = partName;
 		}
+		
+		void putIndexCount(Map<String, List<Integer>> indices, int value) {
+			List<Integer> list = indices.get(this.partName);
+			
+			for (int i = 0; i < 3; i++) {
+				list.add(value);
+			}
+		}
+		
+		public abstract void bakeCube(PoseStack poseStack, ModelPart.Cube cube, List<SingleVertex> vertices, Map<String, List<Integer>> indices);
 	}
 	
 	@OnlyIn(Dist.CLIENT)
 	static class SimpleBaker extends ModelBaker {
 		final int jointId;
 		
-		public SimpleBaker (int jointId) {
+		public SimpleBaker(String partName, int jointId) {
+			super(partName);
 			this.jointId = jointId;
 		}
 		
-		public void bakeCube(PoseStack poseStack, ModelPart.Cube cube, List<CustomArmorVertex> vertices, List<Integer> indices) {
+		public void bakeCube(PoseStack poseStack, ModelPart.Cube cube, List<SingleVertex> vertices, Map<String, List<Integer>> indices) {
 			for (ModelPart.Polygon quad : cube.polygons) {
 				Vector3f norm = quad.normal.copy();
 				norm.transform(poseStack.last().normal());
@@ -205,7 +212,7 @@ public class CustomModelBakery {
 				for (ModelPart.Vertex vertex : quad.vertices) {
 					Vector4f pos = new Vector4f(vertex.pos);
 					pos.transform(poseStack.last().pose());
-					vertices.add(new CustomArmorVertex()
+					vertices.add(new SingleVertex()
 						.setPosition(new Vec3f(pos.x(), pos.y(), pos.z()).scale(0.0625F))
 						.setNormal(new Vec3f(norm.x(), norm.y(), norm.z()))
 						.setTextureCoordinate(new Vec2f(vertex.u, vertex.v))
@@ -232,14 +239,15 @@ public class CustomModelBakery {
 		final SimpleBaker lowerBaker;
 		final float yClipCoord;
 		
-		public SimpleSeparateBaker(int upperJoint, int lowerJoint, float yClipCoord) {
-			this.upperBaker = new SimpleBaker(upperJoint);
-			this.lowerBaker = new SimpleBaker(lowerJoint);
+		public SimpleSeparateBaker(String partName, int upperJoint, int lowerJoint, float yClipCoord) {
+			super(partName);
+			this.upperBaker = new SimpleBaker(partName + "Upper", upperJoint);
+			this.lowerBaker = new SimpleBaker(partName + "Lower", lowerJoint);
 			this.yClipCoord = yClipCoord;
 		}
 		
 		@Override
-		public void bakeCube(PoseStack poseStack, Cube cube, List<CustomArmorVertex> vertices, List<Integer> indices) {
+		public void bakeCube(PoseStack poseStack, Cube cube, List<SingleVertex> vertices, Map<String, List<Integer>> indices) {
 			Vector4f cubeCenter = new Vector4f(cube.minX + (cube.maxX - cube.minX) * 0.5F, cube.minY + (cube.maxY - cube.minY) * 0.5F, cube.minZ + (cube.maxZ - cube.minZ) * 0.5F, 1.0F);
 			cubeCenter.transform(poseStack.last().pose());
 			
@@ -256,8 +264,12 @@ public class CustomModelBakery {
 		static final float X_PLANE = 0.0F;
 		static final VertexWeight[] WEIGHT_ALONG_Y = { new VertexWeight(13.6666F, 0.230F, 0.770F), new VertexWeight(15.8333F, 0.254F, 0.746F), new VertexWeight(18.0F, 0.5F, 0.5F), new VertexWeight(20.1666F, 0.744F, 0.256F), new VertexWeight(22.3333F, 0.770F, 0.230F)};
 		
+		public Chest(String partName) {
+			super(partName);
+		}
+		
 		@Override
-		public void bakeCube(PoseStack poseStack, ModelPart.Cube cube, List<CustomArmorVertex> vertices, List<Integer> indices) {
+		public void bakeCube(PoseStack poseStack, ModelPart.Cube cube, List<SingleVertex> vertices, Map<String, List<Integer>> indices) {
 			List<AnimatedPolygon> xClipPolygons = Lists.<AnimatedPolygon>newArrayList();
 			List<AnimatedPolygon> xyClipPolygons = Lists.<AnimatedPolygon>newArrayList();
 			
@@ -361,7 +373,7 @@ public class CustomModelBakery {
 						weight1 = weight2;
 					}
 					
-					vertices.add(new CustomArmorVertex()
+					vertices.add(new SingleVertex()
 						.setPosition(new Vec3f(pos.x(), pos.y(), pos.z()).scale(0.0625F))
 						.setNormal(new Vec3f(norm.x(), norm.y(), norm.z()))
 						.setTextureCoordinate(new Vec2f(vertex.u, vertex.v))
@@ -430,7 +442,8 @@ public class CustomModelBakery {
 		final float yClipCoord;
 		final boolean bendInFront;
 		
-		public Limb(int upperJoint, int lowerJoint, int middleJoint, float yClipCoord, boolean bendInFront) {
+		public Limb(String partName, int upperJoint, int lowerJoint, int middleJoint, float yClipCoord, boolean bendInFront) {
+			super(partName);
 			this.upperJoint = upperJoint;
 			this.lowerJoint = lowerJoint;
 			this.middleJoint = middleJoint;
@@ -439,7 +452,7 @@ public class CustomModelBakery {
 		}
 		
 		@Override
-		public void bakeCube(PoseStack poseStack, ModelPart.Cube cube, List<CustomArmorVertex> vertices, List<Integer> indices) {
+		public void bakeCube(PoseStack poseStack, ModelPart.Cube cube, List<SingleVertex> vertices, Map<String, List<Integer>> indices) {
 			List<AnimatedPolygon> polygons = Lists.<AnimatedPolygon>newArrayList();
 			
 			for (ModelPart.Polygon quad : cube.polygons) {
@@ -519,7 +532,7 @@ public class CustomModelBakery {
 				
 				for (AnimatedVertex vertex : quad.animatedVertexPositions) {
 					Vector4f pos = new Vector4f(vertex.pos);
-					vertices.add(new CustomArmorVertex()
+					vertices.add(new SingleVertex()
 						.setPosition(new Vec3f(pos.x(), pos.y(), pos.z()).scale(0.0625F))
 						.setNormal(new Vec3f(norm.x(), norm.y(), norm.z()))
 						.setTextureCoordinate(new Vec2f(vertex.u, vertex.v))

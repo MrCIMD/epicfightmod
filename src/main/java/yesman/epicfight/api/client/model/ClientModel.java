@@ -69,15 +69,19 @@ public class ClientModel extends Model {
 		Matrix3f matrix3f = posetStack.last().normal();
 		Mesh mesh = this.getMesh();
 		
-		for (VertexIndicator vi : mesh.vertexIndicators) {
-			int pos = vi.position * 3;
-			int norm = vi.normal * 3;
-			int uv = vi.uv * 2;
-			Vector4f posVec = new Vector4f(mesh.positions[pos], mesh.positions[pos + 1], mesh.positions[pos + 2], 1.0F);
-			Vector3f normVec = new Vector3f(mesh.noramls[norm], mesh.noramls[norm + 1], mesh.noramls[norm + 2]);
-			posVec.transform(matrix4f);
-			normVec.transform(matrix3f);
-			builder.vertex(posVec.x(), posVec.y(), posVec.z(), r, g, b, a, mesh.uvs[uv], mesh.uvs[uv + 1], overlayCoord, packedLightIn, normVec.x(), normVec.y(), normVec.z());
+		for (MeshPart part : mesh.parts.values()) {
+			if (!part.hidden) {
+				for (VertexIndicator vi : part.getVertices()) {
+					int pos = vi.position * 3;
+					int norm = vi.normal * 3;
+					int uv = vi.uv * 2;
+					Vector4f posVec = new Vector4f(mesh.positions[pos], mesh.positions[pos + 1], mesh.positions[pos + 2], 1.0F);
+					Vector3f normVec = new Vector3f(mesh.noramls[norm], mesh.noramls[norm + 1], mesh.noramls[norm + 2]);
+					posVec.transform(matrix4f);
+					normVec.transform(matrix3f);
+					builder.vertex(posVec.x(), posVec.y(), posVec.z(), r, g, b, a, mesh.uvs[uv], mesh.uvs[uv + 1], overlayCoord, packedLightIn, normVec.x(), normVec.y(), normVec.z());
+				}
+			}
 		}
 	}
 	
@@ -91,28 +95,32 @@ public class ClientModel extends Model {
 			posesNoTranslation[i] = poses[i].removeTranslation();
 		}
 		
-		for (VertexIndicator vi : mesh.vertexIndicators) {
-			int pos = vi.position * 3;
-			int norm = vi.normal * 3;
-			int uv = vi.uv * 2;
-			Vec4f position = new Vec4f(mesh.positions[pos], mesh.positions[pos + 1], mesh.positions[pos + 2], 1.0F);
-			Vec4f normal = new Vec4f(mesh.noramls[norm], mesh.noramls[norm + 1], mesh.noramls[norm + 2], 1.0F);
-			Vec4f totalPos = new Vec4f(0.0F, 0.0F, 0.0F, 0.0F);
-			Vec4f totalNorm = new Vec4f(0.0F, 0.0F, 0.0F, 0.0F);
-			
-			for (int i = 0; i < vi.joint.size(); i++) {
-				int jointIndex = vi.joint.get(i);
-				int weightIndex = vi.weight.get(i);
-				float weight = mesh.weights[weightIndex];
-				Vec4f.add(OpenMatrix4f.transform(poses[jointIndex], position, null).scale(weight), totalPos, totalPos);
-				Vec4f.add(OpenMatrix4f.transform(posesNoTranslation[jointIndex], normal, null).scale(weight), totalNorm, totalNorm);
+		for (MeshPart part : mesh.parts.values()) {
+			if (!part.hidden) {
+				for (VertexIndicator vi : part.getVertices()) {
+					int pos = vi.position * 3;
+					int norm = vi.normal * 3;
+					int uv = vi.uv * 2;
+					Vec4f position = new Vec4f(mesh.positions[pos], mesh.positions[pos + 1], mesh.positions[pos + 2], 1.0F);
+					Vec4f normal = new Vec4f(mesh.noramls[norm], mesh.noramls[norm + 1], mesh.noramls[norm + 2], 1.0F);
+					Vec4f totalPos = new Vec4f(0.0F, 0.0F, 0.0F, 0.0F);
+					Vec4f totalNorm = new Vec4f(0.0F, 0.0F, 0.0F, 0.0F);
+					
+					for (int i = 0; i < vi.joint.size(); i++) {
+						int jointIndex = vi.joint.get(i);
+						int weightIndex = vi.weight.get(i);
+						float weight = mesh.weights[weightIndex];
+						Vec4f.add(OpenMatrix4f.transform(poses[jointIndex], position, null).scale(weight), totalPos, totalPos);
+						Vec4f.add(OpenMatrix4f.transform(posesNoTranslation[jointIndex], normal, null).scale(weight), totalNorm, totalNorm);
+					}
+					
+					Vector4f posVec = new Vector4f(totalPos.x, totalPos.y, totalPos.z, 1.0F);
+					Vector3f normVec = new Vector3f(totalNorm.x, totalNorm.y, totalNorm.z);
+					posVec.transform(matrix4f);
+					normVec.transform(matrix3f);
+					builder.vertex(posVec.x(), posVec.y(), posVec.z(), r, g, b, a, mesh.uvs[uv], mesh.uvs[uv + 1], overlayCoord, packedLightIn, normVec.x(), normVec.y(), normVec.z());
+				}
 			}
-			
-			Vector4f posVec = new Vector4f(totalPos.x, totalPos.y, totalPos.z, 1.0F);
-			Vector3f normVec = new Vector3f(totalNorm.x, totalNorm.y, totalNorm.z);
-			posVec.transform(matrix4f);
-			normVec.transform(matrix3f);
-			builder.vertex(posVec.x(), posVec.y(), posVec.z(), r, g, b, a, mesh.uvs[uv], mesh.uvs[uv + 1], overlayCoord, packedLightIn, normVec.x(), normVec.y(), normVec.z());
 		}
 	}
 	
@@ -126,30 +134,34 @@ public class ClientModel extends Model {
 			posesNoTranslation[i] = poses[i].removeTranslation();
 		}
 		
-		for (VertexIndicator vi : mesh.vertexIndicators) {
-			int pos = vi.position * 3;
-			int norm = vi.normal * 3;
-			Vec4f position = new Vec4f(mesh.positions[pos], mesh.positions[pos + 1], mesh.positions[pos + 2], 1.0F);
-			Vec4f normal = new Vec4f(mesh.noramls[norm], mesh.noramls[norm + 1], mesh.noramls[norm + 2], 1.0F);
-			Vec4f totalPos = new Vec4f(0.0F, 0.0F, 0.0F, 0.0F);
-			Vec4f totalNorm = new Vec4f(0.0F, 0.0F, 0.0F, 0.0F);
-			
-			for (int i = 0; i < vi.joint.size(); i++) {
-				int jointIndex = vi.joint.get(i);
-				int weightIndex = vi.weight.get(i);
-				float weight = mesh.weights[weightIndex];
-				Vec4f.add(OpenMatrix4f.transform(poses[jointIndex], position, null).scale(weight), totalPos, totalPos);
-				Vec4f.add(OpenMatrix4f.transform(posesNoTranslation[jointIndex], normal, null).scale(weight), totalNorm, totalNorm);
+		for (MeshPart part : mesh.parts.values()) {
+			if (!part.hidden) {
+				for (VertexIndicator vi : part.getVertices()) {
+					int pos = vi.position * 3;
+					int norm = vi.normal * 3;
+					Vec4f position = new Vec4f(mesh.positions[pos], mesh.positions[pos + 1], mesh.positions[pos + 2], 1.0F);
+					Vec4f normal = new Vec4f(mesh.noramls[norm], mesh.noramls[norm + 1], mesh.noramls[norm + 2], 1.0F);
+					Vec4f totalPos = new Vec4f(0.0F, 0.0F, 0.0F, 0.0F);
+					Vec4f totalNorm = new Vec4f(0.0F, 0.0F, 0.0F, 0.0F);
+					
+					for (int i = 0; i < vi.joint.size(); i++) {
+						int jointIndex = vi.joint.get(i);
+						int weightIndex = vi.weight.get(i);
+						float weight = mesh.weights[weightIndex];
+						Vec4f.add(OpenMatrix4f.transform(poses[jointIndex], position, null).scale(weight), totalPos, totalPos);
+						Vec4f.add(OpenMatrix4f.transform(posesNoTranslation[jointIndex], normal, null).scale(weight), totalNorm, totalNorm);
+					}
+					
+					Vector4f posVec = new Vector4f(totalPos.x, totalPos.y, totalPos.z, 1.0F);
+					Vector3f normVec = new Vector3f(totalNorm.x, totalNorm.y, totalNorm.z);
+					posVec.transform(matrix4f);
+					normVec.transform(matrix3f);
+					builder.vertex(posVec.x(), posVec.y(), posVec.z());
+					builder.color(r, g, b, a);
+					builder.uv2(packedLightIn);
+					builder.endVertex();
+				}
 			}
-			
-			Vector4f posVec = new Vector4f(totalPos.x, totalPos.y, totalPos.z, 1.0F);
-			Vector3f normVec = new Vector3f(totalNorm.x, totalNorm.y, totalNorm.z);
-			posVec.transform(matrix4f);
-			normVec.transform(matrix3f);
-			builder.vertex(posVec.x(), posVec.y(), posVec.z());
-			builder.color(r, g, b, a);
-			builder.uv2(packedLightIn);
-			builder.endVertex();
 		}
 	}
 	

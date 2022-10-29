@@ -21,14 +21,31 @@ public class Mesh {
 	final float[] uvs;
 	final float[] noramls;
 	final float[] weights;
-	final List<VertexIndicator> vertexIndicators;
+	final int totalVertices;
+	final Map<String, MeshPart> parts;
 	
-	public Mesh(float[] positions, float[] noramls, float[] uvs, int[] animationIndices, float[] weights, int[] drawingIndices, int[] vCounts) {
+	public Mesh(float[] positions, float[] noramls, float[] uvs, int[] animationIndices, float[] weights, int[] vCounts, Map<String, MeshPart> parts) {
 		this.positions = positions;
 		this.noramls = noramls;
 		this.uvs = uvs;
 		this.weights = weights;
-		this.vertexIndicators = VertexIndicator.create(drawingIndices, vCounts, animationIndices);
+		this.parts = parts;
+		
+		int totalV = 0;
+		
+		for (MeshPart meshpart : parts.values()) {
+			totalV += meshpart.getVertices().size();
+		}
+		
+		this.totalVertices = totalV;
+	}
+	
+	public MeshPart getPart(String part) {
+		return this.parts.get(part);
+	}
+	
+	public void initialize() {
+		this.parts.values().forEach((part) -> part.hidden = false);
 	}
 	
 	public JsonObject toJsonObject() {
@@ -57,23 +74,25 @@ public class Mesh {
 			normals[k+2] = normVector.z;
 		}
 		
-		int count = this.vertexIndicators.size();
-		int[] indices = new int[count * 3];
+		int[] indices = new int[this.totalVertices * 3];
 		int[] vcounts = new int[positions.length / 3];
 		List<Integer> vIndexList = Lists.newArrayList();
 		Map<Integer, VertexIndicator> positionMap = Maps.newHashMap();
 		int[] vIndices;
+		int i = 0;
 		
-		for (int i = 0; i < this.vertexIndicators.size(); i++) {
-			VertexIndicator vertexIndicator = this.vertexIndicators.get(i);
-			indices[i * 3] = vertexIndicator.position;
-			indices[i * 3 + 1] = vertexIndicator.uv;
-			indices[i * 3 + 2] = vertexIndicator.normal;
-			vcounts[vertexIndicator.position] = vertexIndicator.joint.size();
-			positionMap.put(vertexIndicator.position, vertexIndicator);
+		for (MeshPart part : this.parts.values()) {
+			for (VertexIndicator vertexIndicator : part.getVertices()) {
+				indices[i * 3] = vertexIndicator.position;
+				indices[i * 3 + 1] = vertexIndicator.uv;
+				indices[i * 3 + 2] = vertexIndicator.normal;
+				vcounts[vertexIndicator.position] = vertexIndicator.joint.size();
+				positionMap.put(vertexIndicator.position, vertexIndicator);
+				i++;
+			}
 		}
 		
-		for (int i = 0; i < vcounts.length; i++) {
+		for (i = 0; i < vcounts.length; i++) {
 			for (int j = 0; j < vcounts[i]; j++) {
 				VertexIndicator vi = positionMap.get(i);
 				vIndexList.add(vi.joint.get(j));
@@ -81,7 +100,7 @@ public class Mesh {
 			}
 		}
 		
-		vIndices = vIndexList.stream().mapToInt(i -> i).toArray();
+		vIndices = vIndexList.stream().mapToInt(j -> j).toArray();
 		vertices.add("positions", arrayToJsonObject(positions, 3));
 		vertices.add("uvs", arrayToJsonObject(this.uvs, 2));
 		vertices.add("normals", arrayToJsonObject(normals, 3));

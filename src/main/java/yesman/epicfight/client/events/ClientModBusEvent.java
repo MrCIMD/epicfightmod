@@ -3,7 +3,6 @@ package yesman.epicfight.client.events;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.renderer.entity.NoopRenderer;
-import net.minecraft.client.renderer.entity.WitherSkeletonRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -27,9 +26,11 @@ import yesman.epicfight.client.particle.GroundSlamParticle;
 import yesman.epicfight.client.particle.HitBluntParticle;
 import yesman.epicfight.client.particle.HitCutParticle;
 import yesman.epicfight.client.particle.LaserParticle;
+import yesman.epicfight.client.particle.TsunamiSplashParticle;
 import yesman.epicfight.client.particle.TsunamiSwirlParticle;
 import yesman.epicfight.client.renderer.entity.DroppedNetherStarRenderer;
 import yesman.epicfight.client.renderer.entity.WitherGhostRenderer;
+import yesman.epicfight.client.renderer.entity.WitherSkeletonMinionRenderer;
 import yesman.epicfight.client.renderer.patched.layer.WearableItemLayer;
 import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.particle.EpicFightParticles;
@@ -61,6 +62,7 @@ public class ClientModBusEvent {
     	particleEngine.register(EpicFightParticles.LASER.get(), new LaserParticle.Provider());
     	particleEngine.register(EpicFightParticles.NEUTRALIZE.get(), new DustParticle.ExpansiveMetaParticle.Provider());
     	particleEngine.register(EpicFightParticles.BOSS_CASTING.get(), new DustParticle.ContractiveMetaParticle.Provider());
+    	particleEngine.register(EpicFightParticles.TSUNAMI_SPLASH.get(), TsunamiSplashParticle.Provider::new);
     	particleEngine.register(EpicFightParticles.TSUNAMI_SWIRL.get(), new TsunamiSwirlParticle.Provider());
     }
 	
@@ -68,7 +70,7 @@ public class ClientModBusEvent {
 	public static void registerRenderersEvent(RegisterRenderers event) {
 		event.registerEntityRenderer(EpicFightEntities.AREA_EFFECT_BREATH.get(), NoopRenderer::new);
 		event.registerEntityRenderer(EpicFightEntities.DROPPED_NETHER_STAR.get(), DroppedNetherStarRenderer::new);
-		event.registerEntityRenderer(EpicFightEntities.WITHER_SKELETON_MINION.get(), WitherSkeletonRenderer::new);
+		event.registerEntityRenderer(EpicFightEntities.WITHER_SKELETON_MINION.get(), WitherSkeletonMinionRenderer::new);
 		event.registerEntityRenderer(EpicFightEntities.WITHER_GHOST_CLONE.get(), WitherGhostRenderer::new);
 	}
 	

@@ -7,7 +7,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
@@ -16,6 +15,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.client.model.ClientModel;
 import yesman.epicfight.api.client.model.ClientModels;
+import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
@@ -25,7 +25,7 @@ public class TsunamiSwirlParticle extends CustomModelParticle {
 	
 	public TsunamiSwirlParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, ClientModel particleMesh) {
 		super(level, x, y, z, xd, yd, zd, particleMesh);
-		this.lifetime = 20;
+		this.lifetime = 16;
 		this.hasPhysics = false;
 		this.rCol = 0.0F;
 		this.gCol = 162.0F / 255.0F;
@@ -67,8 +67,8 @@ public class TsunamiSwirlParticle extends CustomModelParticle {
 		
 		for (int x = -1; x <= 1; x += 2) {
 			for (int z = -1; z <= 1; z += 2) {
-				Vec3 rand = new Vec3(Math.random() * x, Math.random(), Math.random() * z).normalize().scale(1.0D);
-				this.level.addParticle(ParticleTypes.DRIPPING_WATER, this.x + rand.x, this.y + rand.y - 1.0D, this.z + rand.z, -rand.x, -rand.y, -rand.z);
+				Vec3 rand = new Vec3(Math.random() * x, Math.random(), Math.random() * z).normalize().scale(2.0D);
+				this.level.addParticle(EpicFightParticles.TSUNAMI_SPLASH.get(), this.x + rand.x, this.y + rand.y - 1.0D, this.z + rand.z, rand.x * 0.1D, rand.y * 0.1D, rand.z * 0.1D);
 			}
 		}
 	}

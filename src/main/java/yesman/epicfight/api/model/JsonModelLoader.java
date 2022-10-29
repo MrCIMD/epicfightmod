@@ -38,6 +38,8 @@ import yesman.epicfight.api.animation.types.AttackAnimation.Phase;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.model.ClientModel;
 import yesman.epicfight.api.client.model.Mesh;
+import yesman.epicfight.api.client.model.MeshPart;
+import yesman.epicfight.api.client.model.VertexIndicator;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.api.utils.math.Vec4f;
@@ -116,8 +118,10 @@ public class JsonModelLoader {
 		JsonObject uvs = obj.getAsJsonObject("uvs");
 		JsonObject vdincies = obj.getAsJsonObject("vindices");
 		JsonObject weights = obj.getAsJsonObject("weights");
-		JsonObject drawingIndices = obj.getAsJsonObject("indices");
 		JsonObject vcounts = obj.getAsJsonObject("vcounts");
+		JsonObject parts = obj.getAsJsonObject("parts");
+		JsonObject indices = obj.getAsJsonObject("indices");
+		
 		float[] positionArray = toFloatArray(positions.get("array").getAsJsonArray());
 		
 		for (int i = 0; i < positionArray.length / 3; i++) {
@@ -143,10 +147,21 @@ public class JsonModelLoader {
 		float[] uvArray = toFloatArray(uvs.get("array").getAsJsonArray());
 		int[] animationIndexArray = toIntArray(vdincies.get("array").getAsJsonArray());
 		float[] weightArray = toFloatArray(weights.get("array").getAsJsonArray());
-		int[] drawingIndexArray = toIntArray(drawingIndices.get("array").getAsJsonArray());
 		int[] vcountArray = toIntArray(vcounts.get("array").getAsJsonArray());
 		
-		return new Mesh(positionArray, normalArray, uvArray, animationIndexArray, weightArray, drawingIndexArray, vcountArray);
+		Map<String, MeshPart> meshMap = Maps.newHashMap();
+		
+		if (parts != null) {
+			for (Map.Entry<String, JsonElement> e : parts.entrySet()) {
+				meshMap.put(e.getKey(), new MeshPart(VertexIndicator.create(toIntArray(e.getValue().getAsJsonObject().get("array").getAsJsonArray()), vcountArray, animationIndexArray)));
+			}
+		}
+		
+		if (indices != null) {
+			meshMap.put("noGroups", new MeshPart(VertexIndicator.create(toIntArray(indices.get("array").getAsJsonArray()), vcountArray, animationIndexArray)));
+		}
+		
+		return new Mesh(positionArray, normalArray, uvArray, animationIndexArray, weightArray, vcountArray, meshMap);
 	}
 	
 	public Armature getArmature() {

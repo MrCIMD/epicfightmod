@@ -7,7 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -46,10 +45,5 @@ public class WitherGhostCloneRenderer extends PatchedEntityRenderer<WitherGhostC
 		}
 		
 		poseStack.popPose();
-	}
-	
-	@Override
-	protected ResourceLocation getEntityTexture(WitherGhostPatch entitypatch, NoopLivingEntityRenderer<WitherGhostClone> renderer) {
-		return PWitherRenderer.WITHER_INVULNERABLE_LOCATION;
 	}
 }

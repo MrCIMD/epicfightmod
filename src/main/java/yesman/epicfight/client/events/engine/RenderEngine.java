@@ -169,7 +169,7 @@ public class RenderEngine {
 		this.entityRendererProvider.put(EntityType.ZOGLIN, PHoglinRenderer::new);
 		this.entityRendererProvider.put(EntityType.ENDER_DRAGON, PEnderDragonRenderer::new);
 		this.entityRendererProvider.put(EntityType.WITHER, PWitherRenderer::new);
-		this.entityRendererProvider.put(EpicFightEntities.WITHER_SKELETON_MINION.get(), () -> new PWitherSkeletonMinionRenderer().setOverridingTexture("epicfight:textures/entity/wither_skeleton_minion.png"));
+		this.entityRendererProvider.put(EpicFightEntities.WITHER_SKELETON_MINION.get(), PWitherSkeletonMinionRenderer::new);
 		this.entityRendererProvider.put(EpicFightEntities.WITHER_GHOST_CLONE.get(), WitherGhostCloneRenderer::new);
 		
 		RenderBow bowRenderer = new RenderBow();

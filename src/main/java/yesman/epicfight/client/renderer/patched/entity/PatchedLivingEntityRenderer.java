@@ -63,6 +63,8 @@ public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T exte
 		OpenMatrix4f[] poseMatrices = this.getPoseMatrices(entitypatch, armature, partialTicks);
 		
 		if (renderType != null) {
+			this.prepareModel(entityIn, entitypatch, model);
+			
 			VertexConsumer builder = buffer.getBuffer(renderType);
 			model.drawAnimatedModel(poseStack, builder, packedLight, 1.0F, 1.0F, 1.0F, isVisibleToPlayer ? 0.15F : 1.0F, this.getOverlayCoord(entityIn, entitypatch, partialTicks), poseMatrices);
 		}
@@ -82,6 +84,10 @@ public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T exte
 		}
 		
 		poseStack.popPose();
+	}
+	
+	protected void prepareModel(E entity, T entitypatch, ClientModel model) {
+		model.getMesh().initialize();
 	}
 	
 	protected void renderLayer(LivingEntityRenderer<E, M> renderer, T entitypatch, E entityIn, OpenMatrix4f[] poses, MultiBufferSource buffer, PoseStack poseStack, int packedLightIn, float partialTicks) {
