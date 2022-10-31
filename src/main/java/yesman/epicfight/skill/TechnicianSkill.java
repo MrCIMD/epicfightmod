@@ -2,6 +2,7 @@ package yesman.epicfight.skill;
 
 import java.util.UUID;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.damagesource.DamageSource;
 import yesman.epicfight.api.animation.types.DodgeAnimation;
 import yesman.epicfight.api.utils.AttackResult;
@@ -14,8 +15,8 @@ public class TechnicianSkill extends PassiveSkill {
 	private static final UUID EVENT_UUID = UUID.fromString("99e5c782-fdaf-11eb-9a03-0242ac130003");
 	private static final SkillDataKey<Boolean> CURRENTLY_ACTIVATED = SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
 	
-	public TechnicianSkill(Builder<? extends Skill> builder) {
-		super(builder);
+	public TechnicianSkill(Builder<? extends Skill> builder, CompoundTag parameters) {
+		super(builder, parameters);
 	}
 	
 	@Override

@@ -14,6 +14,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -37,8 +38,8 @@ public class BladeRushSkill extends WeaponInnateSkill {
 	private static final SkillDataKey<Integer> COMBO_COUNT = SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
 	private static final UUID EVENT_UUID = UUID.fromString("444a1a6a-c2f1-11eb-8529-0242ac130003");
 	
-	public BladeRushSkill(Builder<? extends Skill> builder) {
-		super(builder);
+	public BladeRushSkill(Builder<? extends Skill> builder, CompoundTag parameters) {
+		super(builder, parameters);
 	}
 	
 	@Override

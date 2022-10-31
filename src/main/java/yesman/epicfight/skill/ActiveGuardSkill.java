@@ -4,8 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.google.common.collect.Lists;
-
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -45,8 +44,8 @@ public class ActiveGuardSkill extends GuardSkill {
 					new StaticAnimation[] { Animations.LONGSWORD_GUARD_ACTIVE_HIT1, Animations.LONGSWORD_GUARD_ACTIVE_HIT2 });
 	}
 	
-	public ActiveGuardSkill(GuardSkill.Builder builder) {
-		super(builder);
+	public ActiveGuardSkill(GuardSkill.Builder builder, CompoundTag parameters) {
+		super(builder, parameters);
 	}
 	
 	@Override
@@ -88,7 +87,7 @@ public class ActiveGuardSkill extends GuardSkill {
 					penalty = 0.1F;
 					knockback *= 0.4F;
 				} else {
-					penalty += this.getPenaltyMultiplier(itemCapability);
+					penalty += this.getPenalizer(itemCapability);
 					container.getDataManager().setDataSync(PENALTY, penalty, playerentity);
 				}
 				
@@ -156,9 +155,10 @@ public class ActiveGuardSkill extends GuardSkill {
 	
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public List<Object> getTooltipArgs() {
-		List<Object> list = Lists.<Object>newArrayList();
+	public List<Object> getTooltipArgs(List<Object> list) {
+		list.clear();
 		list.add(String.format("%s, %s, %s, %s", WeaponCategories.KATANA, WeaponCategories.LONGSWORD, WeaponCategories.SWORD, WeaponCategories.TACHI).toLowerCase());
+		
 		return list;
 	}
 }

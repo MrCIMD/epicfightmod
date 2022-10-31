@@ -2,6 +2,7 @@ package yesman.epicfight.skill;
 
 import java.util.UUID;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import yesman.epicfight.skill.SkillDataManager.SkillDataKey;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener.EventType;
@@ -14,13 +15,12 @@ public class ChargingJumpSkill extends Skill {
 	public static Skill.Builder<ChargingJumpSkill> createChargeJumpBuilder() {
 		return (new Builder<ChargingJumpSkill>())
 					.setCategory(SkillCategories.CHARGING_JUMP)
-					.setConsumption(1.0F)
 					.setActivateType(ActivateType.ONE_SHOT)
 					.setResource(Resource.STAMINA);
 	}
 	
-	public ChargingJumpSkill(Builder<? extends Skill> builder) {
-		super(builder);
+	public ChargingJumpSkill(Builder<? extends Skill> builder, CompoundTag parameters) {
+		super(builder, parameters);
 	}
 	
 	@Override

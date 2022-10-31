@@ -7,6 +7,7 @@ import java.util.function.BiFunction;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -33,17 +34,9 @@ public abstract class Skill {
 	public static class Builder<T extends Skill> {
 		protected ResourceLocation registryName;
 		protected SkillCategory category;
-		protected float consumption;
-		protected int maxDuration;
-		protected int maxStack;
-		protected int requiredXp;
+		
 		protected ActivateType activateType;
 		protected Resource resource;
-		
-		public Builder() {
-			this.maxDuration = 0;
-			this.maxStack = 1;
-		}
 		
 		public Builder<T> setRegistryName(ResourceLocation registryName) {
 			this.registryName = registryName;
@@ -52,26 +45,6 @@ public abstract class Skill {
 		
 		public Builder<T> setCategory(SkillCategory category) {
 			this.category = category;
-			return this;
-		}
-		
-		public Builder<T> setConsumption(float consumption) {
-			this.consumption = consumption;
-			return this;
-		}
-		
-		public Builder<T> setMaxDuration(int maxDuration) {
-			this.maxDuration = maxDuration;
-			return this;
-		}
-		
-		public Builder<T> setMaxStack(int maxStack) {
-			this.maxStack = maxStack;
-			return this;
-		}
-		
-		public Builder<T> setRequiredXp(int requiredXp) {
-			this.requiredXp = requiredXp;
 			return this;
 		}
 		
@@ -106,8 +79,9 @@ public abstract class Skill {
 	protected final int requiredXp;
 	protected final ActivateType activateType;
 	protected final Resource resource;
+	protected final CompoundTag parameters;
 	
-	public Skill(Builder<? extends Skill> builder) {
+	public Skill(Builder<? extends Skill> builder, CompoundTag parameters) {
 		if (builder.registryName == null) {
 			Exception e = new IllegalArgumentException("No registry name is given for " + this.getClass().getCanonicalName());
 			e.printStackTrace();
@@ -115,12 +89,13 @@ public abstract class Skill {
 		
 		this.registryName = builder.registryName;
 		this.category = builder.category;
-		this.consumption = builder.consumption;
-		this.maxDuration = builder.maxDuration;
-		this.maxStackSize = builder.maxStack;
-		this.requiredXp = builder.requiredXp;
 		this.activateType = builder.activateType;
+		this.parameters = parameters;
 		this.resource = builder.resource;
+		this.consumption = parameters.getInt("consumption");
+		this.maxDuration = parameters.getInt("max_duration");
+		this.maxStackSize = parameters.contains("max_stacks") ? parameters.getInt("maxStacks") : 1;
+		this.requiredXp = parameters.getInt("required_xp");
 	}
 	
 	@OnlyIn(Dist.CLIENT)
@@ -322,9 +297,7 @@ public abstract class Skill {
 	}
 	
 	@OnlyIn(Dist.CLIENT)
-	public List<Object> getTooltipArgs() {
-		List<Object> list = Lists.newArrayList();
-		list.add(ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(this.getConsumption()));
+	public List<Object> getTooltipArgs(List<Object> list) {
 		return list;
 	}
 	

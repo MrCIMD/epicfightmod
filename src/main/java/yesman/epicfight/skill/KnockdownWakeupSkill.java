@@ -1,5 +1,6 @@
 package yesman.epicfight.skill;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -9,8 +10,8 @@ import yesman.epicfight.network.client.CPExecuteSkill;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
 public class KnockdownWakeupSkill extends DodgeSkill {
-	public KnockdownWakeupSkill(Builder builder) {
-		super(builder);
+	public KnockdownWakeupSkill(Builder builder, CompoundTag parameters) {
+		super(builder, parameters);
 	}
 	
 	@OnlyIn(Dist.CLIENT)

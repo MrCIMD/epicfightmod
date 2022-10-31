@@ -2,13 +2,14 @@ package yesman.epicfight.skill;
 
 import java.util.UUID;
 
+import net.minecraft.nbt.CompoundTag;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener.EventType;
 
 public class StaminaPillagerSkill extends PassiveSkill {
 	private static final UUID EVENT_UUID = UUID.fromString("20807880-fd30-11eb-9a03-0242ac130003");
 	
-	public StaminaPillagerSkill(Builder<? extends Skill> builder) {
-		super(builder);
+	public StaminaPillagerSkill(Builder<? extends Skill> builder, CompoundTag parameters) {
+		super(builder, parameters);
 	}
 	
 	@Override

@@ -2,6 +2,7 @@ package yesman.epicfight.skill;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.player.Input;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -24,26 +25,6 @@ public class DodgeSkill extends Skill {
 			return this;
 		}
 		
-		public Builder setConsumption(float consumption) {
-			this.consumption = consumption;
-			return this;
-		}
-		
-		public Builder setMaxDuration(int maxDuration) {
-			this.maxDuration = maxDuration;
-			return this;
-		}
-		
-		public Builder setMaxStack(int maxStack) {
-			this.maxStack = maxStack;
-			return this;
-		}
-		
-		public Builder setRequiredXp(int requiredXp) {
-			this.requiredXp = requiredXp;
-			return this;
-		}
-		
 		public Builder setActivateType(ActivateType activateType) {
 			this.activateType = activateType;
 			return this;
@@ -61,13 +42,13 @@ public class DodgeSkill extends Skill {
 	}
 	
 	public static Builder createDodgeBuilder() {
-		return (new Builder()).setCategory(SkillCategories.DODGE).setActivateType(ActivateType.ONE_SHOT).setResource(Resource.STAMINA).setRequiredXp(5);
+		return (new Builder()).setCategory(SkillCategories.DODGE).setActivateType(ActivateType.ONE_SHOT).setResource(Resource.STAMINA);
 	}
 	
 	protected final StaticAnimation[] animations;
 	
-	public DodgeSkill(Builder builder) {
-		super(builder);
+	public DodgeSkill(Builder builder, CompoundTag parameters) {
+		super(builder, parameters);
 		
 		this.animations = new StaticAnimation[builder.animations.length];
 		

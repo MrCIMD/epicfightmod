@@ -1,10 +1,12 @@
 package yesman.epicfight.skill;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -15,8 +17,14 @@ import yesman.epicfight.world.entity.eventlistener.PlayerEventListener.EventType
 public class BerserkerSkill extends PassiveSkill {
 	private static final UUID EVENT_UUID = UUID.fromString("fdc09ee8-fcfc-11eb-9a03-0242ac130003");
 	
-	public BerserkerSkill(Builder<? extends Skill> builder) {
-		super(builder);
+	private final float speedBonus;
+	private final float damageBonus;
+	
+	public BerserkerSkill(Builder<? extends Skill> builder, CompoundTag parameters) {
+		super(builder, parameters);
+		
+		this.speedBonus = parameters.getFloat("speed_bonus") * 0.01F;
+		this.damageBonus = parameters.getFloat("damage_bouns") * 0.01F;
 	}
 	
 	@Override
@@ -27,7 +35,7 @@ public class BerserkerSkill extends PassiveSkill {
 			float health = player.getHealth();
 			float maxHealth = player.getMaxHealth();
 			float lostHealthPercentage = (maxHealth - health) / maxHealth;
-			lostHealthPercentage = (float)Math.floor(lostHealthPercentage * 100.0F) * 0.005F;
+			lostHealthPercentage = (float)Math.floor(lostHealthPercentage * 100.0F) * this.speedBonus;
 			float attackSpeed = event.getAttackSpeed();
 			event.setAttackSpeed(Math.min(5.0F, attackSpeed * (1.0F + lostHealthPercentage)));
 		});
@@ -37,7 +45,7 @@ public class BerserkerSkill extends PassiveSkill {
 			float health = player.getHealth();
 			float maxHealth = player.getMaxHealth();
 			float lostHealthPercentage = (maxHealth - health) / maxHealth;
-			lostHealthPercentage = (float)Math.floor(lostHealthPercentage * 100.0F) * 0.003F;
+			lostHealthPercentage = (float)Math.floor(lostHealthPercentage * 100.0F) * this.damageBonus;
 			float attackDamage = event.getAttackDamage();
 			event.setAttackDamage(attackDamage * (1.0F + lostHealthPercentage));
 		});
@@ -76,5 +84,13 @@ public class BerserkerSkill extends PassiveSkill {
 		lostHealthPercentage = (float)Math.floor(lostHealthPercentage * 100.0F);
 		gui.font.drawShadow(matStackIn, String.format("%.0f%%", lostHealthPercentage), ((float)width - x+4), ((float)height - y+6), 16777215);
 		matStackIn.popPose();
+	}
+	
+	@OnlyIn(Dist.CLIENT)
+	public List<Object> getTooltipArgs(List<Object> list) {
+		list.add(String.format("%.1f", this.speedBonus));
+		list.add(String.format("%.1f", this.damageBonus));
+		
+		return list;
 	}
 }

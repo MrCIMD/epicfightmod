@@ -1,5 +1,6 @@
 package yesman.epicfight.skill;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -7,8 +8,8 @@ import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerP
 import yesman.epicfight.network.client.CPExecuteSkill;
 
 public class StepSkill extends DodgeSkill {
-	public StepSkill(DodgeSkill.Builder builder) {
-		super(builder);
+	public StepSkill(DodgeSkill.Builder builder, CompoundTag parameters) {
+		super(builder, parameters);
 	}
 	
 	@OnlyIn(Dist.CLIENT)

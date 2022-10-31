@@ -2,6 +2,7 @@ package yesman.epicfight.client.gui.screen;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -107,7 +108,7 @@ public class SkillBookScreen extends Screen {
 		width = this.font.width(skillCategory);
 		this.font.draw(matrixStack, skillCategory, posX + 50 - width / 2, posY + 130, 0);
 		
-		List<FormattedCharSequence> list = this.font.split(new TranslatableComponent(translationName + ".tooltip", this.skill.getTooltipArgs().toArray(new Object[0])), 140);
+		List<FormattedCharSequence> list = this.font.split(new TranslatableComponent(translationName + ".tooltip", this.skill.getTooltipArgs(Lists.newArrayList()).toArray(new Object[0])), 140);
 		int height = posY + 20;
 		
 		for (int l1 = 0; l1 < list.size(); ++l1) {

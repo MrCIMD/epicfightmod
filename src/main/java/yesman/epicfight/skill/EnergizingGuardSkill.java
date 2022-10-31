@@ -2,8 +2,7 @@ package yesman.epicfight.skill;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
@@ -30,8 +29,14 @@ public class EnergizingGuardSkill extends GuardSkill {
 				.addAdvancedGuardMotion(WeaponCategories.GREATSWORD, (item, player) -> Animations.GREATSWORD_GUARD_HIT);
 	}
 	
-	public EnergizingGuardSkill(GuardSkill.Builder builder) {
-		super(builder);
+	protected final float superiorPenalizer;
+	protected final float damageReducer;
+	
+	public EnergizingGuardSkill(GuardSkill.Builder builder, CompoundTag parameters) {
+		super(builder, parameters);
+		
+		this.superiorPenalizer = parameters.getFloat("superior_penalizer");
+		this.damageReducer = parameters.getFloat("damage_reducer");
 	}
 	
 	@Override
@@ -48,7 +53,7 @@ public class EnergizingGuardSkill extends GuardSkill {
 	@Override
 	public void dealEvent(PlayerPatch<?> playerpatch, HurtEvent.Pre event) {
 		boolean isSpecialSource = isSpecialDamageSource(event.getDamageSource());
-		event.setAmount(isSpecialSource ? event.getAmount() * 0.2F : 0.0F);
+		event.setAmount(isSpecialSource ? event.getAmount() * this.damageReducer * 0.01F : 0.0F);
 		event.setResult(isSpecialSource ? AttackResult.ResultType.SUCCESS : AttackResult.ResultType.BLOCKED);
 		
 		if (event.getDamageSource() instanceof EpicFightDamageSource) {
@@ -70,8 +75,8 @@ public class EnergizingGuardSkill extends GuardSkill {
 	}
 	
 	@Override
-	public float getPenaltyMultiplier(CapabilityItem itemCap) {
-		return this.advancedGuardMotions.containsKey(itemCap.getWeaponCategory()) ? 0.2F : 0.6F;
+	public float getPenalizer(CapabilityItem itemCap) {
+		return this.advancedGuardMotions.containsKey(itemCap.getWeaponCategory()) ? this.superiorPenalizer : this.penalizer;
 	}
 	
 	private static boolean isSpecialDamageSource(DamageSource damageSource) {
@@ -90,8 +95,9 @@ public class EnergizingGuardSkill extends GuardSkill {
 	
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public List<Object> getTooltipArgs() {
-		List<Object> list = Lists.<Object>newArrayList();
+	public List<Object> getTooltipArgs(List<Object> list) {
+		list.clear();
+		list.add(String.format("%.1f", this.damageReducer));
 		list.add(String.format("%s, %s, %s, %s", WeaponCategories.GREATSWORD, WeaponCategories.LONGSWORD, WeaponCategories.SPEAR, WeaponCategories.TACHI).toLowerCase());
 		
 		return list;

@@ -7,11 +7,11 @@ import java.util.function.BiFunction;
 
 import javax.annotation.Nullable;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -58,26 +58,6 @@ public class GuardSkill extends Skill {
 			return this;
 		}
 		
-		public Builder setConsumption(float consumption) {
-			this.consumption = consumption;
-			return this;
-		}
-		
-		public Builder setMaxDuration(int maxDuration) {
-			this.maxDuration = maxDuration;
-			return this;
-		}
-		
-		public Builder setMaxStack(int maxStack) {
-			this.maxStack = maxStack;
-			return this;
-		}
-		
-		public Builder setRequiredXp(int requiredXp) {
-			this.requiredXp = requiredXp;
-			return this;
-		}
-		
 		public Builder setActivateType(ActivateType activateType) {
 			this.activateType = activateType;
 			return this;
@@ -107,7 +87,6 @@ public class GuardSkill extends Skill {
 	public static GuardSkill.Builder createGuardBuilder() {
 		return (new GuardSkill.Builder())
 				.setCategory(SkillCategories.GUARD)
-				.setMaxStack(0)
 				.setActivateType(ActivateType.ONE_SHOT)
 				.setResource(Resource.STAMINA)
 				.addGuardMotion(WeaponCategories.AXE, (item, player) -> Animations.SWORD_GUARD_HIT)
@@ -130,11 +109,15 @@ public class GuardSkill extends Skill {
 	protected final Map<WeaponCategory, BiFunction<CapabilityItem, PlayerPatch<?>, ?>> advancedGuardMotions;
 	protected final Map<WeaponCategory, BiFunction<CapabilityItem, PlayerPatch<?>, ?>> guardBreakMotions;
 	
-	public GuardSkill(GuardSkill.Builder builder) {
-		super(builder);
+	protected final float penalizer;
+	
+	public GuardSkill(GuardSkill.Builder builder, CompoundTag parameters) {
+		super(builder, parameters);
 		this.guardMotions = builder.guardMotions;
 		this.advancedGuardMotions = builder.advancedGuardMotions;
 		this.guardBreakMotions = builder.guardBreakMotions;
+		
+		this.penalizer = parameters.getFloat("penalizer");
 	}
 	
 	@Override
@@ -211,7 +194,7 @@ public class GuardSkill extends Skill {
 				knockback += EnchantmentHelper.getKnockbackBonus((LivingEntity)damageSource.getDirectEntity()) * 0.1F;
 			}
 			
-			float penalty = container.getDataManager().getDataValue(PENALTY) + this.getPenaltyMultiplier(itemCapability);
+			float penalty = container.getDataManager().getDataValue(PENALTY) + this.getPenalizer(itemCapability);
 			event.getPlayerPatch().knockBackEntity(damageSource.getDirectEntity().position(), knockback);
 			
 			float stamina = event.getPlayerPatch().getStamina() - penalty * impact;
@@ -246,8 +229,8 @@ public class GuardSkill extends Skill {
 		}
 	}
 	
-	protected float getPenaltyMultiplier(CapabilityItem itemCapapbility) {
-		return 0.6F;
+	protected float getPenalizer(CapabilityItem itemCapability) {
+		return this.penalizer;
 	}
 	
 	protected Map<WeaponCategory, BiFunction<CapabilityItem, PlayerPatch<?>, ?>> getGuradMotionMap(BlockType blockType) {
@@ -326,9 +309,9 @@ public class GuardSkill extends Skill {
 	
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public List<Object> getTooltipArgs() {
-		List<Object> list = Lists.newArrayList();
+	public List<Object> getTooltipArgs(List<Object> list) {
 		list.add(String.format("%s, %s, %s, %s, %s, %s, %s", this.guardMotions.keySet().toArray(new Object[0])).toLowerCase());
+		
 		return list;
 	}
 	

@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
@@ -38,8 +39,8 @@ public abstract class WeaponInnateSkill extends Skill {
 	
 	protected List<Map<AttackPhaseProperty<?>, Object>> properties;
 	
-	public WeaponInnateSkill(Builder<? extends Skill> builder) {
-		super(builder);
+	public WeaponInnateSkill(Builder<? extends Skill> builder, CompoundTag parameters) {
+		super(builder, parameters);
 		this.properties = Lists.newArrayList();
 	}
 	

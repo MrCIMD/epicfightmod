@@ -2,6 +2,7 @@ package yesman.epicfight.skill;
 
 import java.util.List;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -20,26 +21,6 @@ public class SimpleWeaponInnateSkill extends WeaponInnateSkill {
 		
 		public Builder setCategory(SkillCategory category) {
 			this.category = category;
-			return this;
-		}
-		
-		public Builder setConsumption(float consumption) {
-			this.consumption = consumption;
-			return this;
-		}
-		
-		public Builder setMaxDuration(int maxDuration) {
-			this.maxDuration = maxDuration;
-			return this;
-		}
-		
-		public Builder setMaxStack(int maxStack) {
-			this.maxStack = maxStack;
-			return this;
-		}
-		
-		public Builder setRequiredXp(int requiredXp) {
-			this.requiredXp = requiredXp;
 			return this;
 		}
 		
@@ -65,8 +46,8 @@ public class SimpleWeaponInnateSkill extends WeaponInnateSkill {
 	
 	protected final StaticAnimation attackAnimation;
 	
-	public SimpleWeaponInnateSkill(Builder builder) {
-		super(builder);
+	public SimpleWeaponInnateSkill(Builder builder, CompoundTag parameters) {
+		super(builder, parameters);
 		
 		this.attackAnimation = EpicFightMod.getInstance().animationManager.findAnimationByPath(builder.attackAnimation.toString());
 	}

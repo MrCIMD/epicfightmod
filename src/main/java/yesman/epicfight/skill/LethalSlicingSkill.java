@@ -3,6 +3,7 @@ package yesman.epicfight.skill;
 import java.util.List;
 import java.util.UUID;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,8 +21,8 @@ public class LethalSlicingSkill extends WeaponInnateSkill {
 	private AttackAnimation swing;
 	private AttackAnimation doubleSwing;
 	
-	public LethalSlicingSkill(Builder<? extends Skill> builder) {
-		super(builder);
+	public LethalSlicingSkill(Builder<? extends Skill> builder, CompoundTag parameters) {
+		super(builder, parameters);
 		this.elbow = (AttackAnimation)Animations.LETHAL_SLICING;
 		this.swing = (AttackAnimation)Animations.LETHAL_SLICING_ONCE;
 		this.doubleSwing = (AttackAnimation)Animations.LETHAL_SLICING_TWICE;

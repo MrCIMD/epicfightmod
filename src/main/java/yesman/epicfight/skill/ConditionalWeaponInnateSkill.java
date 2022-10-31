@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import com.google.common.collect.Lists;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -17,12 +18,12 @@ import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 
-public abstract class SeperativeMotionSkill extends WeaponInnateSkill {
+public abstract class ConditionalWeaponInnateSkill extends WeaponInnateSkill {
 	protected final StaticAnimation[] attackAnimations;
 	protected final Function<ServerPlayerPatch, Integer> selector;
 	
-	public SeperativeMotionSkill(Builder<? extends Skill> builder, Function<ServerPlayerPatch, Integer> func, StaticAnimation... animations) {
-		super(builder);
+	public ConditionalWeaponInnateSkill(Builder<? extends Skill> builder, CompoundTag parameters, Function<ServerPlayerPatch, Integer> func, StaticAnimation... animations) {
+		super(builder, parameters);
 		this.properties = Lists.<Map<AttackPhaseProperty<?>, Object>>newArrayList();
 		this.attackAnimations = animations;
 		this.selector = func;

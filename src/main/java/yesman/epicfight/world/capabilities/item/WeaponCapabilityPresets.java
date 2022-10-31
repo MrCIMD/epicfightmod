@@ -18,7 +18,7 @@ import yesman.epicfight.gameasset.ColliderPreset;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.gameasset.Skills;
 import yesman.epicfight.particle.EpicFightParticles;
-import yesman.epicfight.skill.KatanaPassive;
+import yesman.epicfight.skill.Battojutsu;
 import yesman.epicfight.skill.SkillCategories;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
@@ -171,8 +171,8 @@ public class WeaponCapabilityPresets {
 			.styleProvider((entitypatch) -> {
 				if (entitypatch instanceof PlayerPatch) {
 					PlayerPatch<?> playerpatch = (PlayerPatch<?>)entitypatch;
-					if (playerpatch.getSkill(SkillCategories.WEAPON_PASSIVE).getDataManager().hasData(KatanaPassive.SHEATH) && 
-							playerpatch.getSkill(SkillCategories.WEAPON_PASSIVE).getDataManager().getDataValue(KatanaPassive.SHEATH)) {
+					if (playerpatch.getSkill(SkillCategories.WEAPON_PASSIVE).getDataManager().hasData(Battojutsu.SHEATH) && 
+							playerpatch.getSkill(SkillCategories.WEAPON_PASSIVE).getDataManager().getDataValue(Battojutsu.SHEATH)) {
 						return Styles.SHEATH;
 					}
 				}
