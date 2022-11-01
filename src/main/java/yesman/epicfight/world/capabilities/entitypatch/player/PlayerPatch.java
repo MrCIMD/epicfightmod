@@ -23,7 +23,7 @@ import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.math.Formulars;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.Models;
-import yesman.epicfight.gameasset.Skills;
+import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategories;
 import yesman.epicfight.skill.SkillCategory;
@@ -64,9 +64,9 @@ public abstract class PlayerPatch<T extends Player> extends LivingEntityPatch<T>
 		super.onJoinWorld(entityIn, event);
 		
 		CapabilitySkill skillCapability = this.getSkillCapability();
-		skillCapability.skillContainers[SkillCategories.BASIC_ATTACK.universalOrdinal()].setSkill(Skills.BASIC_ATTACK);
-		skillCapability.skillContainers[SkillCategories.AIR_ATTACK.universalOrdinal()].setSkill(Skills.AIR_ATTACK);
-		skillCapability.skillContainers[SkillCategories.KNOCKDOWN_WAKEUP.universalOrdinal()].setSkill(Skills.KNOCKDOWN_WAKEUP);
+		skillCapability.skillContainers[SkillCategories.BASIC_ATTACK.universalOrdinal()].setSkill(EpicFightSkills.BASIC_ATTACK);
+		skillCapability.skillContainers[SkillCategories.AIR_ATTACK.universalOrdinal()].setSkill(EpicFightSkills.AIR_ATTACK);
+		skillCapability.skillContainers[SkillCategories.KNOCKDOWN_WAKEUP.universalOrdinal()].setSkill(EpicFightSkills.KNOCKDOWN_WAKEUP);
 		this.tickSinceLastAction = 0;
 		this.eventListeners.addEventListener(EventType.ACTION_EVENT_SERVER, ACTION_EVENT_UUID, (playerEvent) -> {
 			this.resetActionTick();

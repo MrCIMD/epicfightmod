@@ -14,8 +14,8 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.loot.LootModifier;
+import yesman.epicfight.api.data.reloader.SkillReloadListener;
 import yesman.epicfight.config.ConfigManager;
-import yesman.epicfight.gameasset.Skills;
 import yesman.epicfight.world.item.EpicFightItems;
 import yesman.epicfight.world.item.SkillBookItem;
 
@@ -31,7 +31,7 @@ public class SkillBookModifier extends LootModifier {
 			Random random = new Random();
 			if (random.nextFloat() < 0.025F) {
 				ItemStack skillBook = new ItemStack(EpicFightItems.SKILLBOOK.get());
-				SkillBookItem.setContainingSkill(Skills.getRandomLearnableSkillName(), skillBook);
+				SkillBookItem.setContainingSkill(SkillReloadListener.getRandomLearnableSkillName(), skillBook);
 				generatedLoot.add(skillBook);
 			}
 		}

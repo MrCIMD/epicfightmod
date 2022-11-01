@@ -34,7 +34,6 @@ public abstract class Skill {
 	public static class Builder<T extends Skill> {
 		protected ResourceLocation registryName;
 		protected SkillCategory category;
-		
 		protected ActivateType activateType;
 		protected Resource resource;
 		
@@ -95,7 +94,7 @@ public abstract class Skill {
 		this.consumption = parameters.getInt("consumption");
 		this.maxDuration = parameters.getInt("max_duration");
 		this.maxStackSize = parameters.contains("max_stacks") ? parameters.getInt("maxStacks") : 1;
-		this.requiredXp = parameters.getInt("required_xp");
+		this.requiredXp = parameters.getInt("xp_requirement");
 	}
 	
 	@OnlyIn(Dist.CLIENT)

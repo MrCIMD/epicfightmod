@@ -28,7 +28,7 @@ import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.EpicFightSounds;
-import yesman.epicfight.gameasset.Skills;
+import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.skill.SkillDataManager.SkillDataKey;
@@ -326,7 +326,7 @@ public class GuardSkill extends Skill {
 		matStackIn.pushPose();
 		matStackIn.scale(scale, scale, 1.0F);
 		matStackIn.translate(0, (float)gui.getSlidingProgression() * 1.0F / scale, 0);
-		RenderSystem.setShaderTexture(0, Skills.GUARD.getSkillTexture());
+		RenderSystem.setShaderTexture(0, EpicFightSkills.GUARD.getSkillTexture());
 		float scaleMultiply = 1.0F / scale;
 		gui.drawTexturedModalRectFixCoord(matStackIn.last().pose(), (width - x) * scaleMultiply, (height - y) * scaleMultiply, 0, 0, 255, 255);
 		matStackIn.scale(scaleMultiply, scaleMultiply, 1.0F);

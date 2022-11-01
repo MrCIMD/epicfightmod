@@ -23,8 +23,8 @@ public class BerserkerSkill extends PassiveSkill {
 	public BerserkerSkill(Builder<? extends Skill> builder, CompoundTag parameters) {
 		super(builder, parameters);
 		
-		this.speedBonus = parameters.getFloat("speed_bonus") * 0.01F;
-		this.damageBonus = parameters.getFloat("damage_bouns") * 0.01F;
+		this.speedBonus = parameters.getFloat("speed_bonus");
+		this.damageBonus = parameters.getFloat("damage_bonus");
 	}
 	
 	@Override
@@ -35,7 +35,7 @@ public class BerserkerSkill extends PassiveSkill {
 			float health = player.getHealth();
 			float maxHealth = player.getMaxHealth();
 			float lostHealthPercentage = (maxHealth - health) / maxHealth;
-			lostHealthPercentage = (float)Math.floor(lostHealthPercentage * 100.0F) * this.speedBonus;
+			lostHealthPercentage = (float)Math.floor(lostHealthPercentage * 100.0F) * this.speedBonus * 0.01F;
 			float attackSpeed = event.getAttackSpeed();
 			event.setAttackSpeed(Math.min(5.0F, attackSpeed * (1.0F + lostHealthPercentage)));
 		});
@@ -45,7 +45,7 @@ public class BerserkerSkill extends PassiveSkill {
 			float health = player.getHealth();
 			float maxHealth = player.getMaxHealth();
 			float lostHealthPercentage = (maxHealth - health) / maxHealth;
-			lostHealthPercentage = (float)Math.floor(lostHealthPercentage * 100.0F) * this.damageBonus;
+			lostHealthPercentage = (float)Math.floor(lostHealthPercentage * 100.0F) * this.damageBonus* 0.01F;
 			float attackDamage = event.getAttackDamage();
 			event.setAttackDamage(attackDamage * (1.0F + lostHealthPercentage));
 		});

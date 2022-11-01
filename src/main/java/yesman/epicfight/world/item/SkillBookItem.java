@@ -18,7 +18,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import yesman.epicfight.gameasset.Skills;
+import yesman.epicfight.api.data.reloader.SkillReloadListener;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
@@ -39,7 +39,7 @@ public class SkillBookItem extends Item {
 		
 		String skillName = stack.getTag().getString("skill");
 		
-		return Skills.getSkill(skillName);
+		return SkillReloadListener.getSkill(skillName);
 	}
 	
 	public SkillBookItem(Properties properties) {
@@ -55,7 +55,7 @@ public class SkillBookItem extends Item {
 	public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 		
 		if (stack.getTag() != null && stack.getTag().contains("skill")) {
-			Skill skill = Skills.getSkill(stack.getTag().getString("skill"));
+			Skill skill = SkillReloadListener.getSkill(stack.getTag().getString("skill"));
 			
 			if (skill != null) {
 				tooltip.add(new TranslatableComponent(skill.getTranslatableText()).withStyle(ChatFormatting.DARK_GRAY));
@@ -66,7 +66,7 @@ public class SkillBookItem extends Item {
 	@Override
 	public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
 		if (group == EpicFightItemGroup.ITEMS || group == CreativeModeTab.TAB_SEARCH) {
-			Skills.getLearnableSkillNames().forEach((rl) -> {
+			SkillReloadListener.getLearnableSkillNames().forEach((rl) -> {
 				ItemStack stack = new ItemStack(this);
 				setContainingSkill(rl.toString(), stack);
 				items.add(stack);

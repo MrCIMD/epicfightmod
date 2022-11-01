@@ -5,8 +5,8 @@ import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
+import yesman.epicfight.api.data.reloader.SkillReloadListener;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
-import yesman.epicfight.gameasset.Skills;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
@@ -37,7 +37,7 @@ public class SPRemoveSkill {
 			LocalPlayerPatch playerpatch = EpicFightCapabilities.getEntityPatch(mc.player, LocalPlayerPatch.class);
 			
 			if (playerpatch != null) {
-				Skill skill = Skills.getSkill(msg.skillName);
+				Skill skill = SkillReloadListener.getSkill(msg.skillName);
 				playerpatch.getSkillCapability().removeLearnedSkill(skill);
 				SkillContainer skillContainer = playerpatch.getSkillCapability().skillContainers[skill.getCategory().universalOrdinal()];
 				

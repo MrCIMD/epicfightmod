@@ -33,6 +33,7 @@ import yesman.epicfight.api.client.animation.ClientAnimator;
 import yesman.epicfight.api.client.model.ClientModels;
 import yesman.epicfight.api.data.reloader.ItemCapabilityReloadListener;
 import yesman.epicfight.api.data.reloader.MobPatchReloadListener;
+import yesman.epicfight.api.data.reloader.SkillReloadListener;
 import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.gui.screen.IngameConfigurationScreen;
 import yesman.epicfight.client.input.EpicFightKeyMappings;
@@ -45,8 +46,8 @@ import yesman.epicfight.events.EntityEvents;
 import yesman.epicfight.events.ModBusEvents;
 import yesman.epicfight.events.PlayerEvents;
 import yesman.epicfight.gameasset.Animations;
+import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.gameasset.Models;
-import yesman.epicfight.gameasset.Skills;
 import yesman.epicfight.network.EpicFightDataSerializers;
 import yesman.epicfight.network.EpicFightNetworkManager;
 import yesman.epicfight.particle.EpicFightParticles;
@@ -114,7 +115,7 @@ public class EpicFightMod {
         EpicFightItems.ITEMS.register(bus);
         EpicFightParticles.PARTICLES.register(bus);
         EpicFightEntities.ENTITIES.register(bus);
-        Skills.firstRegisterSkills();
+        EpicFightSkills.registerSkills();
         
         MinecraftForge.EVENT_BUS.addListener(this::reloadListnerEvent);
         MinecraftForge.EVENT_BUS.register(EntityEvents.class);
@@ -158,7 +159,6 @@ public class EpicFightMod {
 	
 	private void doCommonStuff(final FMLCommonSetupEvent event) {
 		event.enqueueWork(this.animationManager::registerAnimations);
-		event.enqueueWork(Skills::buildSkills);
 		event.enqueueWork(SkillArgument::registerArgumentTypes);
 		event.enqueueWork(EpicFightPotions::addRecipes);
 		event.enqueueWork(EpicFightNetworkManager::registerPackets);
@@ -172,6 +172,7 @@ public class EpicFightMod {
     }
 	
 	private void reloadListnerEvent(final AddReloadListenerEvent event) {
+		event.addListener(new SkillReloadListener());
 		event.addListener(new ItemCapabilityReloadListener());
 		event.addListener(new MobPatchReloadListener());
 	}

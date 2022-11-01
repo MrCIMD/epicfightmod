@@ -59,6 +59,7 @@ public class Battojutsu extends Skill {
 		PlayerPatch<?> executer = container.getExecuter();
 		
 		if (!executer.isLogicalClient()) {
+			
 			if (this.consumption < value) {
 				ServerPlayer serverPlayer = (ServerPlayer) executer.getOriginal();
 				container.getDataManager().setDataSync(SHEATH, true, serverPlayer);

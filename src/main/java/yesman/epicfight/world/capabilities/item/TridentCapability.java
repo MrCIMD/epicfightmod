@@ -13,7 +13,7 @@ import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.ColliderPreset;
 import yesman.epicfight.gameasset.EpicFightSounds;
-import yesman.epicfight.gameasset.Skills;
+import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.skill.Skill;
@@ -76,9 +76,9 @@ public class TridentCapability extends RangedWeaponCapability {
 	@Override
 	public Skill getInnateSkill(PlayerPatch<?> playerpatch, ItemStack itemstack) {
 		if (EnchantmentHelper.getRiptide(itemstack) > 0) {
-			return Skills.TSUNAMI;
+			return EpicFightSkills.TSUNAMI;
 		} else if (EnchantmentHelper.hasChanneling(itemstack)) {
-			return Skills.THUNDER_PUNISHMENT;
+			return EpicFightSkills.THUNDER_PUNISHMENT;
 		} else {
 			return null;
 		}
