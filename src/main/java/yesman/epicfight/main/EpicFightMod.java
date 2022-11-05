@@ -33,7 +33,7 @@ import yesman.epicfight.api.client.animation.ClientAnimator;
 import yesman.epicfight.api.client.model.ClientModels;
 import yesman.epicfight.api.data.reloader.ItemCapabilityReloadListener;
 import yesman.epicfight.api.data.reloader.MobPatchReloadListener;
-import yesman.epicfight.api.data.reloader.SkillReloadListener;
+import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.gui.screen.IngameConfigurationScreen;
 import yesman.epicfight.client.input.EpicFightKeyMappings;
@@ -169,10 +169,11 @@ public class EpicFightMod {
 		event.enqueueWork(EpicFightEntities::registerSpawnPlacements);
 		event.enqueueWork(WeaponCapabilityPresets::register);
 		event.enqueueWork(EpicFightMobEffects::addOffhandModifier);
+		event.enqueueWork(SkillManager::buildAll);
     }
 	
 	private void reloadListnerEvent(final AddReloadListenerEvent event) {
-		event.addListener(new SkillReloadListener());
+		event.addListener(new SkillManager());
 		event.addListener(new ItemCapabilityReloadListener());
 		event.addListener(new MobPatchReloadListener());
 	}

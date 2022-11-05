@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -15,8 +14,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.gameasset.Animations;
-import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.gameasset.EpicFightSkills;
+import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.skill.SkillDataManager.SkillDataKey;
@@ -44,8 +43,8 @@ public class ActiveGuardSkill extends GuardSkill {
 					new StaticAnimation[] { Animations.LONGSWORD_GUARD_ACTIVE_HIT1, Animations.LONGSWORD_GUARD_ACTIVE_HIT2 });
 	}
 	
-	public ActiveGuardSkill(GuardSkill.Builder builder, CompoundTag parameters) {
-		super(builder, parameters);
+	public ActiveGuardSkill(GuardSkill.Builder builder) {
+		super(builder);
 	}
 	
 	@Override

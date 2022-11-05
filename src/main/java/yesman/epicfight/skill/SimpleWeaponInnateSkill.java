@@ -2,7 +2,6 @@ package yesman.epicfight.skill;
 
 import java.util.List;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -46,8 +45,8 @@ public class SimpleWeaponInnateSkill extends WeaponInnateSkill {
 	
 	protected final StaticAnimation attackAnimation;
 	
-	public SimpleWeaponInnateSkill(Builder builder, CompoundTag parameters) {
-		super(builder, parameters);
+	public SimpleWeaponInnateSkill(Builder builder) {
+		super(builder);
 		
 		this.attackAnimation = EpicFightMod.getInstance().animationManager.findAnimationByPath(builder.attackAnimation.toString());
 	}

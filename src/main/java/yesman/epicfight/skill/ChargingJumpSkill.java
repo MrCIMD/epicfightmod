@@ -2,7 +2,6 @@ package yesman.epicfight.skill;
 
 import java.util.UUID;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import yesman.epicfight.skill.SkillDataManager.SkillDataKey;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener.EventType;
@@ -19,8 +18,8 @@ public class ChargingJumpSkill extends Skill {
 					.setResource(Resource.STAMINA);
 	}
 	
-	public ChargingJumpSkill(Builder<? extends Skill> builder, CompoundTag parameters) {
-		super(builder, parameters);
+	public ChargingJumpSkill(Builder<? extends Skill> builder) {
+		super(builder);
 	}
 	
 	@Override

@@ -5,10 +5,10 @@ import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
-import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.skill.SkillDataManager;
 import yesman.epicfight.skill.SkillDataManager.SkillDataKey;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
 public class SPModifySkillData {
 	private Object value;
@@ -42,7 +42,7 @@ public class SPModifySkillData {
 	public static void handle(SPModifySkillData msg, Supplier<NetworkEvent.Context> ctx) {
 		ctx.get().enqueueWork(() -> {
 			Minecraft mc = Minecraft.getInstance();
-			LocalPlayerPatch playerpatch = EpicFightCapabilities.getEntityPatch(mc.player, LocalPlayerPatch.class);
+			PlayerPatch<?> playerpatch = (PlayerPatch<?>)mc.player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).orElse(null);
 			
 			if (playerpatch != null) {
 				SkillDataManager dataManager = playerpatch.getSkill(msg.slot).getDataManager();

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Maps;
@@ -20,16 +20,20 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModLoader;
 import yesman.epicfight.api.forgeevent.SkillBuildEvent;
 import yesman.epicfight.main.EpicFightMod;
+import yesman.epicfight.network.server.SPDatapackSync;
 import yesman.epicfight.skill.Skill;
 
-public class SkillReloadListener extends SimpleJsonResourceReloadListener {
+public class SkillManager extends SimpleJsonResourceReloadListener {
 	
 	private static final Map<ResourceLocation, Skill> SKILLS = Maps.newHashMap();
 	private static final Map<ResourceLocation, Skill> LEARNABLE_SKILLS = Maps.newHashMap();
-	private static final Map<ResourceLocation, Pair<? extends Skill.Builder<?>, BiFunction<? extends Skill.Builder<?>, CompoundTag, ? extends Skill>>> BUILDERS = Maps.newHashMap();
+	private static final Map<ResourceLocation, CompoundTag> PARAMETER_MAP = Maps.newHashMap();
+	private static final Map<ResourceLocation, Pair<? extends Skill.Builder<?>, Function<? extends Skill.Builder<?>, ? extends Skill>>> BUILDERS = Maps.newHashMap();
 	private static final Gson GSON = (new GsonBuilder()).create();
 	private static final Random RANDOM = new Random();
 	private static int LAST_PICK = 0;
@@ -61,21 +65,38 @@ public class SkillReloadListener extends SimpleJsonResourceReloadListener {
 		return values.get(LAST_PICK).toString();
 	}
 	
-	public static <T extends Skill, B extends Skill.Builder<T>> void register(BiFunction<B, CompoundTag, T> constructor, B builder, String modid, String name) {
+	public static <T extends Skill, B extends Skill.Builder<T>> void register(Function<B, T> constructor, B builder, String modid, String name) {
 		ResourceLocation registryName = new ResourceLocation(modid, name);
 		BUILDERS.put(registryName, Pair.of(builder.setRegistryName(registryName), constructor));
 		
 		EpicFightMod.LOGGER.info("register skill " + registryName);
 	}
 	
-	public SkillReloadListener() {
+	public static void buildAll() {
+		SkillBuildEvent onBuild = new SkillBuildEvent(BUILDERS, SKILLS, LEARNABLE_SKILLS);
+		ModLoader.get().postEvent(onBuild);
+	}
+	
+	public static Stream<CompoundTag> getDataStream() {
+		Stream<CompoundTag> tagStream = PARAMETER_MAP.entrySet().stream().map((entry) -> {
+			entry.getValue().putString("id", entry.getKey().toString());
+			
+			return entry.getValue();
+		});
+		
+		return tagStream;
+	}
+	
+	public static int getParamCount() {
+		return PARAMETER_MAP.size();
+	}
+	
+	public SkillManager() {
 		super(GSON, "skill_parameters");
 	}
-
+	
 	@Override
 	protected void apply(Map<ResourceLocation, JsonElement> objectIn, ResourceManager resourceManager, ProfilerFiller profileFiller) {
-		Map<ResourceLocation, CompoundTag> parameterMap = Maps.newHashMap();
-		
 		for (Map.Entry<ResourceLocation, JsonElement> entry : objectIn.entrySet()) {
 			CompoundTag tag = null;
 			
@@ -85,10 +106,15 @@ public class SkillReloadListener extends SimpleJsonResourceReloadListener {
 				e.printStackTrace();
 			}
 			
-			parameterMap.put(entry.getKey(), tag);
+			SKILLS.get(entry.getKey()).setParams(tag);
+			PARAMETER_MAP.put(entry.getKey(), tag);
 		}
-		
-		SkillBuildEvent onBuild = new SkillBuildEvent(BUILDERS, SKILLS, LEARNABLE_SKILLS, parameterMap);
-		ModLoader.get().postEvent(onBuild);
+	}
+	
+	@OnlyIn(Dist.CLIENT)
+	public static void processServerPacket(SPDatapackSync packet) {
+		for (CompoundTag tag : packet.getTags()) {
+			SKILLS.get(new ResourceLocation(tag.getString("id"))).setParams(tag);
+		}
 	}
 }

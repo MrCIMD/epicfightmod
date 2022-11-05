@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -17,8 +16,8 @@ import net.minecraft.world.phys.Vec3;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.gameasset.Animations;
-import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.gameasset.EpicFightSkills;
+import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.skill.SkillDataManager.SkillDataKey;
@@ -32,8 +31,8 @@ public class LiechtenauerSkill extends WeaponInnateSkill {
 	private static final UUID EVENT_UUID = UUID.fromString("244c57c0-a837-11eb-bcbc-0242ac130002");
 	private static final SkillDataKey<Integer> PARRY_MOTION_COUNTER = SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
 	
-	public LiechtenauerSkill(Builder<? extends Skill> builder, CompoundTag parameters) {
-		super(builder, parameters);
+	public LiechtenauerSkill(Builder<? extends Skill> builder) {
+		super(builder);
 	}
 	
 	@Override

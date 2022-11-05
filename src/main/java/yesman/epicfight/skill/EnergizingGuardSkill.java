@@ -29,12 +29,16 @@ public class EnergizingGuardSkill extends GuardSkill {
 				.addAdvancedGuardMotion(WeaponCategories.GREATSWORD, (item, player) -> Animations.GREATSWORD_GUARD_HIT);
 	}
 	
-	protected final float superiorPenalizer;
-	protected final float damageReducer;
+	protected float superiorPenalizer;
+	protected float damageReducer;
 	
-	public EnergizingGuardSkill(GuardSkill.Builder builder, CompoundTag parameters) {
-		super(builder, parameters);
-		
+	public EnergizingGuardSkill(GuardSkill.Builder builder) {
+		super(builder);
+	}
+	
+	@Override
+	public void setParams(CompoundTag parameters) {
+		super.setParams(parameters);
 		this.superiorPenalizer = parameters.getFloat("superior_penalizer");
 		this.damageReducer = parameters.getFloat("damage_reducer");
 	}

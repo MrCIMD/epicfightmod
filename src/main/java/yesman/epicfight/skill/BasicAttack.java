@@ -3,7 +3,6 @@ package yesman.epicfight.skill;
 import java.util.List;
 import java.util.UUID;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -27,8 +26,8 @@ public class BasicAttack extends Skill {
 		return (new Builder<BasicAttack>()).setCategory(SkillCategories.BASIC_ATTACK).setActivateType(ActivateType.ONE_SHOT).setResource(Resource.NONE);
 	}
 	
-	public BasicAttack(Builder<? extends Skill> builder, CompoundTag parameters) {
-		super(builder, parameters);
+	public BasicAttack(Builder<? extends Skill> builder) {
+		super(builder);
 	}
 	
 	@Override

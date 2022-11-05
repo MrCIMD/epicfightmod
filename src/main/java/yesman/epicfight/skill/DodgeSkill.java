@@ -2,7 +2,6 @@ package yesman.epicfight.skill;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.player.Input;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -47,8 +46,8 @@ public class DodgeSkill extends Skill {
 	
 	protected final StaticAnimation[] animations;
 	
-	public DodgeSkill(Builder builder, CompoundTag parameters) {
-		super(builder, parameters);
+	public DodgeSkill(Builder builder) {
+		super(builder);
 		
 		this.animations = new StaticAnimation[builder.animations.length];
 		

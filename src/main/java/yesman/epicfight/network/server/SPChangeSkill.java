@@ -5,11 +5,11 @@ import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
-import yesman.epicfight.api.data.reloader.SkillReloadListener;
-import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
+import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
 public class SPChangeSkill {
 	private int slotIndex;
@@ -40,11 +40,11 @@ public class SPChangeSkill {
 	public static void handle(SPChangeSkill msg, Supplier<NetworkEvent.Context> ctx) {
 		ctx.get().enqueueWork(() -> {
 			Minecraft mc = Minecraft.getInstance();
-			LocalPlayerPatch playerpatch = EpicFightCapabilities.getEntityPatch(mc.player, LocalPlayerPatch.class);
+			PlayerPatch<?> playerpatch = (PlayerPatch<?>)mc.player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).orElse(null);
 			
 			if (playerpatch != null) {
 				if (!msg.skillName.equals("")) {
-					Skill skill = SkillReloadListener.getSkill(msg.skillName);
+					Skill skill = SkillManager.getSkill(msg.skillName);
 					playerpatch.getSkill(msg.slotIndex).setSkill(skill);
 					
 					if (SkillCategory.ENUM_MANAGER.get(msg.slotIndex).learnable()) {

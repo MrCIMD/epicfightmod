@@ -54,13 +54,13 @@ public class SkillBookScreen extends Screen {
 				if (playerpatch.getSkill(this.skill.getCategory()).getSkill() != null) {
 					tooltip = (button, matrixStack, mouseX, mouseY) -> {
 						this.renderTooltip(matrixStack, this.minecraft.font.split(new TranslatableComponent("gui." + EpicFightMod.MODID + ".replace",
-								new TranslatableComponent(skill.getTranslatableText()).getString()), Math.max(this.width / 2 - 43, 170)), mouseX, mouseY);
+								new TranslatableComponent(skill.getTranslationKey()).getString()), Math.max(this.width / 2 - 43, 170)), mouseX, mouseY);
 					};
 				}
 			} else {
 				tooltip = (button, matrixStack, mouseX, mouseY) -> {
 					this.renderTooltip(matrixStack, this.minecraft.font.split(new TranslatableComponent("gui." + EpicFightMod.MODID + ".require_learning",
-							new TranslatableComponent(priorSkill.getTranslatableText()).getString()), Math.max(this.width / 2 - 43, 170)), mouseX, mouseY);
+							new TranslatableComponent(priorSkill.getTranslationKey()).getString()), Math.max(this.width / 2 - 43, 170)), mouseX, mouseY);
 				};
 			}
 		}
@@ -98,7 +98,7 @@ public class SkillBookScreen extends Screen {
 		GuiComponent.blit(matrixStack, posX + 25, posY + 50, 50, 50, 0, 0, 64, 64, 64, 64);
 		RenderSystem.disableBlend();
 		
-		String translationName = this.skill.getTranslatableText();
+		String translationName = this.skill.getTranslationKey();
 		
 		String skillName = new TranslatableComponent(translationName).getString();
 		int width = this.font.width(skillName);

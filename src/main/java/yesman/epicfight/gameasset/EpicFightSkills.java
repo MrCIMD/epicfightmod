@@ -7,7 +7,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import yesman.epicfight.api.animation.property.AnimationProperty.AttackPhaseProperty;
-import yesman.epicfight.api.data.reloader.SkillReloadListener;
+import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.api.forgeevent.SkillBuildEvent;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.main.EpicFightMod;
@@ -81,36 +81,36 @@ public class EpicFightSkills {
 	public static Skill GROUND_SLAM;
 	
 	public static void registerSkills() {
-		SkillReloadListener.register(BasicAttack::new, BasicAttack.createBasicAttackBuilder(), EpicFightMod.MODID, "basic_attack");
-		SkillReloadListener.register(AirAttack::new, AirAttack.createAirAttackBuilder(), EpicFightMod.MODID, "air_attack");
-		SkillReloadListener.register(DodgeSkill::new, DodgeSkill.createDodgeBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/roll_forward"), new ResourceLocation(EpicFightMod.MODID, "biped/skill/roll_backward")), EpicFightMod.MODID, "roll");
-		SkillReloadListener.register(StepSkill::new, DodgeSkill.createDodgeBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_forward"), new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_backward"), new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_left"), new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_right")), EpicFightMod.MODID, "step");
-		SkillReloadListener.register(KnockdownWakeupSkill::new, DodgeSkill.createDodgeBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/knockdown_wakeup_left"), new ResourceLocation(EpicFightMod.MODID, "biped/skill/knockdown_wakeup_right")).setCategory(SkillCategories.KNOCKDOWN_WAKEUP), EpicFightMod.MODID, "knockdown_wakeup");
+		SkillManager.register(BasicAttack::new, BasicAttack.createBasicAttackBuilder(), EpicFightMod.MODID, "basic_attack");
+		SkillManager.register(AirAttack::new, AirAttack.createAirAttackBuilder(), EpicFightMod.MODID, "air_attack");
+		SkillManager.register(DodgeSkill::new, DodgeSkill.createDodgeBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/roll_forward"), new ResourceLocation(EpicFightMod.MODID, "biped/skill/roll_backward")), EpicFightMod.MODID, "roll");
+		SkillManager.register(StepSkill::new, DodgeSkill.createDodgeBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_forward"), new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_backward"), new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_left"), new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_right")), EpicFightMod.MODID, "step");
+		SkillManager.register(KnockdownWakeupSkill::new, DodgeSkill.createDodgeBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/knockdown_wakeup_left"), new ResourceLocation(EpicFightMod.MODID, "biped/skill/knockdown_wakeup_right")).setCategory(SkillCategories.KNOCKDOWN_WAKEUP), EpicFightMod.MODID, "knockdown_wakeup");
 		
-		SkillReloadListener.register(GuardSkill::new, GuardSkill.createGuardBuilder(), EpicFightMod.MODID, "guard");
-		SkillReloadListener.register(ActiveGuardSkill::new, ActiveGuardSkill.createActiveGuardBuilder(), EpicFightMod.MODID, "active_guard");
-		SkillReloadListener.register(EnergizingGuardSkill::new, EnergizingGuardSkill.createEnergizingGuardBuilder(), EpicFightMod.MODID, "energizing_guard");
+		SkillManager.register(GuardSkill::new, GuardSkill.createGuardBuilder(), EpicFightMod.MODID, "guard");
+		SkillManager.register(ActiveGuardSkill::new, ActiveGuardSkill.createActiveGuardBuilder(), EpicFightMod.MODID, "active_guard");
+		SkillManager.register(EnergizingGuardSkill::new, EnergizingGuardSkill.createEnergizingGuardBuilder(), EpicFightMod.MODID, "energizing_guard");
 		
-		SkillReloadListener.register(BerserkerSkill::new, PassiveSkill.createPassiveBuilder(), EpicFightMod.MODID, "berserker");
-		SkillReloadListener.register(StaminaPillagerSkill::new, PassiveSkill.createPassiveBuilder(), EpicFightMod.MODID, "stamina_pillager");
-		SkillReloadListener.register(SwordmasterSkill::new, PassiveSkill.createPassiveBuilder(), EpicFightMod.MODID, "swordmaster");
-		SkillReloadListener.register(TechnicianSkill::new, PassiveSkill.createPassiveBuilder(), EpicFightMod.MODID, "technician");
+		SkillManager.register(BerserkerSkill::new, PassiveSkill.createPassiveBuilder(), EpicFightMod.MODID, "berserker");
+		SkillManager.register(StaminaPillagerSkill::new, PassiveSkill.createPassiveBuilder(), EpicFightMod.MODID, "stamina_pillager");
+		SkillManager.register(SwordmasterSkill::new, PassiveSkill.createPassiveBuilder(), EpicFightMod.MODID, "swordmaster");
+		SkillManager.register(TechnicianSkill::new, PassiveSkill.createPassiveBuilder(), EpicFightMod.MODID, "technician");
 		
-		SkillReloadListener.register(SimpleWeaponInnateSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/sweeping_edge")), EpicFightMod.MODID, "sweeping_edge");
-		SkillReloadListener.register(SimpleWeaponInnateSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/dancing_edge")), EpicFightMod.MODID, "dancing_edge");
-		SkillReloadListener.register(SimpleWeaponInnateSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/guillotine_axe")), EpicFightMod.MODID, "guillotine_axe");
-		SkillReloadListener.register(SimpleWeaponInnateSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/spear_slash")), EpicFightMod.MODID, "slaughter_stance");
-		SkillReloadListener.register(SimpleWeaponInnateSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/spear_thrust")), EpicFightMod.MODID, "heartpiercer");
-		SkillReloadListener.register(SimpleWeaponInnateSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/giant_whirlwind")), EpicFightMod.MODID, "giant_whirlwind");
-		SkillReloadListener.register(FatalDrawSkill::new, WeaponInnateSkill.createWeaponInnateBuilder(), EpicFightMod.MODID, "fatal_draw");
-		SkillReloadListener.register(Battojutsu::new, Skill.createBuilder().setCategory(SkillCategories.WEAPON_PASSIVE).setActivateType(ActivateType.ONE_SHOT).setResource(Resource.COOLDOWN), EpicFightMod.MODID, "battojutsu");
-		SkillReloadListener.register(LethalSlicingSkill::new, WeaponInnateSkill.createWeaponInnateBuilder(), EpicFightMod.MODID, "lethal_slice");
-		SkillReloadListener.register(SimpleWeaponInnateSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/relentless_combo")), EpicFightMod.MODID, "relentless_combo");
-		SkillReloadListener.register(LiechtenauerSkill::new, WeaponInnateSkill.createWeaponInnateBuilder().setActivateType(ActivateType.DURATION_INFINITE), EpicFightMod.MODID, "liechtenauer");
-		SkillReloadListener.register(EviscerateSkill::new, WeaponInnateSkill.createWeaponInnateBuilder(), EpicFightMod.MODID, "eviscerate");
-		SkillReloadListener.register(BladeRushSkill::new, WeaponInnateSkill.createWeaponInnateBuilder().setActivateType(ActivateType.TOGGLE), EpicFightMod.MODID, "blade_rush");
-		SkillReloadListener.register(ThunderPunishment::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/thunder_punishment")), EpicFightMod.MODID, "thunder_punishment");
-		SkillReloadListener.register(ThunderPunishment::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/tsunami")), EpicFightMod.MODID, "tsunami");
+		SkillManager.register(SimpleWeaponInnateSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/sweeping_edge")), EpicFightMod.MODID, "sweeping_edge");
+		SkillManager.register(SimpleWeaponInnateSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/dancing_edge")), EpicFightMod.MODID, "dancing_edge");
+		SkillManager.register(SimpleWeaponInnateSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/guillotine_axe")), EpicFightMod.MODID, "guillotine_axe");
+		SkillManager.register(SimpleWeaponInnateSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/spear_slash")), EpicFightMod.MODID, "slaughter_stance");
+		SkillManager.register(SimpleWeaponInnateSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/spear_thrust")), EpicFightMod.MODID, "heartpiercer");
+		SkillManager.register(SimpleWeaponInnateSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/giant_whirlwind")), EpicFightMod.MODID, "giant_whirlwind");
+		SkillManager.register(FatalDrawSkill::new, WeaponInnateSkill.createWeaponInnateBuilder(), EpicFightMod.MODID, "fatal_draw");
+		SkillManager.register(Battojutsu::new, Skill.createBuilder().setCategory(SkillCategories.WEAPON_PASSIVE).setActivateType(ActivateType.ONE_SHOT).setResource(Resource.COOLDOWN), EpicFightMod.MODID, "battojutsu");
+		SkillManager.register(LethalSlicingSkill::new, WeaponInnateSkill.createWeaponInnateBuilder(), EpicFightMod.MODID, "lethal_slice");
+		SkillManager.register(SimpleWeaponInnateSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/relentless_combo")), EpicFightMod.MODID, "relentless_combo");
+		SkillManager.register(LiechtenauerSkill::new, WeaponInnateSkill.createWeaponInnateBuilder().setActivateType(ActivateType.DURATION_INFINITE), EpicFightMod.MODID, "liechtenauer");
+		SkillManager.register(EviscerateSkill::new, WeaponInnateSkill.createWeaponInnateBuilder(), EpicFightMod.MODID, "eviscerate");
+		SkillManager.register(BladeRushSkill::new, WeaponInnateSkill.createWeaponInnateBuilder().setActivateType(ActivateType.TOGGLE), EpicFightMod.MODID, "blade_rush");
+		SkillManager.register(ThunderPunishment::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/thunder_punishment")), EpicFightMod.MODID, "thunder_punishment");
+		SkillManager.register(ThunderPunishment::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/tsunami")), EpicFightMod.MODID, "tsunami");
 	}
 	
 	@SubscribeEvent

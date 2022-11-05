@@ -55,7 +55,7 @@ public class SkillEditScreen extends Screen {
 					int l = this.height / 2 - 78;
 					
 					for (Skill learnedSkill : this.skills.getLearnedSkills(skillCategory)) {
-						this.learnedSkillButtons.add(new LearnSkillButton(k, l, 117, 24, learnedSkill, new TranslatableComponent(learnedSkill.getTranslatableText()), (pressedButton) -> {
+						this.learnedSkillButtons.add(new LearnSkillButton(k, l, 117, 24, learnedSkill, new TranslatableComponent(learnedSkill.getTranslationKey()), (pressedButton) -> {
 							if (this.minecraft.player.experienceLevel >= learnedSkill.getRequiredXp() || this.minecraft.player.isCreative()) {
 								this.skills.skillContainers[learnedSkill.getCategory().universalOrdinal()].setSkill(learnedSkill);
 								EpicFightNetworkManager.sendToServer(new CPChangeSkill(learnedSkill.getCategory().universalOrdinal(), -1, learnedSkill.toString(), !this.minecraft.player.isCreative()));

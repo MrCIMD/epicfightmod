@@ -521,7 +521,7 @@ public class MobPatchReloadListener extends SimpleJsonResourceReloadListener {
 		return tagStream;
 	}
 	
-	public static int getTagSize() {
+	public static int getTagCount() {
 		return TAGMAP.size();
 	}
 	

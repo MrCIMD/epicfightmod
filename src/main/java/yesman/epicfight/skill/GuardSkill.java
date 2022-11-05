@@ -27,8 +27,8 @@ import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.gameasset.Animations;
-import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.gameasset.EpicFightSkills;
+import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.skill.SkillDataManager.SkillDataKey;
@@ -109,14 +109,18 @@ public class GuardSkill extends Skill {
 	protected final Map<WeaponCategory, BiFunction<CapabilityItem, PlayerPatch<?>, ?>> advancedGuardMotions;
 	protected final Map<WeaponCategory, BiFunction<CapabilityItem, PlayerPatch<?>, ?>> guardBreakMotions;
 	
-	protected final float penalizer;
+	protected float penalizer;
 	
-	public GuardSkill(GuardSkill.Builder builder, CompoundTag parameters) {
-		super(builder, parameters);
+	public GuardSkill(GuardSkill.Builder builder) {
+		super(builder);
 		this.guardMotions = builder.guardMotions;
 		this.advancedGuardMotions = builder.advancedGuardMotions;
 		this.guardBreakMotions = builder.guardBreakMotions;
-		
+	}
+	
+	@Override
+	public void setParams(CompoundTag parameters) {
+		super.setParams(parameters);
 		this.penalizer = parameters.getFloat("penalizer");
 	}
 	

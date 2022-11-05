@@ -9,6 +9,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -18,7 +19,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import yesman.epicfight.api.data.reloader.SkillReloadListener;
+import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
@@ -39,7 +40,7 @@ public class SkillBookItem extends Item {
 		
 		String skillName = stack.getTag().getString("skill");
 		
-		return SkillReloadListener.getSkill(skillName);
+		return SkillManager.getSkill(skillName);
 	}
 	
 	public SkillBookItem(Properties properties) {
@@ -53,20 +54,16 @@ public class SkillBookItem extends Item {
 	
 	@Override
 	public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-		
 		if (stack.getTag() != null && stack.getTag().contains("skill")) {
-			Skill skill = SkillReloadListener.getSkill(stack.getTag().getString("skill"));
-			
-			if (skill != null) {
-				tooltip.add(new TranslatableComponent(skill.getTranslatableText()).withStyle(ChatFormatting.DARK_GRAY));
-			}
+			ResourceLocation rl = new ResourceLocation(stack.getTag().getString("skill"));
+			tooltip.add(new TranslatableComponent(String.format("skill.%s.%s", rl.getNamespace(), rl.getPath())).withStyle(ChatFormatting.DARK_GRAY));
 		}
 	}
 	
 	@Override
 	public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
 		if (group == EpicFightItemGroup.ITEMS || group == CreativeModeTab.TAB_SEARCH) {
-			SkillReloadListener.getLearnableSkillNames().forEach((rl) -> {
+			SkillManager.getLearnableSkillNames().forEach((rl) -> {
 				ItemStack stack = new ItemStack(this);
 				setContainingSkill(rl.toString(), stack);
 				items.add(stack);

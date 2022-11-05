@@ -2,7 +2,6 @@ package yesman.epicfight.skill;
 
 import java.util.List;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -16,8 +15,8 @@ public class AirAttack extends Skill {
 		return new Skill.Builder<AirAttack>().setCategory(SkillCategories.AIR_ATTACK).setActivateType(ActivateType.ONE_SHOT).setResource(Resource.STAMINA);
 	}
 	
-	public AirAttack(Builder<? extends Skill> builder, CompoundTag parameter) {
-		super(builder, parameter);
+	public AirAttack(Builder<? extends Skill> builder) {
+		super(builder);
 	}
 	
 	@Override

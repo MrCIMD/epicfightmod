@@ -272,7 +272,7 @@ public class ItemCapabilityReloadListener extends SimpleJsonResourceReloadListen
 			}
 			weaponReceived = true;
 			break;
-		case MOB:
+		default:
 			break;
 		}
 		

@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 import yesman.epicfight.api.data.reloader.ItemCapabilityReloadListener;
 import yesman.epicfight.api.data.reloader.MobPatchReloadListener;
+import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.config.ConfigManager;
 import yesman.epicfight.data.loot.EpicFightLootTables;
 import yesman.epicfight.main.EpicFightMod;
@@ -47,13 +48,18 @@ public class WorldEvents {
 		if (player == null || !player.getServer().isSingleplayerOwner(player.getGameProfile())) {
 			SPDatapackSync armorPacket = new SPDatapackSync(ItemCapabilityReloadListener.armorCount(), SPDatapackSync.Type.ARMOR);
 			SPDatapackSync weaponPacket = new SPDatapackSync(ItemCapabilityReloadListener.weaponCount(), SPDatapackSync.Type.WEAPON);
-			SPDatapackSync mobPatchPacket = new SPDatapackSync(MobPatchReloadListener.getTagSize(), SPDatapackSync.Type.MOB);
+			SPDatapackSync mobPatchPacket = new SPDatapackSync(MobPatchReloadListener.getTagCount(), SPDatapackSync.Type.MOB);
+			SPDatapackSync skillParamsPacket = new SPDatapackSync(SkillManager.getParamCount(), SPDatapackSync.Type.SKILL_PARAMS);
+			
 			ItemCapabilityReloadListener.getArmorDataStream().forEach(armorPacket::write);
 			ItemCapabilityReloadListener.getWeaponDataStream().forEach(weaponPacket::write);
 			MobPatchReloadListener.getDataStream().forEach(mobPatchPacket::write);
+			SkillManager.getDataStream().forEach(skillParamsPacket::write);
+			
 			EpicFightNetworkManager.sendToClient(armorPacket, target);
 			EpicFightNetworkManager.sendToClient(weaponPacket, target);
 			EpicFightNetworkManager.sendToClient(mobPatchPacket, target);
+			EpicFightNetworkManager.sendToClient(skillParamsPacket, target);
 		}
     }
 }

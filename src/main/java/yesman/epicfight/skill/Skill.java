@@ -72,15 +72,14 @@ public abstract class Skill {
 	
 	protected final ResourceLocation registryName;
 	protected final SkillCategory category;
-	protected final float consumption;
-	protected final int maxDuration;
-	protected final int maxStackSize;
-	protected final int requiredXp;
 	protected final ActivateType activateType;
 	protected final Resource resource;
-	protected final CompoundTag parameters;
+	protected float consumption;
+	protected int maxDuration;
+	protected int maxStackSize;
+	protected int requiredXp;
 	
-	public Skill(Builder<? extends Skill> builder, CompoundTag parameters) {
+	public Skill(Builder<? extends Skill> builder) {
 		if (builder.registryName == null) {
 			Exception e = new IllegalArgumentException("No registry name is given for " + this.getClass().getCanonicalName());
 			e.printStackTrace();
@@ -89,11 +88,13 @@ public abstract class Skill {
 		this.registryName = builder.registryName;
 		this.category = builder.category;
 		this.activateType = builder.activateType;
-		this.parameters = parameters;
 		this.resource = builder.resource;
+	}
+	
+	public void setParams(CompoundTag parameters) {
 		this.consumption = parameters.getInt("consumption");
 		this.maxDuration = parameters.getInt("max_duration");
-		this.maxStackSize = parameters.contains("max_stacks") ? parameters.getInt("maxStacks") : 1;
+		this.maxStackSize = parameters.contains("max_stacks") ? parameters.getInt("max_stacks") : 1;
 		this.requiredXp = parameters.getInt("xp_requirement");
 	}
 	
@@ -255,7 +256,7 @@ public abstract class Skill {
 		return this.registryName;
 	}
 	
-	public String getTranslatableText() {
+	public String getTranslationKey() {
 		return String.format("skill.%s.%s", this.getRegistryName().getNamespace(), this.getRegistryName().getPath());
 	}
 	

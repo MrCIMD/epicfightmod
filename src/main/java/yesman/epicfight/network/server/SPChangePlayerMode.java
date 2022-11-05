@@ -38,7 +38,7 @@ public class SPChangePlayerMode {
 			Entity entity = mc.player.level.getEntity(msg.entityId);
 			
 			if (entity != null) {
-				PlayerPatch<?> playerpatch = EpicFightCapabilities.getEntityPatch(entity, PlayerPatch.class);
+				PlayerPatch<?> playerpatch = (PlayerPatch<?>)entity.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).orElse(null);
 				
 				if (playerpatch != null) {
 					playerpatch.toMode(msg.mode, false);

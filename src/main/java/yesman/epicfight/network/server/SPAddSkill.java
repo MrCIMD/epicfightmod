@@ -5,9 +5,9 @@ import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
-import yesman.epicfight.api.data.reloader.SkillReloadListener;
-import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
+import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.skill.CapabilitySkill;
 
 public class SPAddSkill {
@@ -45,11 +45,11 @@ public class SPAddSkill {
 	public static void handle(SPAddSkill msg, Supplier<NetworkEvent.Context> ctx) {
 		ctx.get().enqueueWork(() -> {
 			Minecraft mc = Minecraft.getInstance();
-			LocalPlayerPatch playerpatch = EpicFightCapabilities.getEntityPatch(mc.player, LocalPlayerPatch.class);
+			PlayerPatch<?> playerpatch = (PlayerPatch<?>)mc.player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).orElse(null);
 			CapabilitySkill skillCapability = playerpatch.getSkillCapability();
 			
 			for (String skillName : msg.skillNames) {
-				skillCapability.addLearnedSkill(SkillReloadListener.getSkill(skillName));
+				skillCapability.addLearnedSkill(SkillManager.getSkill(skillName));
 			}
 		});
 		ctx.get().setPacketHandled(true);

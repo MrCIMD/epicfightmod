@@ -2,7 +2,6 @@ package yesman.epicfight.skill;
 
 import java.util.UUID;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.network.EpicFightNetworkManager;
@@ -16,8 +15,8 @@ public class Battojutsu extends Skill {
 	public static final SkillDataKey<Boolean> SHEATH = SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
 	private static final UUID EVENT_UUID = UUID.fromString("a416c93a-42cb-11eb-b378-0242ac130002");
 	
-	public Battojutsu(Builder<? extends Skill> builder, CompoundTag parameters) {
-		super(builder, parameters);
+	public Battojutsu(Builder<? extends Skill> builder) {
+		super(builder);
 	}
 	
 	@Override

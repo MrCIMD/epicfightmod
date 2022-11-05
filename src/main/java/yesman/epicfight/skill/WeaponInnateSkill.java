@@ -9,7 +9,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
@@ -39,8 +38,8 @@ public abstract class WeaponInnateSkill extends Skill {
 	
 	protected List<Map<AttackPhaseProperty<?>, Object>> properties;
 	
-	public WeaponInnateSkill(Builder<? extends Skill> builder, CompoundTag parameters) {
-		super(builder, parameters);
+	public WeaponInnateSkill(Builder<? extends Skill> builder) {
+		super(builder);
 		this.properties = Lists.newArrayList();
 	}
 	
@@ -59,7 +58,7 @@ public abstract class WeaponInnateSkill extends Skill {
 	@Override
 	public List<Component> getTooltipOnItem(ItemStack itemStack, CapabilityItem cap, PlayerPatch<?> playerCap) {
 		List<Component> list = Lists.<Component>newArrayList();
-		String traslatableText = this.getTranslatableText();
+		String traslatableText = this.getTranslationKey();
 		
 		list.add(new TranslatableComponent(traslatableText).withStyle(ChatFormatting.WHITE).append(new TextComponent(String.format("[%.0f]", this.consumption)).withStyle(ChatFormatting.AQUA)));
 		list.add(new TranslatableComponent(traslatableText + ".tooltip").withStyle(ChatFormatting.DARK_GRAY));

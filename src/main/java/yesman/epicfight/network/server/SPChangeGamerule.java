@@ -13,6 +13,12 @@ public class SPChangeGamerule {
 	private int gameruleId;
 	private Object object;
 	
+	public SPChangeGamerule() {
+		this.gamerule = null;
+		this.gameruleId = -1;
+		this.object = 0;
+	}
+	
 	public SPChangeGamerule(SynchronizedGameRules gamerule, Object object) {
 		this.gamerule = gamerule;
 		this.gameruleId = gamerule.ordinal();

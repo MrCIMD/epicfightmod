@@ -1,13 +1,12 @@
 package yesman.epicfight.skill;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 
 public class FatalDrawSkill extends ConditionalWeaponInnateSkill {
-	public FatalDrawSkill(Builder<? extends Skill> builder, CompoundTag parameters) {
-		super(builder, parameters, (executer) -> executer.getOriginal().isSprinting() ? 1 : 0, Animations.FATAL_DRAW, Animations.FATAL_DRAW_DASH);
+	public FatalDrawSkill(Builder<? extends Skill> builder) {
+		super(builder, (executer) -> executer.getOriginal().isSprinting() ? 1 : 0, Animations.FATAL_DRAW, Animations.FATAL_DRAW_DASH);
 	}
 	
 	@Override

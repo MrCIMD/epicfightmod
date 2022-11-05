@@ -14,11 +14,15 @@ public class SwordmasterSkill extends PassiveSkill {
 	private static final UUID EVENT_UUID = UUID.fromString("a395b692-fd97-11eb-9a03-0242ac130003");
 	private static final WeaponCategories[] AVAILABLE_WEAPON_TYPES = {WeaponCategories.KATANA, WeaponCategories.LONGSWORD, WeaponCategories.SWORD, WeaponCategories.TACHI};
 	
-	private final float speedBonus;
+	private float speedBonus;
 	
-	public SwordmasterSkill(Builder<? extends Skill> builder, CompoundTag parameters) {
-		super(builder, parameters);
-		
+	public SwordmasterSkill(Builder<? extends Skill> builder) {
+		super(builder);
+	}
+	
+	@Override
+	public void setParams(CompoundTag parameters) {
+		super.setParams(parameters);
 		this.speedBonus = parameters.getFloat("speed_bonus");
 	}
 	

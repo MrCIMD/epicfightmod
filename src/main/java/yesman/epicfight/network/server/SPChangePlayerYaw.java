@@ -38,7 +38,7 @@ public class SPChangePlayerYaw {
 			Entity entity = mc.player.level.getEntity(msg.entityId);
 			
 			if (entity != null) {
-				PlayerPatch<?> playerpatch = EpicFightCapabilities.getEntityPatch(entity, PlayerPatch.class);
+				PlayerPatch<?> playerpatch = (PlayerPatch<?>)mc.player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).orElse(null);
 				
 				if (playerpatch != null) {
 					playerpatch.changeModelYRot(msg.yaw);

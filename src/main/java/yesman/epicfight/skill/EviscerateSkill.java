@@ -3,7 +3,6 @@ package yesman.epicfight.skill;
 import java.util.List;
 import java.util.UUID;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,8 +20,8 @@ public class EviscerateSkill extends WeaponInnateSkill {
 	private StaticAnimation first;
 	private StaticAnimation second;
 	
-	public EviscerateSkill(Builder<? extends Skill> builder, CompoundTag parameters) {
-		super(builder, parameters);
+	public EviscerateSkill(Builder<? extends Skill> builder) {
+		super(builder);
 		this.first = Animations.EVISCERATE_FIRST;
 		this.second = Animations.EVISCERATE_SECOND;
 	}

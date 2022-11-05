@@ -66,13 +66,13 @@ public class EpicFightNetworkManager {
 	
 	public static void registerPackets() {
 		int id = 0;
+		
 		INSTANCE.registerMessage(id++, CPExecuteSkill.class, CPExecuteSkill::toBytes, CPExecuteSkill::fromBytes, CPExecuteSkill::handle);
 		INSTANCE.registerMessage(id++, CPPlayAnimation.class, CPPlayAnimation::toBytes, CPPlayAnimation::fromBytes, CPPlayAnimation::handle);
 		INSTANCE.registerMessage(id++, CPRotateEntityModelYRot.class, CPRotateEntityModelYRot::toBytes, CPRotateEntityModelYRot::fromBytes, CPRotateEntityModelYRot::handle);
 		INSTANCE.registerMessage(id++, CPChangePlayerMode.class, CPChangePlayerMode::toBytes, CPChangePlayerMode::fromBytes, CPChangePlayerMode::handle);
 		INSTANCE.registerMessage(id++, CPSetPlayerTarget.class, CPSetPlayerTarget::toBytes, CPSetPlayerTarget::fromBytes, CPSetPlayerTarget::handle);
 		INSTANCE.registerMessage(id++, CPChangeSkill.class, CPChangeSkill::toBytes, CPChangeSkill::fromBytes, CPChangeSkill::handle);
-		
 		INSTANCE.registerMessage(id++, SPChangeSkill.class, SPChangeSkill::toBytes, SPChangeSkill::fromBytes, SPChangeSkill::handle);
 		INSTANCE.registerMessage(id++, SPSkillExecutionFeedback.class, SPSkillExecutionFeedback::toBytes, SPSkillExecutionFeedback::fromBytes, SPSkillExecutionFeedback::handle);
 		INSTANCE.registerMessage(id++, SPSpawnData.class, SPSpawnData::toBytes, SPSpawnData::fromBytes, SPSpawnData::handle);

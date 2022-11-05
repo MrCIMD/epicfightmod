@@ -6,7 +6,6 @@ import java.util.function.Function;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -22,8 +21,8 @@ public abstract class ConditionalWeaponInnateSkill extends WeaponInnateSkill {
 	protected final StaticAnimation[] attackAnimations;
 	protected final Function<ServerPlayerPatch, Integer> selector;
 	
-	public ConditionalWeaponInnateSkill(Builder<? extends Skill> builder, CompoundTag parameters, Function<ServerPlayerPatch, Integer> func, StaticAnimation... animations) {
-		super(builder, parameters);
+	public ConditionalWeaponInnateSkill(Builder<? extends Skill> builder, Function<ServerPlayerPatch, Integer> func, StaticAnimation... animations) {
+		super(builder);
 		this.properties = Lists.<Map<AttackPhaseProperty<?>, Object>>newArrayList();
 		this.attackAnimations = animations;
 		this.selector = func;

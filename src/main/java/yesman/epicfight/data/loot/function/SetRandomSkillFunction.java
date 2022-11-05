@@ -9,7 +9,7 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
-import yesman.epicfight.api.data.reloader.SkillReloadListener;
+import yesman.epicfight.api.data.reloader.SkillManager;
 
 public class SetRandomSkillFunction implements LootItemFunction {
 	@Override
@@ -19,7 +19,7 @@ public class SetRandomSkillFunction implements LootItemFunction {
 	
 	@Override
 	public ItemStack apply(ItemStack t, LootContext u) {
-		t.getOrCreateTag().putString("skill", SkillReloadListener.getRandomLearnableSkillName());
+		t.getOrCreateTag().putString("skill", SkillManager.getRandomLearnableSkillName());
 		return t;
 	}
 	

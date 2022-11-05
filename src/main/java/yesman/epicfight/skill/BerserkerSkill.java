@@ -17,12 +17,16 @@ import yesman.epicfight.world.entity.eventlistener.PlayerEventListener.EventType
 public class BerserkerSkill extends PassiveSkill {
 	private static final UUID EVENT_UUID = UUID.fromString("fdc09ee8-fcfc-11eb-9a03-0242ac130003");
 	
-	private final float speedBonus;
-	private final float damageBonus;
+	private float speedBonus;
+	private float damageBonus;
 	
-	public BerserkerSkill(Builder<? extends Skill> builder, CompoundTag parameters) {
-		super(builder, parameters);
-		
+	public BerserkerSkill(Builder<? extends Skill> builder) {
+		super(builder);
+	}
+	
+	@Override
+	public void setParams(CompoundTag parameters) {
+		super.setParams(parameters);
 		this.speedBonus = parameters.getFloat("speed_bonus");
 		this.damageBonus = parameters.getFloat("damage_bonus");
 	}
