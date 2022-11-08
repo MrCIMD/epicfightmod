@@ -56,9 +56,13 @@ public class StaticAnimation extends DynamicAnimation {
 		this.namespaceId = animationManager.getNamespaceHash();
 		this.animationId = animationManager.getIdCounter();
 		
+		int colon = path.indexOf(':');
+		String modid = (colon == -1) ? animationManager.getModid() : path.substring(0, colon);
+		String folderPath = (colon == -1) ? path : path.substring(colon + 1, path.length());
+		
 		animationManager.getIdMap().put(this.animationId, this);
-		this.resourceLocation = new ResourceLocation(animationManager.getModid(), "animmodels/animations/" + path);
-		animationManager.getNameMap().put(new ResourceLocation(animationManager.getModid(), path), this);
+		this.resourceLocation = new ResourceLocation(modid, "animmodels/animations/" + folderPath);
+		animationManager.getNameMap().put(new ResourceLocation(animationManager.getModid(), folderPath), this);
 		this.model = model;
 	}
 	
