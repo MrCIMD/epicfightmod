@@ -13,7 +13,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.client.animation.Layer;
 import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.ClientModels;
+import yesman.epicfight.api.client.model.Models;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.client.renderer.EpicFightRenderTypes;
@@ -26,7 +26,7 @@ public class WitherGhostCloneRenderer extends PatchedEntityRenderer<WitherGhostC
 	@Override
 	public void render(WitherGhostClone entityIn, WitherGhostPatch entitypatch, NoopLivingEntityRenderer<WitherGhostClone> renderer, MultiBufferSource buffer, PoseStack poseStack, int packedLight, float partialTicks) {
 		RenderType renderType = EpicFightRenderTypes.triangles(RenderType.entityTranslucent(PWitherRenderer.WITHER_INVULNERABLE_LOCATION));
-		ClientModel model = entitypatch.getEntityModel(ClientModels.LOGICAL_CLIENT);
+		ClientModel model = entitypatch.getEntityModel(Models.LOGICAL_CLIENT);
 		Armature armature = model.getArmature();
 		float tranparency = Mth.sin((entityIn.tickCount + partialTicks) / 40.0F * 3.1415F) * 0.6F;
 		

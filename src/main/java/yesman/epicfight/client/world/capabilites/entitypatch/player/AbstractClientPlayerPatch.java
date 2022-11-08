@@ -31,11 +31,11 @@ import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.ClientAnimator;
 import yesman.epicfight.api.client.animation.Layer;
 import yesman.epicfight.api.client.forgeevent.UpdatePlayerMotionEvent;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
-import yesman.epicfight.gameasset.Models;
+import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
@@ -205,7 +205,7 @@ public class AbstractClientPlayerPatch<T extends AbstractClientPlayer> extends P
 	}
 	
 	@Override
-	public <M extends Model> M getEntityModel(Models<M> modelDB) {
+	public <M extends ModelOld> M getEntityModel(Armatures<M> modelDB) {
 		return this.original.getModelName().equals("slim") ? modelDB.bipedAlex : modelDB.biped;
 	}
 	

@@ -17,7 +17,7 @@ import yesman.epicfight.api.animation.Keyframe;
 import yesman.epicfight.api.animation.Pose;
 import yesman.epicfight.api.animation.TransformSheet;
 import yesman.epicfight.api.animation.types.ActionAnimation;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.client.renderer.EpicFightRenderTypes;
@@ -29,7 +29,7 @@ public class EnderDragonDynamicActionAnimation extends ActionAnimation implement
 	private final IKInfo[] ikInfos;
 	private Map<String, TransformSheet> tipPointTransform;
 	
-	public EnderDragonDynamicActionAnimation(float convertTime, String path, Model model, IKInfo[] ikInfos) {
+	public EnderDragonDynamicActionAnimation(float convertTime, String path, ModelOld model, IKInfo[] ikInfos) {
 		super(convertTime, path, model);
 		this.ikInfos = ikInfos;
 	}

@@ -17,7 +17,7 @@ import yesman.epicfight.api.animation.Keyframe;
 import yesman.epicfight.api.animation.Pose;
 import yesman.epicfight.api.animation.TransformSheet;
 import yesman.epicfight.api.animation.types.StaticAnimation;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.math.FABRIK;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
@@ -30,7 +30,7 @@ public class EnderDraonWalkAnimation extends StaticAnimation implements Procedur
 	private final IKInfo[] ikInfos;
 	private Map<String, TransformSheet> tipPointTransform;
 	
-	public EnderDraonWalkAnimation(float convertTime, String path, Model model, IKInfo[] ikInfos) {
+	public EnderDraonWalkAnimation(float convertTime, String path, ModelOld model, IKInfo[] ikInfos) {
 		super(convertTime, true, path, model);
 		this.ikInfos = ikInfos;
 	}

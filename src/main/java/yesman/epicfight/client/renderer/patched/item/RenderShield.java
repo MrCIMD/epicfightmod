@@ -11,7 +11,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.ClientModels;
+import yesman.epicfight.api.client.model.Models;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
@@ -26,7 +26,7 @@ public class RenderShield extends RenderItemBase {
 	public void renderItemInHand(ItemStack stack, LivingEntityPatch<?> entitypatch, InteractionHand hand, MultiBufferSource buffer, PoseStack poseStack, int packedLight) {
 		OpenMatrix4f modelMatrix = this.getCorrectionMatrix(stack, entitypatch, hand);
 		String holdingHand = (hand == InteractionHand.MAIN_HAND) ? "Tool_R" : "Tool_L";
-		OpenMatrix4f jointTransform = entitypatch.getEntityModel(ClientModels.LOGICAL_CLIENT).getArmature().searchJointByName(holdingHand).getAnimatedTransform();
+		OpenMatrix4f jointTransform = entitypatch.getEntityModel(Models.LOGICAL_CLIENT).getArmature().searchJointByName(holdingHand).getAnimatedTransform();
 		modelMatrix.mulFront(jointTransform);
 		
 		poseStack.pushPose();

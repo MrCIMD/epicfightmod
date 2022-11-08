@@ -16,15 +16,15 @@ import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.api.utils.math.Vec4f;
 
 @OnlyIn(Dist.CLIENT)
-public class Mesh {
+public class AnimatedModel {
 	final float[] positions;
 	final float[] uvs;
 	final float[] noramls;
 	final float[] weights;
 	final int totalVertices;
-	final Map<String, MeshPart> parts;
+	final Map<String, ModelPart> parts;
 	
-	public Mesh(float[] positions, float[] noramls, float[] uvs, int[] animationIndices, float[] weights, int[] vCounts, Map<String, MeshPart> parts) {
+	public AnimatedModel(float[] positions, float[] noramls, float[] uvs, int[] animationIndices, float[] weights, int[] vCounts, Map<String, ModelPart> parts) {
 		this.positions = positions;
 		this.noramls = noramls;
 		this.uvs = uvs;
@@ -33,14 +33,14 @@ public class Mesh {
 		
 		int totalV = 0;
 		
-		for (MeshPart meshpart : parts.values()) {
+		for (ModelPart meshpart : parts.values()) {
 			totalV += meshpart.getVertices().size();
 		}
 		
 		this.totalVertices = totalV;
 	}
 	
-	public MeshPart getPart(String part) {
+	public ModelPart getPart(String part) {
 		return this.parts.get(part);
 	}
 	
@@ -81,7 +81,7 @@ public class Mesh {
 		int[] vIndices;
 		int i = 0;
 		
-		for (MeshPart part : this.parts.values()) {
+		for (ModelPart part : this.parts.values()) {
 			for (VertexIndicator vertexIndicator : part.getVertices()) {
 				indices[i * 3] = vertexIndicator.position;
 				indices[i * 3 + 1] = vertexIndicator.uv;

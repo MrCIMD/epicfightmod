@@ -6,11 +6,11 @@ import yesman.epicfight.api.animation.JointTransform;
 import yesman.epicfight.api.animation.Keyframe;
 import yesman.epicfight.api.animation.Pose;
 import yesman.epicfight.api.animation.TransformSheet;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class HitAnimation extends MainFrameAnimation {
-	public HitAnimation(float convertTime, String path, Model model) {
+	public HitAnimation(float convertTime, String path, ModelOld model) {
 		super(convertTime, path, model);
 		
 		this.stateSpectrumBlueprint.clear()

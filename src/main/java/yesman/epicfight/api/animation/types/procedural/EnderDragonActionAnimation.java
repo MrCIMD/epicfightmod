@@ -18,7 +18,7 @@ import yesman.epicfight.api.animation.Pose;
 import yesman.epicfight.api.animation.TransformSheet;
 import yesman.epicfight.api.animation.property.AnimationProperty.ActionAnimationProperty;
 import yesman.epicfight.api.animation.types.ActionAnimation;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.math.FABRIK;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
@@ -31,7 +31,7 @@ public class EnderDragonActionAnimation extends ActionAnimation implements Proce
 	private final IKInfo[] ikInfos;
 	private Map<String, TransformSheet> tipPointTransforms;
 	
-	public EnderDragonActionAnimation(float convertTime, String path, Model model, IKInfo[] ikInfos) {
+	public EnderDragonActionAnimation(float convertTime, String path, ModelOld model, IKInfo[] ikInfos) {
 		super(convertTime, path, model);
 		this.ikInfos = ikInfos;
 	}

@@ -5,14 +5,14 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.client.animation.ClientAnimationProperties;
 import yesman.epicfight.api.client.animation.Layer;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.ActionEvent;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener.EventType;
 
 public class MainFrameAnimation extends StaticAnimation {
-	public MainFrameAnimation(float convertTime, String path, Model model) {
+	public MainFrameAnimation(float convertTime, String path, ModelOld model) {
 		super(convertTime, false, path, model);
 	}
 	

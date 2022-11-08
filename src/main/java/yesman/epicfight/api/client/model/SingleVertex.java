@@ -75,7 +75,7 @@ public class SingleVertex {
 		}
 	}
 	
-	public static Mesh loadVertexInformation(List<SingleVertex> vertices, Map<String, List<Integer>> indices) {
+	public static AnimatedModel loadVertexInformation(List<SingleVertex> vertices, Map<String, List<Integer>> indices) {
 		List<Float> positions = Lists.<Float>newArrayList();
 		List<Float> normals = Lists.<Float>newArrayList();
 		List<Float> texCoords = Lists.<Float>newArrayList();
@@ -131,13 +131,13 @@ public class SingleVertex {
 		float[] jointWeightList = ArrayUtils.toPrimitive(jointWeights.toArray(new Float[0]));
 		int[] affectJointCounts = ArrayUtils.toPrimitive(affectCountList.toArray(new Integer[0]));
 		
-		Map<String, MeshPart> meshMap = Maps.newHashMap();
+		Map<String, ModelPart> meshMap = Maps.newHashMap();
 		
 		for (Map.Entry<String, List<Integer>> e : indices.entrySet()) {
-			meshMap.put(e.getKey(), new MeshPart(VertexIndicator.create(ArrayUtils.toPrimitive(e.getValue().toArray(new Integer[0])), affectJointCounts, animationIndexList)));
+			meshMap.put(e.getKey(), new ModelPart(VertexIndicator.create(ArrayUtils.toPrimitive(e.getValue().toArray(new Integer[0])), affectJointCounts, animationIndexList)));
 		}
 		
-		return new Mesh(positionList, normalList, texCoordList, animationIndexList, jointWeightList, affectJointCounts, meshMap);
+		return new AnimatedModel(positionList, normalList, texCoordList, animationIndexList, jointWeightList, affectJointCounts, meshMap);
 	}
 	
 	public enum State {

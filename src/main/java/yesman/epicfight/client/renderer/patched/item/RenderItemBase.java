@@ -11,7 +11,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.ClientModels;
+import yesman.epicfight.api.client.model.Models;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
@@ -38,7 +38,7 @@ public class RenderItemBase {
 		OpenMatrix4f modelMatrix = this.getCorrectionMatrix(stack, entitypatch, hand);
 		boolean isInMainhand = (hand == InteractionHand.MAIN_HAND);
 		String holdingHand = isInMainhand ? "Tool_R" : "Tool_L";
-		OpenMatrix4f jointTransform = entitypatch.getEntityModel(ClientModels.LOGICAL_CLIENT).getArmature().searchJointByName(holdingHand).getAnimatedTransform();
+		OpenMatrix4f jointTransform = entitypatch.getEntityModel(Models.LOGICAL_CLIENT).getArmature().searchJointByName(holdingHand).getAnimatedTransform();
 		modelMatrix.mulFront(jointTransform);
 		
 		poseStack.pushPose();
@@ -50,7 +50,7 @@ public class RenderItemBase {
 	
 	public void renderUnusableItemMount(ItemStack stack, LivingEntityPatch<?> entitypatch, MultiBufferSource buffer, PoseStack poseStack, int packedLight) {
 		OpenMatrix4f modelMatrix = new OpenMatrix4f(BACK_COORECTION);
-		modelMatrix.mulFront(entitypatch.getEntityModel(ClientModels.LOGICAL_CLIENT).getArmature().searchJointById(0).getAnimatedTransform());
+		modelMatrix.mulFront(entitypatch.getEntityModel(Models.LOGICAL_CLIENT).getArmature().searchJointById(0).getAnimatedTransform());
 		
 		poseStack.pushPose();
 		this.mulPoseStack(poseStack, modelMatrix);

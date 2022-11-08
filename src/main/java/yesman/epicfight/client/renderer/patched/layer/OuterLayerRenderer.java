@@ -12,7 +12,7 @@ import net.minecraft.world.entity.monster.Drowned;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.ClientModels;
+import yesman.epicfight.api.client.model.Models;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.client.renderer.EpicFightRenderTypes;
 import yesman.epicfight.world.capabilities.entitypatch.mob.DrownedPatch;
@@ -24,7 +24,7 @@ public class OuterLayerRenderer extends PatchedLayer<Drowned, DrownedPatch, Drow
 	@Override
 	public void renderLayer(DrownedPatch entitypatch, Drowned entityliving, DrownedOuterLayer<Drowned> originalRenderer, PoseStack matrixStackIn, MultiBufferSource buffer, int packedLightIn, OpenMatrix4f[] poses, float netYawHead, float pitchHead, float partialTicks) {
 		
-		ClientModel model = ClientModels.LOGICAL_CLIENT.drownedOuterLayer;
+		ClientModel model = Models.LOGICAL_CLIENT.drownedOuterLayer;
 		
 		model.drawAnimatedModel(matrixStackIn, buffer.getBuffer(EpicFightRenderTypes.triangles(RenderType.entityCutoutNoCull(DROWNED_OUTER_LAYER))), packedLightIn, 1.0F, 1.0F, 1.0F, 1.0F, LivingEntityRenderer.getOverlayCoords(entityliving, 0.0F), poses);
 	}

@@ -4,7 +4,7 @@ import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.entity.EntityDimensions;
 import yesman.epicfight.api.animation.property.AnimationProperty.ActionAnimationProperty;
 import yesman.epicfight.api.animation.property.AnimationProperty.StaticAnimationProperty;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.network.EpicFightNetworkManager;
@@ -12,11 +12,11 @@ import yesman.epicfight.network.client.CPRotateEntityModelYRot;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class DodgeAnimation extends ActionAnimation {
-	public DodgeAnimation(float convertTime, String path, float width, float height, Model model) {
+	public DodgeAnimation(float convertTime, String path, float width, float height, ModelOld model) {
 		this(convertTime, 0.0F, path, width, height, model);
 	}
 	
-	public DodgeAnimation(float convertTime, float delayTime, String path, float width, float height, Model model) {
+	public DodgeAnimation(float convertTime, float delayTime, String path, float width, float height, ModelOld model) {
 		super(convertTime, delayTime, path, model);
 		
 		this.stateSpectrumBlueprint.clear()

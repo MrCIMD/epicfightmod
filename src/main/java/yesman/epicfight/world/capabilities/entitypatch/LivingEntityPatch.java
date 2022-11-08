@@ -40,12 +40,12 @@ import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.ClientAnimator;
 import yesman.epicfight.api.collider.Collider;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.AttackResult.ResultType;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
-import yesman.epicfight.gameasset.Models;
+import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.network.EpicFightNetworkManager;
 import yesman.epicfight.network.server.SPPlayAnimation;
@@ -96,7 +96,7 @@ public abstract class LivingEntityPatch<T extends LivingEntity> extends EntityPa
 	@OnlyIn(Dist.CLIENT)
 	public abstract void initAnimator(ClientAnimator clientAnimator);
 	public abstract void updateMotion(boolean considerInaction);
-	public abstract <M extends Model> M getEntityModel(Models<M> modelDB);
+	public abstract <M extends ModelOld> M getEntityModel(Armatures<M> modelDB);
 	
 	protected void initAttributes() {
 		this.original.getAttribute(EpicFightAttributes.WEIGHT.get()).setBaseValue(this.original.getAttribute(Attributes.MAX_HEALTH).getBaseValue() * 2.0D);

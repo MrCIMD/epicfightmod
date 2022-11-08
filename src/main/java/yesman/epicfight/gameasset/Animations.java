@@ -78,10 +78,10 @@ import yesman.epicfight.api.animation.types.procedural.EnderDraonWalkAnimation;
 import yesman.epicfight.api.animation.types.procedural.IKInfo;
 import yesman.epicfight.api.client.animation.ClientAnimationProperties;
 import yesman.epicfight.api.client.animation.Layer;
-import yesman.epicfight.api.client.model.ClientModels;
+import yesman.epicfight.api.client.model.Models;
 import yesman.epicfight.api.collider.OBBCollider;
 import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.HitEntityList;
 import yesman.epicfight.api.utils.HitEntityList.Priority;
 import yesman.epicfight.api.utils.math.MathUtils;
@@ -392,18 +392,18 @@ public class Animations {
 	}
 	
 	private static void build() {
-		Models<?> models = FMLEnvironment.dist == Dist.CLIENT ? ClientModels.LOGICAL_CLIENT : Models.LOGICAL_SERVER;
-		Model biped = models.biped;
-		Model crepper = models.creeper;
-		Model enderman = models.enderman;
-		Model spider = models.spider;
-		Model hoglin = models.hoglin;
-		Model iron_golem = models.ironGolem;
-		Model piglin = models.piglin;
-		Model ravager = models.ravager;
-		Model vex = models.vex;
-		Model dragon = models.dragon;
-		Model wither = models.wither;
+		Armatures<?> models = FMLEnvironment.dist == Dist.CLIENT ? Models.LOGICAL_CLIENT : Armatures.LOGICAL_SERVER;
+		ModelOld biped = models.biped;
+		ModelOld crepper = models.creeper;
+		ModelOld enderman = models.enderman;
+		ModelOld spider = models.spider;
+		ModelOld hoglin = models.hoglin;
+		ModelOld iron_golem = models.ironGolem;
+		ModelOld piglin = models.piglin;
+		ModelOld ravager = models.ravager;
+		ModelOld vex = models.vex;
+		ModelOld dragon = models.dragon;
+		ModelOld wither = models.wither;
 		
 		BIPED_IDLE = new StaticAnimation(true, "biped/living/idle", biped);
 		BIPED_WALK = new MovementAnimation(true, "biped/living/walk", biped);

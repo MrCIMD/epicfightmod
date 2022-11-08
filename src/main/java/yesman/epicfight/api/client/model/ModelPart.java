@@ -6,11 +6,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class MeshPart {
+public class ModelPart {
 	private final List<VertexIndicator> vertices;
 	public boolean hidden;
 	
-	public MeshPart(List<VertexIndicator> vertices) {
+	public ModelPart(List<VertexIndicator> vertices) {
 		this.vertices = vertices;
 	}
 	

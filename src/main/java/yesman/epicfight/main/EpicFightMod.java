@@ -30,7 +30,7 @@ import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.animation.ServerAnimator;
 import yesman.epicfight.api.client.animation.ClientAnimator;
-import yesman.epicfight.api.client.model.ClientModels;
+import yesman.epicfight.api.client.model.Models;
 import yesman.epicfight.api.data.reloader.ItemCapabilityReloadListener;
 import yesman.epicfight.api.data.reloader.MobPatchReloadListener;
 import yesman.epicfight.api.data.reloader.SkillManager;
@@ -47,7 +47,7 @@ import yesman.epicfight.events.ModBusEvents;
 import yesman.epicfight.events.PlayerEvents;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.EpicFightSkills;
-import yesman.epicfight.gameasset.Models;
+import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.network.EpicFightDataSerializers;
 import yesman.epicfight.network.EpicFightNetworkManager;
 import yesman.epicfight.particle.EpicFightParticles;
@@ -85,7 +85,7 @@ public class EpicFightMod {
 	
 	public final AnimationManager animationManager;
 	private Function<LivingEntityPatch<?>, Animator> animatorProvider;
-	private Models<?> model;
+	private Armatures<?> model;
 	
     public EpicFightMod() {
     	this.animationManager = new AnimationManager();
@@ -132,28 +132,28 @@ public class EpicFightMod {
     	
     	CLIENT_INGAME_CONFIG = new ConfigurationIngame();
         this.animatorProvider = ClientAnimator::getAnimator;
-        this.model = ClientModels.LOGICAL_CLIENT;
+        this.model = Models.LOGICAL_CLIENT;
     	
 		EntityPatchProvider.registerEntityPatchesClient();
 		ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
-		ClientModels.LOGICAL_CLIENT.loadModels(resourceManager);
-		ClientModels.LOGICAL_CLIENT.loadArmatures(resourceManager);
-		Models.LOGICAL_SERVER.loadArmatures(resourceManager);
+		Models.LOGICAL_CLIENT.loadModels(resourceManager);
+		Models.LOGICAL_CLIENT.loadArmatures(resourceManager);
+		Armatures.LOGICAL_SERVER.loadArmatures(resourceManager);
 		this.animationManager.loadAnimationsInit(resourceManager);
 		
 		Animations.buildClient();
 		EpicFightKeyMappings.registerKeys();
 		EpicFightItemProperties.registerItemProperties();
 		
-        ((ReloadableResourceManager)resourceManager).registerReloadListener(ClientModels.LOGICAL_CLIENT);
+        ((ReloadableResourceManager)resourceManager).registerReloadListener(Models.LOGICAL_CLIENT);
         ((ReloadableResourceManager)resourceManager).registerReloadListener(this.animationManager);
     }
 	
 	private void doServerStuff(final FMLDedicatedServerSetupEvent event) {
-		Models.LOGICAL_SERVER.loadArmatures(null);
+		Armatures.LOGICAL_SERVER.loadArmatures(null);
 		this.animationManager.loadAnimationsInit(null);
 		this.animatorProvider = ServerAnimator::getAnimator;
-		this.model = Models.LOGICAL_SERVER;
+		this.model = Armatures.LOGICAL_SERVER;
 	}
 	
 	private void doCommonStuff(final FMLCommonSetupEvent event) {
@@ -181,7 +181,7 @@ public class EpicFightMod {
 		return EpicFightMod.getInstance().animatorProvider.apply(entitypatch);
 	}
 	
-	public static Models<?> getModelContainer(boolean isLogicalClient) {
+	public static Armatures<?> getModelContainer(boolean isLogicalClient) {
 		return EpicFightMod.getInstance().model.getModels(isLogicalClient);
 	}
 	

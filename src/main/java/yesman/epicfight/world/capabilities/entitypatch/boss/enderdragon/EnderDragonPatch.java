@@ -31,14 +31,14 @@ import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.animation.types.procedural.IKInfo;
 import yesman.epicfight.api.animation.types.procedural.TipPointAnimation;
 import yesman.epicfight.api.client.animation.ClientAnimator;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.EpicFightSounds;
-import yesman.epicfight.gameasset.Models;
+import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.world.capabilities.entitypatch.MobPatch;
 import yesman.epicfight.world.damagesource.StunType;
 import yesman.epicfight.world.entity.ai.attribute.EpicFightAttributes;
@@ -286,7 +286,7 @@ public class EnderDragonPatch extends MobPatch<EnderDragon> {
 	}
 	
 	@Override
-	public <M extends Model> M getEntityModel(Models<M> modelDB) {
+	public <M extends ModelOld> M getEntityModel(Armatures<M> modelDB) {
 		return modelDB.dragon;
 	}
 	

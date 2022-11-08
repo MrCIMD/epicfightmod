@@ -37,8 +37,8 @@ import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.AttackAnimation.Phase;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.Mesh;
-import yesman.epicfight.api.client.model.MeshPart;
+import yesman.epicfight.api.client.model.AnimatedModel;
+import yesman.epicfight.api.client.model.ModelPart;
 import yesman.epicfight.api.client.model.VertexIndicator;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
@@ -111,7 +111,7 @@ public class JsonModelLoader {
 	}
 	
 	@OnlyIn(Dist.CLIENT)
-	public Mesh getMesh() {
+	public AnimatedModel getMesh() {
 		JsonObject obj = this.rootJson.getAsJsonObject("vertices");
 		JsonObject positions = obj.getAsJsonObject("positions");
 		JsonObject normals = obj.getAsJsonObject("normals");
@@ -149,19 +149,19 @@ public class JsonModelLoader {
 		float[] weightArray = toFloatArray(weights.get("array").getAsJsonArray());
 		int[] vcountArray = toIntArray(vcounts.get("array").getAsJsonArray());
 		
-		Map<String, MeshPart> meshMap = Maps.newHashMap();
+		Map<String, ModelPart> meshMap = Maps.newHashMap();
 		
 		if (parts != null) {
 			for (Map.Entry<String, JsonElement> e : parts.entrySet()) {
-				meshMap.put(e.getKey(), new MeshPart(VertexIndicator.create(toIntArray(e.getValue().getAsJsonObject().get("array").getAsJsonArray()), vcountArray, animationIndexArray)));
+				meshMap.put(e.getKey(), new ModelPart(VertexIndicator.create(toIntArray(e.getValue().getAsJsonObject().get("array").getAsJsonArray()), vcountArray, animationIndexArray)));
 			}
 		}
 		
 		if (indices != null) {
-			meshMap.put("noGroups", new MeshPart(VertexIndicator.create(toIntArray(indices.get("array").getAsJsonArray()), vcountArray, animationIndexArray)));
+			meshMap.put("noGroups", new ModelPart(VertexIndicator.create(toIntArray(indices.get("array").getAsJsonArray()), vcountArray, animationIndexArray)));
 		}
 		
-		return new Mesh(positionArray, normalArray, uvArray, animationIndexArray, weightArray, vcountArray, meshMap);
+		return new AnimatedModel(positionArray, normalArray, uvArray, animationIndexArray, weightArray, vcountArray, meshMap);
 	}
 	
 	public Armature getArmature() {
@@ -170,7 +170,7 @@ public class JsonModelLoader {
 		JsonArray nameAsVertexGroups = obj.getAsJsonArray("joints");
 		Map<String, Joint> jointMap = Maps.newHashMap();
 		Joint joint = this.getJoint(hierarchy, nameAsVertexGroups, jointMap, true);
-		joint.setInversedModelTransform(new OpenMatrix4f());
+		joint.initShortcut(new OpenMatrix4f());
 		return new Armature(jointMap.size(), joint, jointMap);
 	}
 	

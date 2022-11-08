@@ -9,16 +9,16 @@ import yesman.epicfight.api.animation.property.AnimationProperty.ActionAnimation
 import yesman.epicfight.api.animation.property.AnimationProperty.AttackAnimationProperty;
 import yesman.epicfight.api.animation.property.AnimationProperty.AttackPhaseProperty;
 import yesman.epicfight.api.collider.Collider;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class AirSlashAnimation extends AttackAnimation {
-	public AirSlashAnimation(float convertTime, float antic, float contact, float recovery, @Nullable Collider collider, String index, String path, Model model) {
+	public AirSlashAnimation(float convertTime, float antic, float contact, float recovery, @Nullable Collider collider, String index, String path, ModelOld model) {
 		this(convertTime, antic, antic, contact, recovery, true, collider, index, path, model);
 	}
 	
-	public AirSlashAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, boolean directional, @Nullable Collider collider, String index, String path, Model model) {
+	public AirSlashAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, boolean directional, @Nullable Collider collider, String index, String path, ModelOld model) {
 		super(convertTime, antic, preDelay, contact, recovery, collider, index, path, model);
 		
 		if (directional) {

@@ -22,7 +22,7 @@ import yesman.epicfight.api.client.animation.JointMask.BindModifier;
 import yesman.epicfight.api.client.animation.Layer;
 import yesman.epicfight.api.client.animation.Layer.LayerType;
 import yesman.epicfight.api.model.JsonModelLoader;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.config.ConfigurationIngame;
 import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
@@ -31,7 +31,7 @@ public class StaticAnimation extends DynamicAnimation {
 	protected final Map<AnimationProperty<?>, Object> properties = Maps.newHashMap();
 	protected final StateSpectrum.Blueprint stateSpectrumBlueprint = new StateSpectrum.Blueprint();
 	protected final ResourceLocation resourceLocation;
-	protected final Model model;
+	protected final ModelOld model;
 	protected final int namespaceId;
 	protected final int animationId;
 	
@@ -45,11 +45,11 @@ public class StaticAnimation extends DynamicAnimation {
 		this.model = null;
 	}
 	
-	public StaticAnimation(boolean repeatPlay, String path, Model model) {
+	public StaticAnimation(boolean repeatPlay, String path, ModelOld model) {
 		this(ConfigurationIngame.GENERAL_ANIMATION_CONVERT_TIME, repeatPlay, path, model);
 	}
 	
-	public StaticAnimation(float convertTime, boolean isRepeat, String path, Model model) {
+	public StaticAnimation(float convertTime, boolean isRepeat, String path, ModelOld model) {
 		super(convertTime, isRepeat);
 		
 		AnimationManager animationManager = EpicFightMod.getInstance().animationManager;
@@ -66,7 +66,7 @@ public class StaticAnimation extends DynamicAnimation {
 		this.model = model;
 	}
 	
-	public StaticAnimation(float convertTime, boolean repeatPlay, String path, Model model, boolean notRegisteredInAnimationManager) {
+	public StaticAnimation(float convertTime, boolean repeatPlay, String path, ModelOld model, boolean notRegisteredInAnimationManager) {
 		super(convertTime, repeatPlay);
 		this.namespaceId = -1;
 		this.animationId = -1;
@@ -187,7 +187,7 @@ public class StaticAnimation extends DynamicAnimation {
 		return this.resourceLocation;
 	}
 	
-	public Model getModel() {
+	public ModelOld getModel() {
 		return this.model;
 	}
 	

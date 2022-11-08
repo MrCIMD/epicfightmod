@@ -14,7 +14,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.ClientModels;
+import yesman.epicfight.api.client.model.Models;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
@@ -87,7 +87,7 @@ public class TsunamiSwirlParticle extends CustomModelParticle {
 	public static class Provider implements ParticleProvider<SimpleParticleType> {
 		@Override
 		public Particle createParticle(SimpleParticleType typeIn, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-			return new TsunamiSwirlParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, ClientModels.LOGICAL_CLIENT.tsunamiSwirl);
+			return new TsunamiSwirlParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, Models.LOGICAL_CLIENT.tsunamiSwirl);
 		}
 	}
 }

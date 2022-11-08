@@ -20,20 +20,20 @@ import yesman.epicfight.api.animation.Pose;
 import yesman.epicfight.api.animation.TransformSheet;
 import yesman.epicfight.api.animation.property.AnimationProperty.ActionAnimationCoordSetter;
 import yesman.epicfight.api.animation.property.AnimationProperty.ActionAnimationProperty;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.api.utils.math.Vec4f;
-import yesman.epicfight.gameasset.Models;
+import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class ActionAnimation extends MainFrameAnimation {
 	
-	public ActionAnimation(float convertTime, String path, Model model) {
+	public ActionAnimation(float convertTime, String path, ModelOld model) {
 		this(convertTime, Float.MAX_VALUE, path, model);
 	}
 	
-	public ActionAnimation(float convertTime, float postDelay, String path, Model model) {
+	public ActionAnimation(float convertTime, float postDelay, String path, ModelOld model) {
 		super(convertTime, path, model);
 		
 		this.stateSpectrumBlueprint.clear()
@@ -135,7 +135,7 @@ public class ActionAnimation extends MainFrameAnimation {
 	protected void modifyPose(Pose pose, LivingEntityPatch<?> entitypatch, float time) {
 		JointTransform jt = pose.getOrDefaultTransform("Root");
 		Vec3f jointPosition = jt.translation();
-		OpenMatrix4f toRootTransformApplied = entitypatch.getEntityModel(Models.LOGICAL_SERVER).getArmature().searchJointByName("Root").getLocalTrasnform().removeTranslation();
+		OpenMatrix4f toRootTransformApplied = entitypatch.getEntityModel(Armatures.LOGICAL_SERVER).getArmature().searchJointByName("Root").getLocalTrasnform().removeTranslation();
 		OpenMatrix4f toOrigin = OpenMatrix4f.invert(toRootTransformApplied, null);
 		Vec3f worldPosition = OpenMatrix4f.transform3v(toRootTransformApplied, jointPosition, null);
 		worldPosition.x = 0.0F;
@@ -212,7 +212,7 @@ public class ActionAnimation extends MainFrameAnimation {
 		Vec4f currentpos = new Vec4f(jt.translation().x, jt.translation().y, jt.translation().z, 1.0F);
 		Vec4f prevpos = new Vec4f(prevJt.translation().x, prevJt.translation().y, prevJt.translation().z, 1.0F);
 		OpenMatrix4f rotationTransform = entitypatch.getModelMatrix(1.0F).removeTranslation();
-		OpenMatrix4f localTransform = entitypatch.getEntityModel(Models.LOGICAL_SERVER).getArmature().searchJointByName("Root").getLocalTrasnform().removeTranslation();
+		OpenMatrix4f localTransform = entitypatch.getEntityModel(Armatures.LOGICAL_SERVER).getArmature().searchJointByName("Root").getLocalTrasnform().removeTranslation();
 		rotationTransform.mulBack(localTransform);
 		currentpos.transform(rotationTransform);
 		prevpos.transform(rotationTransform);

@@ -3,11 +3,11 @@ package yesman.epicfight.api.model;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 
-public class Model {
+public class ModelOld {
 	protected final ResourceLocation location;
 	protected Armature armature;
 	
-	public Model(ResourceLocation location) {
+	public ModelOld(ResourceLocation location) {
 		this.location = new ResourceLocation(location.getNamespace(), "animmodels/" + location.getPath() + ".json");
 	}
 	

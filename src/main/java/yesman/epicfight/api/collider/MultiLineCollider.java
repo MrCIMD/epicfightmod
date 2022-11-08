@@ -13,7 +13,7 @@ import yesman.epicfight.api.animation.Animator;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
-import yesman.epicfight.gameasset.Models;
+import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class MultiLineCollider extends MultiCollider<LineCollider> {
@@ -33,7 +33,7 @@ public class MultiLineCollider extends MultiCollider<LineCollider> {
 		int numberOf = Math.max(Math.round(this.numberOfColliders * attackSpeed), 1);
 		float partialScale = 1.0F / numberOf;
 		float interpolation = partialScale;
-		Armature armature = entitypatch.getEntityModel(Models.LOGICAL_SERVER).getArmature();
+		Armature armature = entitypatch.getEntityModel(Armatures.LOGICAL_SERVER).getArmature();
 		int pathIndex =  armature.searchPathIndex(animation.getPathIndexByTime(elapsedTime));
 		boolean red = entitypatch.getEntityState().attacking();
 		List<LineCollider> colliders = Lists.newArrayList();

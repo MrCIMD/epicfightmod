@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Spider;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.ClientModels;
+import yesman.epicfight.api.client.model.Models;
 import yesman.epicfight.client.renderer.patched.layer.PatchedEyeLayer;
 import yesman.epicfight.world.capabilities.entitypatch.mob.SpiderPatch;
 
@@ -15,6 +15,6 @@ public class PSpiderRenderer extends PatchedLivingEntityRenderer<Spider, SpiderP
 	private static final ResourceLocation SPIDER_EYE_TEXTURE = new ResourceLocation("textures/entity/spider_eyes.png");
 	
 	public PSpiderRenderer() {
-		this.addPatchedLayer(SpiderEyesLayer.class, new PatchedEyeLayer<>(SPIDER_EYE_TEXTURE, ClientModels.LOGICAL_CLIENT.spider));
+		this.addPatchedLayer(SpiderEyesLayer.class, new PatchedEyeLayer<>(SPIDER_EYE_TEXTURE, Models.LOGICAL_CLIENT.spider));
 	}
 }

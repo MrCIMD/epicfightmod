@@ -34,13 +34,13 @@ import yesman.epicfight.api.animation.property.AnimationProperty.AttackAnimation
 import yesman.epicfight.api.animation.property.AnimationProperty.AttackPhaseProperty;
 import yesman.epicfight.api.animation.property.AnimationProperty.StaticAnimationProperty;
 import yesman.epicfight.api.collider.Collider;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.HitEntityList;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
-import yesman.epicfight.gameasset.Models;
+import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.world.capabilities.entitypatch.HumanoidMobPatch;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
@@ -81,15 +81,15 @@ public class AttackAnimation extends ActionAnimation {
 	
 	public final Phase[] phases;
 	
-	public AttackAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, @Nullable Collider collider, String index, String path, Model model) {
+	public AttackAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, @Nullable Collider collider, String index, String path, ModelOld model) {
 		this(convertTime, path, model, new Phase(0.0F, antic, preDelay, contact, recovery, Float.MAX_VALUE, index, collider));
 	}
 	
-	public AttackAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, InteractionHand hand, @Nullable Collider collider, String index, String path, Model model) {
+	public AttackAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, InteractionHand hand, @Nullable Collider collider, String index, String path, ModelOld model) {
 		this(convertTime, path, model, new Phase(0.0F, antic, preDelay, contact, recovery, Float.MAX_VALUE, hand, index, collider));
 	}
 	
-	public AttackAnimation(float convertTime, String path, Model model, Phase... phases) {
+	public AttackAnimation(float convertTime, String path, ModelOld model, Phase... phases) {
 		super(convertTime, path, model);
 		
 		this.addProperty(ActionAnimationProperty.COORD_SET_BEGIN, COMMON_COORD_SETTER);
@@ -183,7 +183,7 @@ public class AttackAnimation extends ActionAnimation {
 	public void hurtCollidingEntities(LivingEntityPatch<?> entitypatch, float prevElapsedTime, float elapsedTime, EntityState prevState, EntityState state, Phase phase) {
 		Collider collider = this.getCollider(entitypatch, elapsedTime);
 		LivingEntity entity = entitypatch.getOriginal();
-		entitypatch.getEntityModel(Models.LOGICAL_SERVER).getArmature().initializeTransform();
+		entitypatch.getEntityModel(Armatures.LOGICAL_SERVER).getArmature().initializeTransform();
 		float prevPoseTime = prevState.attacking() ? prevElapsedTime : phase.preDelay;
 		float poseTime = state.attacking() ? elapsedTime : phase.contact;
 		List<Entity> list = collider.updateAndSelectCollideEntity(entitypatch, this, prevPoseTime, poseTime, phase.getColliderJointName(), this.getPlaySpeed(entitypatch));

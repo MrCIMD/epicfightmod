@@ -12,7 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.ClientModels;
+import yesman.epicfight.api.client.model.Models;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
@@ -27,7 +27,7 @@ public class PatchedHeadLayer<E extends LivingEntity, T extends LivingEntityPatc
 			ModelPart model = originalRenderer.getParentModel().getHead();
 			E entity = entitypatch.getOriginal();
 			OpenMatrix4f modelMatrix = new OpenMatrix4f();
-			modelMatrix.scale(new Vec3f(-1.0F, -1.0F, 1.0F)).mulFront(entitypatch.getEntityModel(ClientModels.LOGICAL_CLIENT).getArmature().searchJointById(9).getAnimatedTransform());
+			modelMatrix.scale(new Vec3f(-1.0F, -1.0F, 1.0F)).mulFront(entitypatch.getEntityModel(Models.LOGICAL_CLIENT).getArmature().searchJointById(9).getAnimatedTransform());
 			model.x = 0;
 			model.y = 0;
 			model.z = 0;

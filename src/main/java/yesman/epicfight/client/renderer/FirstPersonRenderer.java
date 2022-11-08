@@ -26,7 +26,7 @@ import yesman.epicfight.api.animation.types.ActionAnimation;
 import yesman.epicfight.api.animation.types.AimAnimation;
 import yesman.epicfight.api.client.animation.Layer.Priority;
 import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.ClientModels;
+import yesman.epicfight.api.client.model.Models;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec4f;
@@ -58,7 +58,7 @@ public class FirstPersonRenderer extends PatchedLivingEntityRenderer<LocalPlayer
 		double x = Mth.lerp(partialTicks, entityIn.xo, entityIn.getX()) - projView.x();
 		double y = Mth.lerp(partialTicks, entityIn.yo, entityIn.getY()) - projView.y();
 		double z = Mth.lerp(partialTicks, entityIn.zo, entityIn.getZ()) - projView.z();
-		ClientModel model = entitypatch.getEntityModel(ClientModels.LOGICAL_CLIENT);
+		ClientModel model = entitypatch.getEntityModel(Models.LOGICAL_CLIENT);
 		Armature armature = model.getArmature();
 		armature.initializeTransform();
 		entitypatch.getClientAnimator().setPoseToModel(partialTicks);
@@ -90,7 +90,7 @@ public class FirstPersonRenderer extends PatchedLivingEntityRenderer<LocalPlayer
 		
 		matStackIn.translate(x, yCorrection, zCorrection);
 		
-		ClientModel firstModel = entityIn.getModelName().equals("slim") ? ClientModels.LOGICAL_CLIENT.playerFirstPersonAlex : ClientModels.LOGICAL_CLIENT.playerFirstPerson;
+		ClientModel firstModel = entityIn.getModelName().equals("slim") ? Models.LOGICAL_CLIENT.playerFirstPersonAlex : Models.LOGICAL_CLIENT.playerFirstPerson;
 		firstModel.drawAnimatedModel(matStackIn, buffer.getBuffer(EpicFightRenderTypes.triangles(RenderType.entityCutoutNoCull(entityIn.getSkinTextureLocation()))),
 				packedLightIn, 1.0F, 1.0F, 1.0F, 1.0F, OverlayTexture.NO_OVERLAY, poses);
 		

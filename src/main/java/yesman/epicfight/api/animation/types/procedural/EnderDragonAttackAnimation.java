@@ -21,7 +21,7 @@ import yesman.epicfight.api.animation.property.AnimationProperty.AttackAnimation
 import yesman.epicfight.api.animation.property.AnimationProperty.ActionAnimationCoordSetter;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.collider.Collider;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.client.renderer.EpicFightRenderTypes;
@@ -33,7 +33,7 @@ public class EnderDragonAttackAnimation extends AttackAnimation implements Proce
 	private final IKInfo[] ikInfos;
 	private Map<String, TransformSheet> tipPointTransform;
 	
-	public EnderDragonAttackAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, Collider collider, String index, String path, Model model, IKInfo[] ikInfos) {
+	public EnderDragonAttackAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, Collider collider, String index, String path, ModelOld model, IKInfo[] ikInfos) {
 		super(convertTime, antic, preDelay, contact, recovery, collider, index, path, model);
 		this.ikInfos = ikInfos;
 		this.addProperty(AttackAnimationProperty.FIXED_MOVE_DISTANCE, true);

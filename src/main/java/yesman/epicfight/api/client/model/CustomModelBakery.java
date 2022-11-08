@@ -115,12 +115,12 @@ public class CustomModelBakery {
 		
 		ResourceLocation rl = new ResourceLocation(armorItem.getRegistryName().getNamespace(), "armor/" + armorItem.getRegistryName().getPath());
 		ClientModel customModel = new ClientModel(rl, bakeMeshFromCubes(boxes, debuggingMode));
-		ClientModels.LOGICAL_CLIENT.register(rl, customModel);
+		Models.LOGICAL_CLIENT.register(rl, customModel);
 		BAKED_MODELS.put(armorItem.getRegistryName(), customModel);
 		return customModel;
 	}
 	
-	private static Mesh bakeMeshFromCubes(List<ModelPartition> partitions, boolean debuggingMode) {
+	private static AnimatedModel bakeMeshFromCubes(List<ModelPartition> partitions, boolean debuggingMode) {
 		List<SingleVertex> vertices = Lists.newArrayList();
 		Map<String, List<Integer>> indices = Maps.newHashMap();
 		PoseStack poseStack = new PoseStack();

@@ -12,20 +12,20 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.model.JsonModelLoader;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec4f;
 
 @OnlyIn(Dist.CLIENT)
-public class ClientModel extends Model {
-	protected Mesh mesh;
+public class ClientModel extends ModelOld {
+	protected AnimatedModel mesh;
 	protected RenderProperties properties;
 	
 	public ClientModel(ResourceLocation location) {
 		this(location, null);
 	}
 	
-	public ClientModel(ResourceLocation location, Mesh mesh) {
+	public ClientModel(ResourceLocation location, AnimatedModel mesh) {
 		super(location);
 		this.mesh = mesh;
 		this.properties = RenderProperties.DEFAULT;
@@ -40,12 +40,12 @@ public class ClientModel extends Model {
 			if (parent == null) {
 				this.mesh = loader.getMesh();
 			} else {
-				ClientModel model = ClientModels.LOGICAL_CLIENT.get(parent);
+				ClientModel model = Models.LOGICAL_CLIENT.get(parent);
 				if (model == null) {
 					throw new IllegalStateException("the parent location " + parent + " not exists!");
 				}
 				
-				this.mesh = ClientModels.LOGICAL_CLIENT.get(parent).getMesh();
+				this.mesh = Models.LOGICAL_CLIENT.get(parent).getMesh();
 			}
 			
 			this.properties = loader.getRenderProperties();
@@ -60,16 +60,16 @@ public class ClientModel extends Model {
 		return this.properties;
 	}
 	
-	public Mesh getMesh() {
+	public AnimatedModel getMesh() {
 		return this.mesh;
 	}
 	
 	public void drawRawModel(PoseStack posetStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord) {
 		Matrix4f matrix4f = posetStack.last().pose();
 		Matrix3f matrix3f = posetStack.last().normal();
-		Mesh mesh = this.getMesh();
+		AnimatedModel mesh = this.getMesh();
 		
-		for (MeshPart part : mesh.parts.values()) {
+		for (ModelPart part : mesh.parts.values()) {
 			if (!part.hidden) {
 				for (VertexIndicator vi : part.getVertices()) {
 					int pos = vi.position * 3;
@@ -89,13 +89,13 @@ public class ClientModel extends Model {
 		Matrix4f matrix4f = posetStack.last().pose();
 		Matrix3f matrix3f = posetStack.last().normal();
 		OpenMatrix4f[] posesNoTranslation = new OpenMatrix4f[poses.length];
-		Mesh mesh = this.getMesh();
+		AnimatedModel mesh = this.getMesh();
 		
 		for (int i = 0; i < poses.length; i++) {
 			posesNoTranslation[i] = poses[i].removeTranslation();
 		}
 		
-		for (MeshPart part : mesh.parts.values()) {
+		for (ModelPart part : mesh.parts.values()) {
 			if (!part.hidden) {
 				for (VertexIndicator vi : part.getVertices()) {
 					int pos = vi.position * 3;
@@ -128,13 +128,13 @@ public class ClientModel extends Model {
 		Matrix4f matrix4f = posetStack.last().pose();
 		Matrix3f matrix3f = posetStack.last().normal();
 		OpenMatrix4f[] posesNoTranslation = new OpenMatrix4f[poses.length];
-		Mesh mesh = this.getMesh();
+		AnimatedModel mesh = this.getMesh();
 		
 		for (int i = 0; i < poses.length; i++) {
 			posesNoTranslation[i] = poses[i].removeTranslation();
 		}
 		
-		for (MeshPart part : mesh.parts.values()) {
+		for (ModelPart part : mesh.parts.values()) {
 			if (!part.hidden) {
 				for (VertexIndicator vi : part.getVertices()) {
 					int pos = vi.position * 3;

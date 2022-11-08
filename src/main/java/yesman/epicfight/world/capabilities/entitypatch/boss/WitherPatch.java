@@ -36,7 +36,7 @@ import yesman.epicfight.api.animation.property.AnimationProperty.ActionAnimation
 import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.ClientAnimator;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.AttackResult.ResultType;
 import yesman.epicfight.api.utils.math.MathUtils;
@@ -44,7 +44,7 @@ import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.gameasset.MobCombatBehaviors;
-import yesman.epicfight.gameasset.Models;
+import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.network.EpicFightDataSerializers;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.MobPatch;
@@ -298,7 +298,7 @@ public class WitherPatch extends MobPatch<WitherBoss> {
 	}
 	
 	@Override
-	public <M extends Model> M getEntityModel(Models<M> modelDB) {
+	public <M extends ModelOld> M getEntityModel(Armatures<M> modelDB) {
 		return modelDB.wither;
 	}
 	

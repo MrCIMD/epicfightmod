@@ -25,7 +25,7 @@ import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.client.animation.Layer;
 import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.ClientModels;
+import yesman.epicfight.api.client.model.Models;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
@@ -56,7 +56,7 @@ public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T exte
 		boolean isVisibleToPlayer = !isVisible && !entityIn.isInvisibleTo(mc.player);
 		boolean isGlowing = mc.shouldEntityAppearGlowing(entityIn);
 		RenderType renderType = this.getRenderType(entityIn, entitypatch, renderer, isVisible, isVisibleToPlayer, isGlowing);
-		ClientModel model = entitypatch.getEntityModel(ClientModels.LOGICAL_CLIENT);
+		ClientModel model = entitypatch.getEntityModel(Models.LOGICAL_CLIENT);
 		Armature armature = model.getArmature();
 		poseStack.pushPose();
 		this.mulPoseStack(poseStack, armature, entityIn, entitypatch, partialTicks);
@@ -115,7 +115,7 @@ public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T exte
 		}
 		
 		OpenMatrix4f modelMatrix = new OpenMatrix4f();
-		modelMatrix.mulFront(entitypatch.getEntityModel(ClientModels.LOGICAL_CLIENT).getArmature().searchJointById(this.getRootJointIndex()).getAnimatedTransform());
+		modelMatrix.mulFront(entitypatch.getEntityModel(Models.LOGICAL_CLIENT).getArmature().searchJointById(this.getRootJointIndex()).getAnimatedTransform());
 		OpenMatrix4f transpose = OpenMatrix4f.transpose(modelMatrix, null);
 		
 		poseStack.pushPose();

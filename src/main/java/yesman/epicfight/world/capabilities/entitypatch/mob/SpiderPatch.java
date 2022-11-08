@@ -14,10 +14,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.ClientAnimator;
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.MobCombatBehaviors;
-import yesman.epicfight.gameasset.Models;
+import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.world.capabilities.entitypatch.Faction;
 import yesman.epicfight.world.capabilities.entitypatch.MobPatch;
 import yesman.epicfight.world.damagesource.StunType;
@@ -74,7 +74,7 @@ public class SpiderPatch<T extends PathfinderMob> extends MobPatch<T> {
 	}
 	
 	@Override
-	public <M extends Model> M getEntityModel(Models<M> modelDB) {
+	public <M extends ModelOld> M getEntityModel(Armatures<M> modelDB) {
 		return modelDB.spider;
 	}
 }

@@ -36,12 +36,12 @@ public class Joint {
 		}
 	}
 	
-	public void setInversedModelTransform(OpenMatrix4f parentTransform) {
+	public void initShortcut(OpenMatrix4f parentTransform) {
 		OpenMatrix4f modelTransform = OpenMatrix4f.mul(parentTransform, this.localTransform, null);
 		OpenMatrix4f.invert(modelTransform, this.inversedTransform);
 		
 		for (Joint joint : this.subJoints) {
-			joint.setInversedModelTransform(modelTransform);
+			joint.initShortcut(modelTransform);
 		}
 	}
 	

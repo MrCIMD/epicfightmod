@@ -9,7 +9,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.ClientModels;
+import yesman.epicfight.api.client.model.Models;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
@@ -22,7 +22,7 @@ public class PatchedElytraLayer<E extends LivingEntity, T extends LivingEntityPa
 		if (originalRenderer.shouldRender(livingentity.getItemBySlot(EquipmentSlot.CHEST), livingentity)) {
 			OpenMatrix4f modelMatrix = new OpenMatrix4f();
 			modelMatrix.scale(new Vec3f(-0.9F, -0.9F, 0.9F)).translate(new Vec3f(0.0F, -0.5F, -0.1F))
-				.mulFront(entitypatch.getEntityModel(ClientModels.LOGICAL_CLIENT).getArmature().searchJointById(8).getAnimatedTransform());
+				.mulFront(entitypatch.getEntityModel(Models.LOGICAL_CLIENT).getArmature().searchJointById(8).getAnimatedTransform());
 			OpenMatrix4f transpose = OpenMatrix4f.transpose(modelMatrix, null);
 			matrixStackIn.pushPose();
 			MathUtils.translateStack(matrixStackIn, modelMatrix);

@@ -1,13 +1,13 @@
 package yesman.epicfight.api.animation.types;
 
-import yesman.epicfight.api.model.Model;
+import yesman.epicfight.api.model.ModelOld;
 
 public class GuardAnimation extends MainFrameAnimation {
-	public GuardAnimation(float convertTime, String path, Model model) {
+	public GuardAnimation(float convertTime, String path, ModelOld model) {
 		this(convertTime, Float.MAX_VALUE, path, model);
 	}
 	
-	public GuardAnimation(float convertTime, float lockTime, String path, Model model) {
+	public GuardAnimation(float convertTime, float lockTime, String path, ModelOld model) {
 		super(convertTime, path, model);
 		
 		this.stateSpectrumBlueprint.clear()
