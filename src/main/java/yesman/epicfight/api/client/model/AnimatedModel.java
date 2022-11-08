@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import yesman.epicfight.api.client.model.ClientModel.RenderProperties;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.api.utils.math.Vec4f;
@@ -23,12 +24,22 @@ public class AnimatedModel {
 	final float[] weights;
 	final int totalVertices;
 	final Map<String, ModelPart> parts;
+	final RenderProperties properties;
+	
+	public AnimatedModel(AnimatedModel parent, RenderProperties properties) {
+		this(parent.positions, parent.uvs, parent.noramls, parent.weights, parent.positions);
+	}
 	
 	public AnimatedModel(float[] positions, float[] noramls, float[] uvs, int[] animationIndices, float[] weights, int[] vCounts, Map<String, ModelPart> parts) {
+		this();
+	}
+	
+	public AnimatedModel(float[] positions, float[] noramls, float[] uvs, int[] animationIndices, float[] weights, int[] vCounts, RenderProperties properties, Map<String, ModelPart> parts) {
 		this.positions = positions;
 		this.noramls = noramls;
 		this.uvs = uvs;
 		this.weights = weights;
+		this.properties = properties;
 		this.parts = parts;
 		
 		int totalV = 0;
