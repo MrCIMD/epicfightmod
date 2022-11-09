@@ -8,35 +8,72 @@ import org.apache.commons.compress.utils.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix3f;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
+import com.mojang.math.Vector4f;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.ClientModel.RenderProperties;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.api.utils.math.Vec4f;
 
 @OnlyIn(Dist.CLIENT)
 public class AnimatedModel {
+	
+	public static class RenderProperties {
+		public static final RenderProperties DEFAULT = RenderProperties.builder().build();
+		
+		boolean isTransparent;
+		
+		public RenderProperties(Builder builder) {
+			this.isTransparent = builder.isTransparent;
+		}
+		
+		public boolean isTransparent() {
+			return this.isTransparent;
+		}
+		
+		public static RenderProperties.Builder builder() {
+			return new Builder();
+		}
+		
+		public static class Builder {
+			boolean isTransparent = false;
+			
+			public RenderProperties.Builder transparency(boolean isTransparent) {
+				this.isTransparent = isTransparent;
+				return this;
+			}
+			
+			public RenderProperties build() {
+				return new RenderProperties(this);
+			}
+		}
+	}
+	
 	final float[] positions;
 	final float[] uvs;
-	final float[] noramls;
+	final float[] normals;
 	final float[] weights;
 	final int totalVertices;
 	final Map<String, ModelPart> parts;
 	final RenderProperties properties;
 	
 	public AnimatedModel(AnimatedModel parent, RenderProperties properties) {
-		this(parent.positions, parent.uvs, parent.noramls, parent.weights, parent.positions);
+		this(parent.positions, parent.normals, parent.uvs, parent.weights, properties, parent.parts);
 	}
 	
-	public AnimatedModel(float[] positions, float[] noramls, float[] uvs, int[] animationIndices, float[] weights, int[] vCounts, Map<String, ModelPart> parts) {
-		this();
+	public AnimatedModel(float[] positions, float[] normals, float[] uvs, float[] weights, Map<String, ModelPart> parts) {
+		this(positions, normals, uvs, weights, RenderProperties.DEFAULT, parts);
 	}
 	
-	public AnimatedModel(float[] positions, float[] noramls, float[] uvs, int[] animationIndices, float[] weights, int[] vCounts, RenderProperties properties, Map<String, ModelPart> parts) {
+	public AnimatedModel(float[] positions, float[] normals, float[] uvs, float[] weights, RenderProperties properties, Map<String, ModelPart> parts) {
 		this.positions = positions;
-		this.noramls = noramls;
+		this.normals = normals;
 		this.uvs = uvs;
 		this.weights = weights;
 		this.properties = properties;
@@ -59,11 +96,110 @@ public class AnimatedModel {
 		this.parts.values().forEach((part) -> part.hidden = false);
 	}
 	
+
+	public void drawRawModel(PoseStack posetStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord) {
+		Matrix4f matrix4f = posetStack.last().pose();
+		Matrix3f matrix3f = posetStack.last().normal();
+		
+		for (ModelPart part : this.parts.values()) {
+			if (!part.hidden) {
+				for (VertexIndicator vi : part.getVertices()) {
+					int pos = vi.position * 3;
+					int norm = vi.normal * 3;
+					int uv = vi.uv * 2;
+					Vector4f posVec = new Vector4f(this.positions[pos], this.positions[pos + 1], this.positions[pos + 2], 1.0F);
+					Vector3f normVec = new Vector3f(this.normals[norm], this.normals[norm + 1], this.normals[norm + 2]);
+					posVec.transform(matrix4f);
+					normVec.transform(matrix3f);
+					builder.vertex(posVec.x(), posVec.y(), posVec.z(), r, g, b, a, this.uvs[uv], this.uvs[uv + 1], overlayCoord, packedLightIn, normVec.x(), normVec.y(), normVec.z());
+				}
+			}
+		}
+	}
+	
+	public void drawAnimatedModel(PoseStack posetStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord, OpenMatrix4f[] poses) {
+		Matrix4f matrix4f = posetStack.last().pose();
+		Matrix3f matrix3f = posetStack.last().normal();
+		OpenMatrix4f[] posesNoTranslation = new OpenMatrix4f[poses.length];
+		
+		for (int i = 0; i < poses.length; i++) {
+			posesNoTranslation[i] = poses[i].removeTranslation();
+		}
+		
+		for (ModelPart part : this.parts.values()) {
+			if (!part.hidden) {
+				for (VertexIndicator vi : part.getVertices()) {
+					int pos = vi.position * 3;
+					int norm = vi.normal * 3;
+					int uv = vi.uv * 2;
+					Vec4f position = new Vec4f(this.positions[pos], this.positions[pos + 1], this.positions[pos + 2], 1.0F);
+					Vec4f normal = new Vec4f(this.normals[norm], this.normals[norm + 1], this.normals[norm + 2], 1.0F);
+					Vec4f totalPos = new Vec4f(0.0F, 0.0F, 0.0F, 0.0F);
+					Vec4f totalNorm = new Vec4f(0.0F, 0.0F, 0.0F, 0.0F);
+					
+					for (int i = 0; i < vi.joint.size(); i++) {
+						int jointIndex = vi.joint.get(i);
+						int weightIndex = vi.weight.get(i);
+						float weight = this.weights[weightIndex];
+						Vec4f.add(OpenMatrix4f.transform(poses[jointIndex], position, null).scale(weight), totalPos, totalPos);
+						Vec4f.add(OpenMatrix4f.transform(posesNoTranslation[jointIndex], normal, null).scale(weight), totalNorm, totalNorm);
+					}
+					
+					Vector4f posVec = new Vector4f(totalPos.x, totalPos.y, totalPos.z, 1.0F);
+					Vector3f normVec = new Vector3f(totalNorm.x, totalNorm.y, totalNorm.z);
+					posVec.transform(matrix4f);
+					normVec.transform(matrix3f);
+					builder.vertex(posVec.x(), posVec.y(), posVec.z(), r, g, b, a, this.uvs[uv], this.uvs[uv + 1], overlayCoord, packedLightIn, normVec.x(), normVec.y(), normVec.z());
+				}
+			}
+		}
+	}
+	
+	public void drawAnimatedModelNoTexture(PoseStack posetStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord, OpenMatrix4f[] poses) {
+		Matrix4f matrix4f = posetStack.last().pose();
+		Matrix3f matrix3f = posetStack.last().normal();
+		OpenMatrix4f[] posesNoTranslation = new OpenMatrix4f[poses.length];
+		
+		for (int i = 0; i < poses.length; i++) {
+			posesNoTranslation[i] = poses[i].removeTranslation();
+		}
+		
+		for (ModelPart part : this.parts.values()) {
+			if (!part.hidden) {
+				for (VertexIndicator vi : part.getVertices()) {
+					int pos = vi.position * 3;
+					int norm = vi.normal * 3;
+					Vec4f position = new Vec4f(this.positions[pos], this.positions[pos + 1], this.positions[pos + 2], 1.0F);
+					Vec4f normal = new Vec4f(this.normals[norm], this.normals[norm + 1], this.normals[norm + 2], 1.0F);
+					Vec4f totalPos = new Vec4f(0.0F, 0.0F, 0.0F, 0.0F);
+					Vec4f totalNorm = new Vec4f(0.0F, 0.0F, 0.0F, 0.0F);
+					
+					for (int i = 0; i < vi.joint.size(); i++) {
+						int jointIndex = vi.joint.get(i);
+						int weightIndex = vi.weight.get(i);
+						float weight = this.weights[weightIndex];
+						Vec4f.add(OpenMatrix4f.transform(poses[jointIndex], position, null).scale(weight), totalPos, totalPos);
+						Vec4f.add(OpenMatrix4f.transform(posesNoTranslation[jointIndex], normal, null).scale(weight), totalNorm, totalNorm);
+					}
+					
+					Vector4f posVec = new Vector4f(totalPos.x, totalPos.y, totalPos.z, 1.0F);
+					Vector3f normVec = new Vector3f(totalNorm.x, totalNorm.y, totalNorm.z);
+					posVec.transform(matrix4f);
+					normVec.transform(matrix3f);
+					builder.vertex(posVec.x(), posVec.y(), posVec.z());
+					builder.color(r, g, b, a);
+					builder.uv2(packedLightIn);
+					builder.endVertex();
+				}
+			}
+		}
+	}
+	
 	public JsonObject toJsonObject() {
 		JsonObject root = new JsonObject();
 		JsonObject vertices = new JsonObject();
 		float[] positions = this.positions.clone();
-		float[] normals = this.noramls.clone();
+		float[] normals = this.normals.clone();
 		
 		OpenMatrix4f toBlenderCoord = OpenMatrix4f.createRotatorDeg(90.0F, Vec3f.X_AXIS);
 		

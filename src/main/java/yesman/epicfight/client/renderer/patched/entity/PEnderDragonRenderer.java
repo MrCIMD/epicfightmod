@@ -18,7 +18,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.client.animation.Layer;
 import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.Models;
+import yesman.epicfight.api.client.model.AnimatedModels;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
@@ -36,7 +36,7 @@ public class PEnderDragonRenderer extends PatchedEntityRenderer<EnderDragon, End
 	
 	@Override
 	public void render(EnderDragon entityIn, EnderDragonPatch entitypatch, EnderDragonRenderer renderer, MultiBufferSource buffer, PoseStack poseStack, int packedLight, float partialTicks) {
-		ClientModel model = entitypatch.getEntityModel(Models.LOGICAL_CLIENT);
+		ClientModel model = entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT);
 		Armature armature = model.getArmature();
 		poseStack.pushPose();
         this.mulPoseStack(poseStack, armature, entityIn, entitypatch, partialTicks);

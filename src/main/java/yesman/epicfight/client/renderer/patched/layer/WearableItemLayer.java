@@ -27,9 +27,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.ForgeHooksClient;
-import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.Models;
+import yesman.epicfight.api.client.model.AnimatedModel;
+import yesman.epicfight.api.client.model.AnimatedModels;
 import yesman.epicfight.api.client.model.CustomModelBakery;
+import yesman.epicfight.api.model.JsonModelLoader;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.renderer.EpicFightRenderTypes;
@@ -37,7 +38,7 @@ import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 @OnlyIn(Dist.CLIENT)
 public class WearableItemLayer<E extends LivingEntity, T extends LivingEntityPatch<E>, M extends HumanoidModel<E>> extends PatchedLayer<E, T, M, HumanoidArmorLayer<E, M, M>> {
-	private static final Map<ResourceLocation, ClientModel> ARMOR_MODELS = new HashMap<ResourceLocation, ClientModel>();
+	private static final Map<ResourceLocation, AnimatedModel> ARMOR_MODELS = new HashMap<ResourceLocation, AnimatedModel>();
 	private static final Map<String, ResourceLocation> EPICFIGHT_OVERRIDING_TEXTURES = Maps.newHashMap();
 	
 	public static void clear() {
@@ -55,7 +56,7 @@ public class WearableItemLayer<E extends LivingEntity, T extends LivingEntityPat
 		this.doNotRenderHelment = doNotRenderHelment;
 	}
 	
-	private void renderArmor(PoseStack matStack, MultiBufferSource multiBufferSource, int packedLightIn, boolean hasEffect, ClientModel model, float r, float g, float b, ResourceLocation armorTexture, OpenMatrix4f[] poses) {
+	private void renderArmor(PoseStack matStack, MultiBufferSource multiBufferSource, int packedLightIn, boolean hasEffect, AnimatedModel model, float r, float g, float b, ResourceLocation armorTexture, OpenMatrix4f[] poses) {
 		VertexConsumer vertexConsumer = EpicFightRenderTypes.getArmorFoilBufferTriangles(multiBufferSource, RenderType.armorCutoutNoCull(armorTexture), false, hasEffect);
 		model.drawAnimatedModel(matStack, vertexConsumer, packedLightIn, r, g, b, 1.0F, OverlayTexture.NO_OVERLAY, poses);
 	}
@@ -93,7 +94,7 @@ public class WearableItemLayer<E extends LivingEntity, T extends LivingEntityPat
 					poseStack.translate(0.0D, head * 0.055D, 0.0D);
 				}
 				
-				ClientModel model = this.getArmorModel(originalRenderer, entityliving, armorItem, stack, slot);
+				AnimatedModel model = this.getArmorModel(originalRenderer, entityliving, armorItem, stack, slot);
 				boolean hasEffect = stack.hasFoil();
 				
 				if (armorItem instanceof DyeableLeatherItem) {
@@ -112,7 +113,7 @@ public class WearableItemLayer<E extends LivingEntity, T extends LivingEntityPat
 		}
 	}
 	
-	private ClientModel getArmorModel(HumanoidArmorLayer<E, M, M> originalRenderer, E entityliving, ArmorItem armorItem, ItemStack stack, EquipmentSlot slot) {
+	private AnimatedModel getArmorModel(HumanoidArmorLayer<E, M, M> originalRenderer, E entityliving, ArmorItem armorItem, ItemStack stack, EquipmentSlot slot) {
 		ResourceLocation registryName = armorItem.getRegistryName();
 		boolean debuggingMode = ClientEngine.instance.isArmorModelDebuggingMode();
 		
@@ -121,10 +122,11 @@ public class WearableItemLayer<E extends LivingEntity, T extends LivingEntityPat
 		} else {
 			ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
 			ResourceLocation rl = new ResourceLocation(armorItem.getRegistryName().getNamespace(), "armor/" + armorItem.getRegistryName().getPath());
-			ClientModel model = new ClientModel(rl);
+			AnimatedModel model = null;
 			
-			if (resourceManager.hasResource(model.getLocation())) {
-				model.loadMeshAndProperties(resourceManager);
+			if (resourceManager.hasResource(rl)) {
+				JsonModelLoader modelLoader = new JsonModelLoader(resourceManager, rl);
+				model = modelLoader.loadAnimatedModel(AnimatedModel::new);
 			} else {
 				HumanoidModel<?> defaultModel = originalRenderer.getArmorModel(slot);
 				Model customModel = ForgeHooksClient.getArmorModel(entityliving, stack, slot, defaultModel);
@@ -183,8 +185,8 @@ public class WearableItemLayer<E extends LivingEntity, T extends LivingEntityPat
 		return resourcelocation;
 	}
 	
-	public static ClientModel getDefaultArmorModel(EquipmentSlot slot) {
-		Models modelDB = Models.LOGICAL_CLIENT;
+	public static AnimatedModel getDefaultArmorModel(EquipmentSlot slot) {
+		AnimatedModels modelDB = AnimatedModels.LOGICAL_CLIENT;
 		
 		switch (slot) {
 		case HEAD:

@@ -10,7 +10,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.Models;
+import yesman.epicfight.api.client.model.AnimatedModels;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.item.EpicFightItems;
@@ -22,7 +22,7 @@ public class RenderKatana extends RenderItemBase {
 	@Override
 	public void renderItemInHand(ItemStack stack, LivingEntityPatch<?> entitypatch, InteractionHand hand, MultiBufferSource buffer, PoseStack poseStack, int packedLight) {
 		OpenMatrix4f modelMatrix = new OpenMatrix4f(this.mainhandcorrectionMatrix);
-		modelMatrix.mulFront(entitypatch.getEntityModel(Models.LOGICAL_CLIENT).getArmature().searchJointByName("Tool_R").getAnimatedTransform());
+		modelMatrix.mulFront(entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT).getArmature().searchJointByName("Tool_R").getAnimatedTransform());
 		
 		poseStack.pushPose();
 		this.mulPoseStack(poseStack, modelMatrix);
@@ -30,7 +30,7 @@ public class RenderKatana extends RenderItemBase {
         poseStack.popPose();
         
 		modelMatrix = new OpenMatrix4f(this.mainhandcorrectionMatrix);
-		modelMatrix.mulFront(entitypatch.getEntityModel(Models.LOGICAL_CLIENT).getArmature().searchJointByName("Tool_L").getAnimatedTransform());
+		modelMatrix.mulFront(entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT).getArmature().searchJointByName("Tool_L").getAnimatedTransform());
 		
 		poseStack.pushPose();
 		this.mulPoseStack(poseStack, modelMatrix);

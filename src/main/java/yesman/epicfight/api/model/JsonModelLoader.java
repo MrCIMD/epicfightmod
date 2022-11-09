@@ -36,8 +36,8 @@ import yesman.epicfight.api.animation.types.ActionAnimation;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.AttackAnimation.Phase;
 import yesman.epicfight.api.animation.types.StaticAnimation;
-import yesman.epicfight.api.client.model.ClientModel;
 import yesman.epicfight.api.client.model.AnimatedModel;
+import yesman.epicfight.api.client.model.AnimatedModels.AnimatedModelContructor;
 import yesman.epicfight.api.client.model.ModelPart;
 import yesman.epicfight.api.client.model.VertexIndicator;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
@@ -93,15 +93,13 @@ public class JsonModelLoader {
 	}
 	
 	@OnlyIn(Dist.CLIENT)
-	public ClientModel.RenderProperties getRenderProperties() {
+	public AnimatedModel.RenderProperties getRenderProperties() {
 		JsonObject properties = this.rootJson.getAsJsonObject("render_properties");
 		
 		if (properties != null) {
-			return ClientModel.RenderProperties.builder()
-					.transparency(properties.has("transparent") ? properties.get("transparent").getAsBoolean() : false)
-				.build();
+			return AnimatedModel.RenderProperties.builder().transparency(properties.has("transparent") ? properties.get("transparent").getAsBoolean() : false).build();
 		} else {
-			return ClientModel.RenderProperties.builder().build();
+			return AnimatedModel.RenderProperties.DEFAULT;
 		}
 	}
 	
@@ -111,57 +109,63 @@ public class JsonModelLoader {
 	}
 	
 	@OnlyIn(Dist.CLIENT)
-	public AnimatedModel getMesh() {
-		JsonObject obj = this.rootJson.getAsJsonObject("vertices");
-		JsonObject positions = obj.getAsJsonObject("positions");
-		JsonObject normals = obj.getAsJsonObject("normals");
-		JsonObject uvs = obj.getAsJsonObject("uvs");
-		JsonObject vdincies = obj.getAsJsonObject("vindices");
-		JsonObject weights = obj.getAsJsonObject("weights");
-		JsonObject vcounts = obj.getAsJsonObject("vcounts");
-		JsonObject parts = obj.getAsJsonObject("parts");
-		JsonObject indices = obj.getAsJsonObject("indices");
+	public <T extends AnimatedModel> T loadAnimatedModel(AnimatedModelContructor<T> builder) {
+		ResourceLocation parent = this.getParent();
 		
-		float[] positionArray = toFloatArray(positions.get("array").getAsJsonArray());
-		
-		for (int i = 0; i < positionArray.length / 3; i++) {
-			int k = i * 3;
-			Vec4f posVector = new Vec4f(positionArray[k], positionArray[k+1], positionArray[k+2], 1.0F);
-			OpenMatrix4f.transform(CORRECTION, posVector, posVector);
-			positionArray[k] = posVector.x;
-			positionArray[k+1] = posVector.y;
-			positionArray[k+2] = posVector.z;
-		}
-		
-		float[] normalArray = toFloatArray(normals.get("array").getAsJsonArray());
-		
-		for (int i = 0; i < normalArray.length / 3; i++) {
-			int k = i * 3;
-			Vec4f normVector = new Vec4f(normalArray[k], normalArray[k+1], normalArray[k+2], 1.0F);
-			OpenMatrix4f.transform(CORRECTION, normVector, normVector);
-			normalArray[k] = normVector.x;
-			normalArray[k+1] = normVector.y;
-			normalArray[k+2] = normVector.z;
-		}
-		
-		float[] uvArray = toFloatArray(uvs.get("array").getAsJsonArray());
-		int[] animationIndexArray = toIntArray(vdincies.get("array").getAsJsonArray());
-		float[] weightArray = toFloatArray(weights.get("array").getAsJsonArray());
-		int[] vcountArray = toIntArray(vcounts.get("array").getAsJsonArray());
-		
-		Map<String, ModelPart> meshMap = Maps.newHashMap();
-		
-		if (parts != null) {
-			for (Map.Entry<String, JsonElement> e : parts.entrySet()) {
-				meshMap.put(e.getKey(), new ModelPart(VertexIndicator.create(toIntArray(e.getValue().getAsJsonObject().get("array").getAsJsonArray()), vcountArray, animationIndexArray)));
+		if (parent != null) {
+			
+		} else {
+			JsonObject obj = this.rootJson.getAsJsonObject("vertices");
+			JsonObject positions = obj.getAsJsonObject("positions");
+			JsonObject normals = obj.getAsJsonObject("normals");
+			JsonObject uvs = obj.getAsJsonObject("uvs");
+			JsonObject vdincies = obj.getAsJsonObject("vindices");
+			JsonObject weights = obj.getAsJsonObject("weights");
+			JsonObject vcounts = obj.getAsJsonObject("vcounts");
+			JsonObject parts = obj.getAsJsonObject("parts");
+			JsonObject indices = obj.getAsJsonObject("indices");
+			
+			float[] positionArray = toFloatArray(positions.get("array").getAsJsonArray());
+			
+			for (int i = 0; i < positionArray.length / 3; i++) {
+				int k = i * 3;
+				Vec4f posVector = new Vec4f(positionArray[k], positionArray[k+1], positionArray[k+2], 1.0F);
+				OpenMatrix4f.transform(CORRECTION, posVector, posVector);
+				positionArray[k] = posVector.x;
+				positionArray[k+1] = posVector.y;
+				positionArray[k+2] = posVector.z;
 			}
+			
+			float[] normalArray = toFloatArray(normals.get("array").getAsJsonArray());
+			
+			for (int i = 0; i < normalArray.length / 3; i++) {
+				int k = i * 3;
+				Vec4f normVector = new Vec4f(normalArray[k], normalArray[k+1], normalArray[k+2], 1.0F);
+				OpenMatrix4f.transform(CORRECTION, normVector, normVector);
+				normalArray[k] = normVector.x;
+				normalArray[k+1] = normVector.y;
+				normalArray[k+2] = normVector.z;
+			}
+			
+			float[] uvArray = toFloatArray(uvs.get("array").getAsJsonArray());
+			int[] animationIndexArray = toIntArray(vdincies.get("array").getAsJsonArray());
+			float[] weightArray = toFloatArray(weights.get("array").getAsJsonArray());
+			int[] vcountArray = toIntArray(vcounts.get("array").getAsJsonArray());
+			
+			Map<String, ModelPart> meshMap = Maps.newHashMap();
+			
+			if (parts != null) {
+				for (Map.Entry<String, JsonElement> e : parts.entrySet()) {
+					meshMap.put(e.getKey(), new ModelPart(VertexIndicator.create(toIntArray(e.getValue().getAsJsonObject().get("array").getAsJsonArray()), vcountArray, animationIndexArray)));
+				}
+			}
+			
+			if (indices != null) {
+				meshMap.put("noGroups", new ModelPart(VertexIndicator.create(toIntArray(indices.get("array").getAsJsonArray()), vcountArray, animationIndexArray)));
+			}
+			
+			return builder.constructor(positionArray, normalArray, uvArray, weightArray, meshMap);
 		}
-		
-		if (indices != null) {
-			meshMap.put("noGroups", new ModelPart(VertexIndicator.create(toIntArray(indices.get("array").getAsJsonArray()), vcountArray, animationIndexArray)));
-		}
-		
-		return new AnimatedModel(positionArray, normalArray, uvArray, animationIndexArray, weightArray, vcountArray, meshMap);
 	}
 	
 	public Armature getArmature() {

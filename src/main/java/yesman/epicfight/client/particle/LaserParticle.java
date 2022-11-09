@@ -18,7 +18,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.Models;
+import yesman.epicfight.api.client.model.AnimatedModels;
 
 @OnlyIn(Dist.CLIENT)
 public class LaserParticle extends CustomModelParticle {
@@ -27,7 +27,7 @@ public class LaserParticle extends CustomModelParticle {
 	private float yRot;
 	
 	public LaserParticle(ClientLevel level, double x, double y, double z, double toX, double toY, double toZ) {
-		super(level, x, y, z, 0, 0, 0, Models.LOGICAL_CLIENT.laser);
+		super(level, x, y, z, 0, 0, 0, Models.AnimatedModels.laser);
 		this.lifetime = 5;
 		
 		Vec3 direction = new Vec3(toX - x, toY - y, toZ - z);

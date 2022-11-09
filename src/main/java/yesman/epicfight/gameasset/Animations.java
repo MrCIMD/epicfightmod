@@ -38,7 +38,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.fml.loading.FMLEnvironment;
 import yesman.epicfight.api.animation.JointTransform;
 import yesman.epicfight.api.animation.Keyframe;
 import yesman.epicfight.api.animation.TransformSheet;
@@ -78,7 +77,6 @@ import yesman.epicfight.api.animation.types.procedural.EnderDraonWalkAnimation;
 import yesman.epicfight.api.animation.types.procedural.IKInfo;
 import yesman.epicfight.api.client.animation.ClientAnimationProperties;
 import yesman.epicfight.api.client.animation.Layer;
-import yesman.epicfight.api.client.model.Models;
 import yesman.epicfight.api.collider.OBBCollider;
 import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
 import yesman.epicfight.api.model.ModelOld;
@@ -391,9 +389,8 @@ public class Animations {
 		event.getRegistryMap().put(EpicFightMod.MODID, Animations::build);
 	}
 	
-	private static void build() {
-		Armatures<?> models = FMLEnvironment.dist == Dist.CLIENT ? Models.LOGICAL_CLIENT : Armatures.LOGICAL_SERVER;
-		ModelOld biped = models.biped;
+	private static void build(Armatures armatures) {
+		ModelOld biped = armatures.biped;
 		ModelOld crepper = models.creeper;
 		ModelOld enderman = models.enderman;
 		ModelOld spider = models.spider;

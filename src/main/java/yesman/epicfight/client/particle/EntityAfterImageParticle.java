@@ -15,7 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.Models;
+import yesman.epicfight.api.client.model.AnimatedModels;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.client.ClientEngine;
@@ -72,11 +72,11 @@ public class EntityAfterImageParticle extends CustomModelParticle {
 			
 			if (entitypatch != null && ClientEngine.instance.renderEngine.hasRendererFor(entitypatch.getOriginal())) {
 				PatchedEntityRenderer renderer = ClientEngine.instance.renderEngine.getEntityRenderer(entitypatch.getOriginal());
-				Armature armature = entitypatch.getEntityModel(Models.LOGICAL_CLIENT).getArmature();
+				Armature armature = entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT).getArmature();
 				PoseStack poseStack = new PoseStack();
 				OpenMatrix4f[] matrices = renderer.getPoseMatrices(entitypatch, armature, 1.0F);
 				renderer.mulPoseStack(poseStack, armature, entitypatch.getOriginal(), entitypatch, 1.0F);
-				EntityAfterImageParticle particle = new EntityAfterImageParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, entitypatch.getEntityModel(Models.LOGICAL_CLIENT), matrices, poseStack.last().pose());
+				EntityAfterImageParticle particle = new EntityAfterImageParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT), matrices, poseStack.last().pose());
 				return particle;
 			} else {
 				return null;

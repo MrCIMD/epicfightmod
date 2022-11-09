@@ -15,17 +15,18 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import yesman.epicfight.api.model.JsonModelLoader;
 import yesman.epicfight.client.model.BipedAnimatedModel;
 import yesman.epicfight.main.EpicFightMod;
 
 @OnlyIn(Dist.CLIENT)
-public class Models implements PreparableReloadListener {
+public class AnimatedModels implements PreparableReloadListener {
 	@FunctionalInterface
-	public static interface ModelContructor<T extends AnimatedModel> {
-		public T constructor(float[] positions, float[] noramls, float[] uvs, int[] animationIndices, float[] weights, int[] vCounts, Map<String, ModelPart> parts);
+	public static interface AnimatedModelContructor<T extends AnimatedModel> {
+		public T constructor(float[] positions, float[] noramls, float[] uvs, float[] weights, Map<String, ModelPart> parts);
 	}
 	
-	private static Map<ResourceLocation, ModelContructor> BUILDERS = Maps.newHashMap();
+	private static Map<ResourceLocation, AnimatedModelContructor> REGISTERED_BUILDERS = Maps.newHashMap();
 	
 	public static BipedAnimatedModel ALEX;
 	public static BipedAnimatedModel BIPED;
@@ -47,7 +48,10 @@ public class Models implements PreparableReloadListener {
 	public static AnimatedModel FORCE_FIELD;
 	public static AnimatedModel LASER;
 	
-	public static void registerModels() {
+	public static void registerModels(ResourceManager rm) {
+		
+		ALEX = (new JsonModelLoader(EpicFightMod.MODID, "entity/biped_slim_arm")).loadAnimatedModel();
+		
 		register(BipedAnimatedModel::new, new ResourceLocation(EpicFightMod.MODID, "entity/biped_slim_arm"));
 		register(BipedAnimatedModel::new, new ResourceLocation(EpicFightMod.MODID, "entity/biped"));
 		register(BipedAnimatedModel::new, new ResourceLocation(EpicFightMod.MODID, "entity/biped_old_texture"));
@@ -69,8 +73,8 @@ public class Models implements PreparableReloadListener {
 		register(AnimatedModel::new, new ResourceLocation(EpicFightMod.MODID, "particle/laser"));
 	}
 	
-	public static <M extends AnimatedModel> void register(ModelContructor<M> contructor, ResourceLocation rl) {
-		BUILDERS.put(rl, contructor);
+	public static <M extends AnimatedModel> void register(AnimatedModelContructor<M> contructor, ResourceLocation rl) {
+		REGISTERED_BUILDERS.put(rl, contructor);
 	}
 	
 	/** Entities **/

@@ -18,7 +18,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.client.animation.Layer;
 import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.Models;
+import yesman.epicfight.api.client.model.AnimatedModels;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
@@ -42,7 +42,7 @@ public class PWitherRenderer extends PatchedLivingEntityRenderer<WitherBoss, Wit
 		boolean isVisibleToPlayer = !isVisible && !entityIn.isInvisibleTo(mc.player);
 		boolean isGlowing = mc.shouldEntityAppearGlowing(entityIn);
 		RenderType renderType = this.getRenderType(entityIn, entitypatch, renderer, isVisible, isVisibleToPlayer, isGlowing);
-		ClientModel model = entitypatch.getEntityModel(Models.LOGICAL_CLIENT);
+		ClientModel model = entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT);
 		Armature armature = model.getArmature();
 		poseStack.pushPose();
 		this.mulPoseStack(poseStack, armature, entityIn, entitypatch, partialTicks);

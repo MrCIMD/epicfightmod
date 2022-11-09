@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.Models;
+import yesman.epicfight.api.client.model.AnimatedModels;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
@@ -26,7 +26,7 @@ public class PatchedCapeLayer extends PatchedLayer<AbstractClientPlayer, Abstrac
 			ItemStack itemstack = entityliving.getItemBySlot(EquipmentSlot.CHEST);
 			if (itemstack.getItem() != Items.ELYTRA) {
 				OpenMatrix4f modelMatrix = new OpenMatrix4f();
-				modelMatrix.scale(new Vec3f(-1.0F, -1.0F, 1.0F)).mulFront(entitypatch.getEntityModel(Models.LOGICAL_CLIENT).getArmature().searchJointById(8).getAnimatedTransform());
+				modelMatrix.scale(new Vec3f(-1.0F, -1.0F, 1.0F)).mulFront(entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT).getArmature().searchJointById(8).getAnimatedTransform());
 				OpenMatrix4f transpose = OpenMatrix4f.transpose(modelMatrix, null);
 				matrixStackIn.pushPose();
 				MathUtils.translateStack(matrixStackIn, modelMatrix);

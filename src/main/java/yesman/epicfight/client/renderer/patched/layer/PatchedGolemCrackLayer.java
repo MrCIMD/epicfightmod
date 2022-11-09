@@ -15,7 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.Models;
+import yesman.epicfight.api.client.model.AnimatedModels;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.client.renderer.EpicFightRenderTypes;
 import yesman.epicfight.world.capabilities.entitypatch.mob.IronGolemPatch;
@@ -34,7 +34,7 @@ public class PatchedGolemCrackLayer extends PatchedLayer<IronGolem, IronGolemPat
 		
 		if (crack != IronGolem.Crackiness.NONE) {
 			VertexConsumer ivertexbuilder = bufferIn.getBuffer(EpicFightRenderTypes.triangles(RenderType.entityCutoutNoCull(CRACK_MAP.get(crack))));
-			entitypatch.getEntityModel(Models.LOGICAL_CLIENT).drawAnimatedModel(matrixStackIn, ivertexbuilder, packedLightIn, 1.0F, 1.0F, 1.0F, 1.0F, OverlayTexture.NO_OVERLAY, poses);
+			entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT).drawAnimatedModel(matrixStackIn, ivertexbuilder, packedLightIn, 1.0F, 1.0F, 1.0F, 1.0F, OverlayTexture.NO_OVERLAY, poses);
 		}
 	}
 }

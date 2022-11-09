@@ -40,6 +40,7 @@ import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.ClientAnimator;
 import yesman.epicfight.api.collider.Collider;
+import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.AttackResult.ResultType;
@@ -62,19 +63,21 @@ public abstract class LivingEntityPatch<T extends LivingEntity> extends EntityPa
 	public static final EntityDataAccessor<Float> STUN_SHIELD = new EntityDataAccessor<Float> (251, EntityDataSerializers.FLOAT);
 	public static final EntityDataAccessor<Float> MAX_STUN_SHIELD = new EntityDataAccessor<Float> (252, EntityDataSerializers.FLOAT);
 	
-	private float stunTimeReduction;
-	protected EntityState state = EntityState.DEFAULT;
-	protected Animator animator;
-	public LivingMotion currentLivingMotion = LivingMotions.IDLE;
-	public LivingMotion currentCompositeMotion = LivingMotions.IDLE;
-	
-	public List<LivingEntity> currentlyAttackedEntity;
-	protected Vec3 lastAttackPosition;
-	protected EpicFightDamageSource animationDamageSource;
-	protected boolean airborne;
 	private Entity lastTryHurtEntity;
 	private ResultType lastResultType;
 	private float lastDealDamage;
+	private float stunTimeReduction;
+	
+	protected Armature armature;
+	protected EntityState state = EntityState.DEFAULT;
+	protected Animator animator;
+	protected Vec3 lastAttackPosition;
+	protected EpicFightDamageSource animationDamageSource;
+	protected boolean airborne;
+	
+	public LivingMotion currentLivingMotion = LivingMotions.IDLE;
+	public LivingMotion currentCompositeMotion = LivingMotions.IDLE;
+	public List<LivingEntity> currentlyAttackedEntity;
 	
 	@Override
 	public void onConstructed(T entityIn) {
@@ -96,6 +99,11 @@ public abstract class LivingEntityPatch<T extends LivingEntity> extends EntityPa
 	@OnlyIn(Dist.CLIENT)
 	public abstract void initAnimator(ClientAnimator clientAnimator);
 	public abstract void updateMotion(boolean considerInaction);
+	
+	public Armature getArmature() {
+		return this.armature;
+	}
+	
 	public abstract <M extends ModelOld> M getEntityModel(Armatures<M> modelDB);
 	
 	protected void initAttributes() {

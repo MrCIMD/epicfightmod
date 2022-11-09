@@ -38,7 +38,7 @@ import yesman.epicfight.main.EpicFightMod;
 public class CustomModelBakery {
 	static int indexCount = 0;
 	
-	static final Map<ResourceLocation, ClientModel> BAKED_MODELS = Maps.newHashMap();
+	static final Map<ResourceLocation, AnimatedModel> BAKED_MODELS = Maps.newHashMap();
 	static final ModelBaker HEAD = new SimpleBaker("head", 9);
 	static final ModelBaker LEFT_FEET = new SimpleBaker("leftBoots", 5);
 	static final ModelBaker RIGHT_FEET = new SimpleBaker("rightBoots", 2);
@@ -55,17 +55,17 @@ public class CustomModelBakery {
 	
 	public static void exportModels(File resourcePackDirectory) throws IOException {
 		File zipFile = new File(resourcePackDirectory, "epicfight_custom_armors.zip");
-		
 		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
-		for (Map.Entry<ResourceLocation, ClientModel> entry : BAKED_MODELS.entrySet()) {
-			ZipEntry zipEntry = new ZipEntry(String.format("assets/%s/%s", entry.getValue().getLocation().getNamespace(), entry.getValue().getLocation().getPath()));
+		
+		for (Map.Entry<ResourceLocation, AnimatedModel> entry : BAKED_MODELS.entrySet()) {
+			ZipEntry zipEntry = new ZipEntry(String.format("assets/%s/%s", entry.getKey().getNamespace(), entry.getKey().getPath()));
 			Gson gson = new GsonBuilder().create();
 			out.putNextEntry(zipEntry);
-			out.write(gson.toJson(entry.getValue().getMesh().toJsonObject()).getBytes());
+			out.write(gson.toJson(entry.getValue().toJsonObject()).getBytes());
 			out.closeEntry();
 			EpicFightMod.LOGGER.info("Exported custom armor model : " + entry.getKey());
 		}
-
+		
 		ZipEntry zipEntry = new ZipEntry("pack.mcmeta");
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonObject root = new JsonObject();
@@ -79,7 +79,7 @@ public class CustomModelBakery {
 		out.close();
 	}
 	
-	public static ClientModel bakeBipedCustomArmorModel(HumanoidModel<?> model, ArmorItem armorItem, EquipmentSlot slot, boolean debuggingMode) {
+	public static AnimatedModel bakeBipedCustomArmorModel(HumanoidModel<?> model, ArmorItem armorItem, EquipmentSlot slot, boolean debuggingMode) {
 		List<ModelPartition> boxes = Lists.<ModelPartition>newArrayList();
 		
 		model.head.setRotation(0.0F, 0.0F, 0.0F);
@@ -115,7 +115,7 @@ public class CustomModelBakery {
 		
 		ResourceLocation rl = new ResourceLocation(armorItem.getRegistryName().getNamespace(), "armor/" + armorItem.getRegistryName().getPath());
 		ClientModel customModel = new ClientModel(rl, bakeMeshFromCubes(boxes, debuggingMode));
-		Models.LOGICAL_CLIENT.register(rl, customModel);
+		AnimatedModels.LOGICAL_CLIENT.register(rl, customModel);
 		BAKED_MODELS.put(armorItem.getRegistryName(), customModel);
 		return customModel;
 	}
