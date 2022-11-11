@@ -48,7 +48,7 @@ public class AnimatedModels implements PreparableReloadListener {
 	public static AnimatedModel FORCE_FIELD;
 	public static AnimatedModel LASER;
 	
-	public static void registerModels(ResourceManager rm) {
+	public static void build(ResourceManager rm) {
 		
 		ALEX = (new JsonModelLoader(EpicFightMod.MODID, "entity/biped_slim_arm")).loadAnimatedModel();
 		

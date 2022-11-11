@@ -136,9 +136,13 @@ public class EpicFightMod {
     	
 		EntityPatchProvider.registerEntityPatchesClient();
 		ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
-		AnimatedModels.LOGICAL_CLIENT.loadModels(resourceManager);
-		AnimatedModels.LOGICAL_CLIENT.loadArmatures(resourceManager);
-		Armatures.LOGICAL_SERVER.loadArmatures(resourceManager);
+		//AnimatedModels.LOGICAL_CLIENT.loadModels(resourceManager);
+		//AnimatedModels.LOGICAL_CLIENT.loadArmatures(resourceManager);
+		//Armatures.LOGICAL_SERVER.loadArmatures(resourceManager);
+		
+		AnimatedModels.build(resourceManager);
+		Armatures.build(resourceManager);
+		
 		this.animationManager.loadAnimationsInit(resourceManager);
 		
 		Animations.buildClient();

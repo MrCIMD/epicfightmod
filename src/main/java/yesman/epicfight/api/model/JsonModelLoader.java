@@ -113,7 +113,7 @@ public class JsonModelLoader {
 		ResourceLocation parent = this.getParent();
 		
 		if (parent != null) {
-			
+			return null;
 		} else {
 			JsonObject obj = this.rootJson.getAsJsonObject("vertices");
 			JsonObject positions = obj.getAsJsonObject("positions");
