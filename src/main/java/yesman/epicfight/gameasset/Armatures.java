@@ -1,21 +1,22 @@
 package yesman.epicfight.gameasset;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import com.google.common.collect.Maps;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.fml.ModLoader;
-import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.api.forgeevent.ModelBuildEvent;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.model.JsonModelLoader;
-import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.main.EpicFightMod;
 
-@Mod.EventBusSubscriber()
-public class Armatures {
+public class Armatures implements PreparableReloadListener {
 	private static final Map<ResourceLocation, Armature> ARMATURES = Maps.newHashMap();
 	
 	public static Armature BIPED;
@@ -71,5 +72,10 @@ public class Armatures {
 		ARMATURES.put(rl, armature);
 		
 		return armature;
+	}
+
+	@Override
+	public CompletableFuture<Void> reload(PreparationBarrier p_10638_, ResourceManager p_10639_, ProfilerFiller p_10640_, ProfilerFiller p_10641_, Executor p_10642_, Executor p_10643_) {
+		return null;
 	}
 }
