@@ -7,6 +7,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class ModelPart {
+	public static final ModelPart EMPTY = new ModelPart(null);
+	
 	private final List<VertexIndicator> vertices;
 	public boolean hidden;
 	

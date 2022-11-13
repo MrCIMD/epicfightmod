@@ -14,8 +14,7 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.AnimatedModels;
+import yesman.epicfight.api.client.model.AnimatedMesh;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.client.ClientEngine;
@@ -29,7 +28,7 @@ public class EntityAfterImageParticle extends CustomModelParticle {
 	private Matrix4f modelMatrix;
 	private float alphaO;
 	
-	public EntityAfterImageParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, ClientModel particleMesh, OpenMatrix4f[] matrices, Matrix4f modelMatrix) {
+	public EntityAfterImageParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, AnimatedMesh particleMesh, OpenMatrix4f[] matrices, Matrix4f modelMatrix) {
 		super(level, x, y, z, xd, yd, zd, particleMesh);
 		this.poseMatrices = matrices;
 		this.modelMatrix = modelMatrix;
@@ -72,11 +71,14 @@ public class EntityAfterImageParticle extends CustomModelParticle {
 			
 			if (entitypatch != null && ClientEngine.instance.renderEngine.hasRendererFor(entitypatch.getOriginal())) {
 				PatchedEntityRenderer renderer = ClientEngine.instance.renderEngine.getEntityRenderer(entitypatch.getOriginal());
-				Armature armature = entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT).getArmature();
+				Armature armature = entitypatch.getArmature();
 				PoseStack poseStack = new PoseStack();
 				OpenMatrix4f[] matrices = renderer.getPoseMatrices(entitypatch, armature, 1.0F);
 				renderer.mulPoseStack(poseStack, armature, entitypatch.getOriginal(), entitypatch, 1.0F);
-				EntityAfterImageParticle particle = new EntityAfterImageParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT), matrices, poseStack.last().pose());
+				
+				AnimatedMesh mesh = ClientEngine.instance.renderEngine.getEntityRenderer(entitypatch.getOriginal()).getMesh(entitypatch);
+				EntityAfterImageParticle particle = new EntityAfterImageParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, mesh, matrices, poseStack.last().pose());
+				
 				return particle;
 			} else {
 				return null;

@@ -36,13 +36,15 @@ import yesman.epicfight.api.animation.types.ActionAnimation;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.AttackAnimation.Phase;
 import yesman.epicfight.api.animation.types.StaticAnimation;
-import yesman.epicfight.api.client.model.AnimatedModel;
-import yesman.epicfight.api.client.model.AnimatedModels.AnimatedModelContructor;
+import yesman.epicfight.api.client.model.AnimatedMesh;
+import yesman.epicfight.api.client.model.Meshes;
+import yesman.epicfight.api.client.model.Meshes.AnimatedMeshContructor;
 import yesman.epicfight.api.client.model.ModelPart;
 import yesman.epicfight.api.client.model.VertexIndicator;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.api.utils.math.Vec4f;
+import yesman.epicfight.gameasset.Armatures.ArmatureContructor;
 import yesman.epicfight.main.EpicFightMod;
 
 public class JsonModelLoader {
@@ -67,6 +69,7 @@ public class JsonModelLoader {
 	}
 	
 	private JsonObject rootJson;
+	private ResourceManager resourceManager;
 	
 	public JsonModelLoader(ResourceManager resourceManager, ResourceLocation resourceLocation) {
 		try {
@@ -78,6 +81,7 @@ public class JsonModelLoader {
 				in.setLenient(true);
 				this.rootJson = Streams.parse(in).getAsJsonObject();	
 			} else {
+				this.resourceManager = resourceManager;
 				Resource resource = resourceManager.getResource(resourceLocation);
 				JsonReader in = new JsonReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
 				in.setLenient(true);
@@ -93,13 +97,13 @@ public class JsonModelLoader {
 	}
 	
 	@OnlyIn(Dist.CLIENT)
-	public AnimatedModel.RenderProperties getRenderProperties() {
+	public AnimatedMesh.RenderProperties getRenderProperties() {
 		JsonObject properties = this.rootJson.getAsJsonObject("render_properties");
 		
 		if (properties != null) {
-			return AnimatedModel.RenderProperties.builder().transparency(properties.has("transparent") ? properties.get("transparent").getAsBoolean() : false).build();
+			return AnimatedMesh.RenderProperties.builder().transparency(properties.has("transparent") ? properties.get("transparent").getAsBoolean() : false).build();
 		} else {
-			return AnimatedModel.RenderProperties.DEFAULT;
+			return AnimatedMesh.RenderProperties.DEFAULT;
 		}
 	}
 	
@@ -109,11 +113,12 @@ public class JsonModelLoader {
 	}
 	
 	@OnlyIn(Dist.CLIENT)
-	public <T extends AnimatedModel> T loadAnimatedModel(AnimatedModelContructor<T> builder) {
+	public <T extends AnimatedMesh> T loadAnimatedMesh(AnimatedMeshContructor<T> constructor) {
 		ResourceLocation parent = this.getParent();
 		
 		if (parent != null) {
-			return null;
+			AnimatedMesh mesh = Meshes.getOrCreateMesh(this.resourceManager, parent, AnimatedMesh::new);			
+			return constructor.invoke(null, null, null, null, mesh, this.getRenderProperties(), null);
 		} else {
 			JsonObject obj = this.rootJson.getAsJsonObject("vertices");
 			JsonObject positions = obj.getAsJsonObject("positions");
@@ -164,18 +169,19 @@ public class JsonModelLoader {
 				meshMap.put("noGroups", new ModelPart(VertexIndicator.create(toIntArray(indices.get("array").getAsJsonArray()), vcountArray, animationIndexArray)));
 			}
 			
-			return builder.constructor(positionArray, normalArray, uvArray, weightArray, meshMap);
+			return constructor.invoke(positionArray, normalArray, uvArray, weightArray, null, this.getRenderProperties(), meshMap);
 		}
 	}
 	
-	public Armature getArmature() {
+	public <T extends Armature> T loadArmature(ArmatureContructor<T> constructor) {
 		JsonObject obj = this.rootJson.getAsJsonObject("armature");
 		JsonObject hierarchy = obj.get("hierarchy").getAsJsonArray().get(0).getAsJsonObject();
 		JsonArray nameAsVertexGroups = obj.getAsJsonArray("joints");
 		Map<String, Joint> jointMap = Maps.newHashMap();
 		Joint joint = this.getJoint(hierarchy, nameAsVertexGroups, jointMap, true);
 		joint.initShortcut(new OpenMatrix4f());
-		return new Armature(jointMap.size(), joint, jointMap);
+		
+		return constructor.invoke(jointMap.size(), joint, jointMap);
 	}
 	
 	public Joint getJoint(JsonObject object, JsonArray nameAsVertexGroups, Map<String, Joint> jointMap, boolean start) {
@@ -215,6 +221,7 @@ public class JsonModelLoader {
 		boolean action = animation instanceof ActionAnimation;
 		boolean attack = animation instanceof AttackAnimation;
 		boolean root = true;
+		Armature armature = animation.getArmature();
 		
 		if (!action && !attack) {
 			if (FMLEnvironment.dist == Dist.DEDICATED_SERVER) {
@@ -225,9 +232,9 @@ public class JsonModelLoader {
 		Set<String> allowedJoints = Sets.<String>newLinkedHashSet();
 		
 		if (attack) {
+			
 			for (Phase phase : ((AttackAnimation)animation).phases) {
-				Armature armature = animation.getModel().getArmature();
-				Joint joint = armature.getJointHierarcy();
+				Joint joint = armature.getRootJoint();
 				int pathIndex = armature.searchPathIndex(phase.getColliderJointName());
 				
 				while (joint != null) {
@@ -254,7 +261,7 @@ public class JsonModelLoader {
 				continue;
 			}
 			
-			Joint joint = animation.getModel().getArmature().searchJointByName(name);
+			Joint joint = armature.searchJointByName(name);
 			
 			if (joint == null) {
 				throw new IllegalArgumentException("[EpicFightMod] Can't find the joint " + name + " in animation data " + animation);
@@ -288,11 +295,12 @@ public class JsonModelLoader {
 	public void loadStaticAnimationBothSide(StaticAnimation animation) {
 		JsonArray array = this.rootJson.get("animation").getAsJsonArray();
 		boolean root = true;
+		Armature armature = animation.getArmature();
 		
 		for (JsonElement element : array) {
 			JsonObject keyObject = element.getAsJsonObject();
 			String name = keyObject.get("name").getAsString();
-			Joint joint = animation.getModel().getArmature().searchJointByName(name);
+			Joint joint = armature.searchJointByName(name);
 			
 			if (joint == null) {
 				throw new IllegalArgumentException("[EpicFightMod] Can't find the joint " + name + " in animation data " + animation);

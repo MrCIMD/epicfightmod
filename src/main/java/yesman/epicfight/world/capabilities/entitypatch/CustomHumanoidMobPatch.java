@@ -17,9 +17,7 @@ import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.ClientAnimator;
 import yesman.epicfight.api.client.animation.Layer;
 import yesman.epicfight.api.data.reloader.MobPatchReloadListener;
-import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
-import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
 import yesman.epicfight.world.damagesource.StunType;
@@ -132,11 +130,6 @@ public class CustomHumanoidMobPatch<T extends PathfinderMob> extends HumanoidMob
 				this.playReboundAnimation();
 			}
 		}
-	}
-	
-	@Override
-	public <M extends ModelOld> M getEntityModel(Armatures<M> modelDB) {
-		return modelDB.get(this.provider.getModelLocation());
 	}
 	
 	@Override

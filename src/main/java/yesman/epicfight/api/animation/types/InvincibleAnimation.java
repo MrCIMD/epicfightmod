@@ -1,10 +1,10 @@
 package yesman.epicfight.api.animation.types;
 
-import yesman.epicfight.api.model.ModelOld;
+import net.minecraft.resources.ResourceLocation;
 
 public class InvincibleAnimation extends ActionAnimation {
-	public InvincibleAnimation(float convertTime, String path, ModelOld model) {
-		super(convertTime, path, model);
+	public InvincibleAnimation(float convertTime, String path, ResourceLocation armature) {
+		super(convertTime, path, armature);
 		
 		this.stateSpectrumBlueprint.clear()
 			.newTimePair(0.0F, Float.MAX_VALUE)

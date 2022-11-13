@@ -38,7 +38,7 @@ import yesman.epicfight.main.EpicFightMod;
 public class CustomModelBakery {
 	static int indexCount = 0;
 	
-	static final Map<ResourceLocation, AnimatedModel> BAKED_MODELS = Maps.newHashMap();
+	static final Map<ResourceLocation, AnimatedMesh> BAKED_MODELS = Maps.newHashMap();
 	static final ModelBaker HEAD = new SimpleBaker("head", 9);
 	static final ModelBaker LEFT_FEET = new SimpleBaker("leftBoots", 5);
 	static final ModelBaker RIGHT_FEET = new SimpleBaker("rightBoots", 2);
@@ -57,7 +57,7 @@ public class CustomModelBakery {
 		File zipFile = new File(resourcePackDirectory, "epicfight_custom_armors.zip");
 		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
 		
-		for (Map.Entry<ResourceLocation, AnimatedModel> entry : BAKED_MODELS.entrySet()) {
+		for (Map.Entry<ResourceLocation, AnimatedMesh> entry : BAKED_MODELS.entrySet()) {
 			ZipEntry zipEntry = new ZipEntry(String.format("assets/%s/%s", entry.getKey().getNamespace(), entry.getKey().getPath()));
 			Gson gson = new GsonBuilder().create();
 			out.putNextEntry(zipEntry);
@@ -79,7 +79,7 @@ public class CustomModelBakery {
 		out.close();
 	}
 	
-	public static AnimatedModel bakeBipedCustomArmorModel(HumanoidModel<?> model, ArmorItem armorItem, EquipmentSlot slot, boolean debuggingMode) {
+	public static AnimatedMesh bakeBipedCustomArmorModel(HumanoidModel<?> model, ArmorItem armorItem, EquipmentSlot slot, boolean debuggingMode) {
 		List<ModelPartition> boxes = Lists.<ModelPartition>newArrayList();
 		
 		model.head.setRotation(0.0F, 0.0F, 0.0F);
@@ -114,13 +114,15 @@ public class CustomModelBakery {
 		}
 		
 		ResourceLocation rl = new ResourceLocation(armorItem.getRegistryName().getNamespace(), "armor/" + armorItem.getRegistryName().getPath());
-		ClientModel customModel = new ClientModel(rl, bakeMeshFromCubes(boxes, debuggingMode));
-		AnimatedModels.LOGICAL_CLIENT.register(rl, customModel);
-		BAKED_MODELS.put(armorItem.getRegistryName(), customModel);
-		return customModel;
+		AnimatedMesh armorModelMesh = bakeMeshFromCubes(boxes, debuggingMode);
+		Meshes.addMesh(rl, armorModelMesh);
+		
+		BAKED_MODELS.put(armorItem.getRegistryName(), armorModelMesh);
+		
+		return armorModelMesh;
 	}
 	
-	private static AnimatedModel bakeMeshFromCubes(List<ModelPartition> partitions, boolean debuggingMode) {
+	private static AnimatedMesh bakeMeshFromCubes(List<ModelPartition> partitions, boolean debuggingMode) {
 		List<SingleVertex> vertices = Lists.newArrayList();
 		Map<String, List<Integer>> indices = Maps.newHashMap();
 		PoseStack poseStack = new PoseStack();
@@ -185,7 +187,7 @@ public class CustomModelBakery {
 		}
 		
 		void putIndexCount(Map<String, List<Integer>> indices, int value) {
-			List<Integer> list = indices.get(this.partName);
+			List<Integer> list = indices.computeIfAbsent(this.partName, (key) -> Lists.newArrayList());
 			
 			for (int i = 0; i < 3; i++) {
 				list.add(value);

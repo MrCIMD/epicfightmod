@@ -13,7 +13,6 @@ import yesman.epicfight.api.animation.property.AnimationProperty.AttackAnimation
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
-import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class MultiOBBCollider extends MultiCollider<OBBCollider> {
@@ -33,7 +32,7 @@ public class MultiOBBCollider extends MultiCollider<OBBCollider> {
 		int numberOf = Math.max(Math.round((this.numberOfColliders + animation.getProperty(AttackAnimationProperty.EXTRA_COLLIDERS).orElse(0)) * attackSpeed), 1);
 		float partialScale = 1.0F / (numberOf - 1);
 		float interpolation = 0.0F;
-		Armature armature = entitypatch.getEntityModel(Armatures.LOGICAL_SERVER).getArmature();
+		Armature armature = entitypatch.getArmature();
 		int pathIndex =  armature.searchPathIndex(animation.getPathIndexByTime(elapsedTime));
 		boolean red = entitypatch.getEntityState().attacking();
 		List<OBBCollider> colliders = Lists.newArrayList();

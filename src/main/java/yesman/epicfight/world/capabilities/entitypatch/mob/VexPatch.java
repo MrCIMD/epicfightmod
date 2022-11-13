@@ -14,10 +14,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.ClientAnimator;
-import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.gameasset.Animations;
-import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.world.capabilities.entitypatch.Faction;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.MobPatch;
@@ -81,11 +79,6 @@ public class VexPatch extends MobPatch<Vex> {
 	public void onAttackBlocked(DamageSource damageSource, LivingEntityPatch<?> opponent) {
 		this.original.setPos(opponent.getOriginal().getEyePosition().add(opponent.getOriginal().getLookAngle()));
 		this.playAnimationSynchronized(Animations.VEX_NEUTRALIZED, 0.0F);
-	}
-	
-	@Override
-	public <M extends ModelOld> M getEntityModel(Armatures<M> modelDB) {
-		return modelDB.vex;
 	}
 	
 	@Override

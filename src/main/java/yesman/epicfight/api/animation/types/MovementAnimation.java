@@ -1,17 +1,17 @@
 package yesman.epicfight.api.animation.types;
 
+import net.minecraft.resources.ResourceLocation;
 import yesman.epicfight.api.animation.property.AnimationProperty.StaticAnimationProperty;
-import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.config.ConfigurationIngame;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class MovementAnimation extends StaticAnimation {
-	public MovementAnimation(boolean isRepeat, String path, ModelOld model) {
-		super(ConfigurationIngame.GENERAL_ANIMATION_CONVERT_TIME, isRepeat, path, model);
+	public MovementAnimation(boolean isRepeat, String path, ResourceLocation armature) {
+		super(ConfigurationIngame.GENERAL_ANIMATION_CONVERT_TIME, isRepeat, path, armature);
 	}
 	
-	public MovementAnimation(float convertTime, boolean isRepeat, String path, ModelOld model) {
-		super(convertTime, isRepeat, path, model);
+	public MovementAnimation(float convertTime, boolean isRepeat, String path, ResourceLocation armature) {
+		super(convertTime, isRepeat, path, armature);
 	}
 	
 	@Override

@@ -11,21 +11,33 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Drowned;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.AnimatedModels;
+import yesman.epicfight.api.client.model.Meshes;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
+import yesman.epicfight.client.mesh.HumanoidMesh;
 import yesman.epicfight.client.renderer.EpicFightRenderTypes;
 import yesman.epicfight.world.capabilities.entitypatch.mob.DrownedPatch;
 
 @OnlyIn(Dist.CLIENT)
-public class OuterLayerRenderer extends PatchedLayer<Drowned, DrownedPatch, DrownedModel<Drowned>, DrownedOuterLayer<Drowned>> {
+public class OuterLayerRenderer extends PatchedLayer<Drowned, DrownedPatch, DrownedModel<Drowned>, DrownedOuterLayer<Drowned>, HumanoidMesh> {
+
 	public static final ResourceLocation DROWNED_OUTER_LAYER = new ResourceLocation("textures/entity/zombie/drowned_outer_layer.png");
 	
+	public OuterLayerRenderer() {
+		super(Meshes.BIPED);
+	}
+	
 	@Override
-	public void renderLayer(DrownedPatch entitypatch, Drowned entityliving, DrownedOuterLayer<Drowned> originalRenderer, PoseStack matrixStackIn, MultiBufferSource buffer, int packedLightIn, OpenMatrix4f[] poses, float netYawHead, float pitchHead, float partialTicks) {
-		
-		ClientModel model = Models.AnimatedModels.drownedOuterLayer;
-		
-		model.drawAnimatedModel(matrixStackIn, buffer.getBuffer(EpicFightRenderTypes.triangles(RenderType.entityCutoutNoCull(DROWNED_OUTER_LAYER))), packedLightIn, 1.0F, 1.0F, 1.0F, 1.0F, LivingEntityRenderer.getOverlayCoords(entityliving, 0.0F), poses);
+	protected void renderLayer(DrownedPatch entitypatch, Drowned entityliving, DrownedOuterLayer<Drowned> originalRenderer, PoseStack matrixStackIn, MultiBufferSource buffer, int packedLightIn, OpenMatrix4f[] poses, float netYawHead, float pitchHead, float partialTicks) {
+		this.mesh.drawAnimatedModel(matrixStackIn, buffer.getBuffer(EpicFightRenderTypes.triangles(RenderType.entityCutoutNoCull(DROWNED_OUTER_LAYER))), packedLightIn, 1.0F, 1.0F, 1.0F, 1.0F, LivingEntityRenderer.getOverlayCoords(entityliving, 0.0F), poses);
+	}
+	
+	protected void initMesh() {
+		this.mesh.initialize();
+		this.mesh.head.hidden = true;
+		this.mesh.lefrArm.hidden = true;
+		this.mesh.rightArm.hidden = true;
+		this.mesh.torso.hidden = true;
+		this.mesh.leftLeg.hidden = true;
+		this.mesh.rightLeg.hidden = true;
 	}
 }

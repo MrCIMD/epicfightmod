@@ -3,6 +3,7 @@ package yesman.epicfight.api.animation.types;
 import com.mojang.math.Vector3f;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.animation.JointTransform;
@@ -10,7 +11,6 @@ import yesman.epicfight.api.animation.Pose;
 import yesman.epicfight.api.animation.property.AnimationProperty.StaticAnimationProperty;
 import yesman.epicfight.api.client.animation.ClientAnimator;
 import yesman.epicfight.api.client.animation.Layer;
-import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.config.ConfigurationIngame;
@@ -21,15 +21,15 @@ public class AimAnimation extends StaticAnimation {
 	public StaticAnimation lookDown;
 	public StaticAnimation lying;
 	
-	public AimAnimation(float convertTime, boolean repeatPlay, String path1, String path2, String path3, String path4, ModelOld model) {
-		super(convertTime, repeatPlay, path1, model);
-		this.lookUp = new StaticAnimation(convertTime, repeatPlay, path2, model, true);
-		this.lookDown = new StaticAnimation(convertTime, repeatPlay, path3, model, true);
-		this.lying = new StaticAnimation(convertTime, repeatPlay, path4, model, true);
+	public AimAnimation(float convertTime, boolean repeatPlay, String path1, String path2, String path3, String path4, ResourceLocation armature) {
+		super(convertTime, repeatPlay, path1, armature);
+		this.lookUp = new StaticAnimation(convertTime, repeatPlay, path2, armature, true);
+		this.lookDown = new StaticAnimation(convertTime, repeatPlay, path3, armature, true);
+		this.lying = new StaticAnimation(convertTime, repeatPlay, path4, armature, true);
 	}
 	
-	public AimAnimation(boolean repeatPlay, String path1, String path2, String path3, String path4, ModelOld model) {
-		this(ConfigurationIngame.GENERAL_ANIMATION_CONVERT_TIME, repeatPlay, path1, path2, path3, path4, model);
+	public AimAnimation(boolean repeatPlay, String path1, String path2, String path3, String path4, ResourceLocation armature) {
+		this(ConfigurationIngame.GENERAL_ANIMATION_CONVERT_TIME, repeatPlay, path1, path2, path3, path4, armature);
 	}
 	
 	@Override

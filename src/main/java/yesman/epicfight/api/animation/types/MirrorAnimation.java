@@ -1,5 +1,6 @@
 package yesman.epicfight.api.animation.types;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.InteractionHand;
 import net.minecraftforge.api.distmarker.Dist;
@@ -7,17 +8,16 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.property.AnimationProperty.StaticAnimationProperty;
 import yesman.epicfight.api.client.animation.ClientAnimationProperties;
 import yesman.epicfight.api.client.animation.Layer;
-import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class MirrorAnimation extends StaticAnimation {
 	public StaticAnimation original;
 	public StaticAnimation mirror;
 	
-	public MirrorAnimation(float convertTime, boolean repeatPlay, String path1, String path2, ModelOld model) {
-		super(0.0F, false, path1, model);
-		this.original = new StaticAnimation(convertTime, repeatPlay, path1, model, true);
-		this.mirror = new StaticAnimation(convertTime, repeatPlay, path2, model, true);
+	public MirrorAnimation(float convertTime, boolean repeatPlay, String path1, String path2, ResourceLocation armature) {
+		super(0.0F, false, path1, armature);
+		this.original = new StaticAnimation(convertTime, repeatPlay, path1, armature, true);
+		this.mirror = new StaticAnimation(convertTime, repeatPlay, path2, armature, true);
 	}
 	
 	@Override

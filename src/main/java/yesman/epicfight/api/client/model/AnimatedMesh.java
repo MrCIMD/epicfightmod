@@ -20,10 +20,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.api.utils.math.Vec4f;
+import yesman.epicfight.main.EpicFightMod;
 
 @OnlyIn(Dist.CLIENT)
-public class AnimatedModel {
-	
+public class AnimatedMesh {
 	public static class RenderProperties {
 		public static final RenderProperties DEFAULT = RenderProperties.builder().build();
 		
@@ -63,21 +63,13 @@ public class AnimatedModel {
 	final Map<String, ModelPart> parts;
 	final RenderProperties properties;
 	
-	public AnimatedModel(AnimatedModel parent, RenderProperties properties) {
-		this(parent.positions, parent.normals, parent.uvs, parent.weights, properties, parent.parts);
-	}
-	
-	public AnimatedModel(float[] positions, float[] normals, float[] uvs, float[] weights, Map<String, ModelPart> parts) {
-		this(positions, normals, uvs, weights, RenderProperties.DEFAULT, parts);
-	}
-	
-	public AnimatedModel(float[] positions, float[] normals, float[] uvs, float[] weights, RenderProperties properties, Map<String, ModelPart> parts) {
-		this.positions = positions;
-		this.normals = normals;
-		this.uvs = uvs;
-		this.weights = weights;
+	public AnimatedMesh(float[] positions, float[] normals, float[] uvs, float[] weights, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+		this.positions = (parent == null) ? positions : parent.positions;
+		this.normals = (parent == null) ? normals : parent.normals;
+		this.uvs = (parent == null) ? uvs : parent.uvs;
+		this.weights = (parent == null) ? weights : parent.weights;
+		this.parts = (parent == null) ? parts : parent.parts;
 		this.properties = properties;
-		this.parts = parts;
 		
 		int totalV = 0;
 		
@@ -86,6 +78,15 @@ public class AnimatedModel {
 		}
 		
 		this.totalVertices = totalV;
+	}
+	
+	protected ModelPart getOrLogException(Map<String, ModelPart> parts, String name) {
+		if (!parts.containsKey(name)) {
+			EpicFightMod.LOGGER.info("Cannot find the mesh part named " + name + " in " + this.getClass().getCanonicalName());
+			return ModelPart.EMPTY;
+		}
+		
+		return parts.get(name);
 	}
 	
 	public ModelPart getPart(String part) {

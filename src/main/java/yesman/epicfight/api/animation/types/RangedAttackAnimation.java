@@ -1,13 +1,13 @@
 package yesman.epicfight.api.animation.types;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import yesman.epicfight.api.collider.Collider;
-import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class RangedAttackAnimation extends AttackAnimation {
-	public RangedAttackAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, Collider collider, String index, String path, ModelOld model) {
-		super(convertTime, antic, preDelay, contact, recovery, collider, index, path, model);
+	public RangedAttackAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, Collider collider, String index, String path, ResourceLocation armature) {
+		super(convertTime, antic, preDelay, contact, recovery, collider, index, path, armature);
 	}
 	
 	@Override

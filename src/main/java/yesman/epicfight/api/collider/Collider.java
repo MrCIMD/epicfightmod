@@ -17,7 +17,6 @@ import yesman.epicfight.api.animation.Animator;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
-import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public abstract class Collider {
@@ -37,7 +36,7 @@ public abstract class Collider {
 	
 	public List<Entity> updateAndSelectCollideEntity(LivingEntityPatch<?> entitypatch, AttackAnimation attackAnimation, float prevElapsedTime, float elapsedTime, String jointName, float attackSpeed) {
 		OpenMatrix4f transformMatrix;
-		Armature armature = entitypatch.getEntityModel(Armatures.LOGICAL_SERVER).getArmature();
+		Armature armature = entitypatch.getArmature();
 		int pathIndex = armature.searchPathIndex(jointName);
 		
 		if (pathIndex == -1) {
@@ -74,7 +73,7 @@ public abstract class Collider {
 	/** Display on debug mode **/
 	@OnlyIn(Dist.CLIENT)
 	public void draw(PoseStack matrixStackIn, MultiBufferSource buffer, LivingEntityPatch<?> entitypatch, AttackAnimation animation, float prevElapsedTime, float elapsedTime, float partialTicks, float attackSpeed) {
-		Armature armature = entitypatch.getEntityModel(Armatures.LOGICAL_SERVER).getArmature();
+		Armature armature = entitypatch.getArmature();
 		int pathIndex =  armature.searchPathIndex(animation.getPathIndexByTime(elapsedTime));
 		boolean flag3 = entitypatch.getEntityState().attacking();
 		OpenMatrix4f mat = null;

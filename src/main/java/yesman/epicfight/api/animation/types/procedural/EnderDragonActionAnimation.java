@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -18,7 +19,6 @@ import yesman.epicfight.api.animation.Pose;
 import yesman.epicfight.api.animation.TransformSheet;
 import yesman.epicfight.api.animation.property.AnimationProperty.ActionAnimationProperty;
 import yesman.epicfight.api.animation.types.ActionAnimation;
-import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.math.FABRIK;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
@@ -31,8 +31,8 @@ public class EnderDragonActionAnimation extends ActionAnimation implements Proce
 	private final IKInfo[] ikInfos;
 	private Map<String, TransformSheet> tipPointTransforms;
 	
-	public EnderDragonActionAnimation(float convertTime, String path, ModelOld model, IKInfo[] ikInfos) {
-		super(convertTime, path, model);
+	public EnderDragonActionAnimation(float convertTime, String path, ResourceLocation armature, IKInfo[] ikInfos) {
+		super(convertTime, path, armature);
 		this.ikInfos = ikInfos;
 	}
 	
@@ -40,7 +40,7 @@ public class EnderDragonActionAnimation extends ActionAnimation implements Proce
 	public void loadAnimation(ResourceManager resourceManager) {
 		loadBothSide(resourceManager, this);
 		this.tipPointTransforms = Maps.newHashMap();
-		this.setIKInfo(this.ikInfos, this.getTransfroms(), this.tipPointTransforms, this.getModel().getArmature(), this.getProperty(ActionAnimationProperty.MOVE_VERTICAL).orElse(false), true);
+		this.setIKInfo(this.ikInfos, this.getTransfroms(), this.tipPointTransforms, this.getArmature(), this.getProperty(ActionAnimationProperty.MOVE_VERTICAL).orElse(false), true);
 		this.onLoaded();
 	}
 	
@@ -63,7 +63,7 @@ public class EnderDragonActionAnimation extends ActionAnimation implements Proce
 	    		TipPointAnimation tipAnim = enderdragonpatch.getTipPointAnimation(ikInfo.endJoint);
 	    		JointTransform jt = tipAnim.getTipTransform(partialTicks);
 		    	Vec3f jointModelpos = OpenMatrix4f.transform3v(toModelPos, jt.translation(), null);
-		    	this.applyFabrikToJoint(jointModelpos.multiply(-1.0F, 1.0F, -1.0F), pose, this.getModel().getArmature(), ikInfo.startJoint, ikInfo.endJoint, jt.rotation());
+		    	this.applyFabrikToJoint(jointModelpos.multiply(-1.0F, 1.0F, -1.0F), pose, entitypatch.getArmature(), ikInfo.startJoint, ikInfo.endJoint, jt.rotation());
 	    	}
 		}
 		
@@ -165,7 +165,7 @@ public class EnderDragonActionAnimation extends ActionAnimation implements Proce
 					pose.putJointData(jointName, this.jointTransforms.get(jointName).getInterpolatedTransform(playTime));
 				}
 				
-				FABRIK fabrik = new FABRIK(pose, this.getModel().getArmature(), ikInfo.startJoint, ikInfo.endJoint);
+				FABRIK fabrik = new FABRIK(pose, entitypatch.getArmature(), ikInfo.startJoint, ikInfo.endJoint);
 			   	fabrik.run(jointModelpos, 10);
 		       	for (Vec3f vec : fabrik.getChainingPosition()) {
 		       		RenderingTool.drawCube(poseStack, vertexBuilder, vec, 0.3F, 0.0F, 1.0F, 0.0F);

@@ -7,12 +7,10 @@ import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.world.entity.PathfinderMob;
 import yesman.epicfight.api.animation.LivingMotions;
-import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.MobCombatBehaviors;
-import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.world.capabilities.entitypatch.Faction;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
@@ -52,10 +50,5 @@ public class WitherSkeletonPatch<T extends PathfinderMob> extends SkeletonPatch<
 	public OpenMatrix4f getModelMatrix(float partialTicks) {
 		OpenMatrix4f mat = super.getModelMatrix(partialTicks);
 		return OpenMatrix4f.scale(new Vec3f(1.2F, 1.2F, 1.2F), mat, mat);
-	}
-	
-	@Override
-	public <M extends ModelOld> M getEntityModel(Armatures<M> modelDB) {
-		return modelDB.skeleton;
 	}
 }

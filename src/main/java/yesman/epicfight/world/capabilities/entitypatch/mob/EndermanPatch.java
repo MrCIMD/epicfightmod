@@ -28,12 +28,10 @@ import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.ClientAnimator;
-import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.MobCombatBehaviors;
-import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.network.EpicFightNetworkManager;
 import yesman.epicfight.network.server.SPChangeLivingMotion;
 import yesman.epicfight.network.server.SPSpawnData;
@@ -260,11 +258,6 @@ public class EndermanPatch extends MobPatch<EnderMan> {
 		} else {
 			return Animations.ENDERMAN_HIT_SHORT;
 		}
-	}
-	
-	@Override
-	public <M extends ModelOld> M getEntityModel(Armatures<M> modelDB) {
-		return modelDB.enderman;
 	}
 	
 	static class EndermanTeleportMove extends CombatBehaviorGoal<EndermanPatch> {

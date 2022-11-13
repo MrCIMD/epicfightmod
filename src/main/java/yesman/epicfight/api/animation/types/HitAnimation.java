@@ -2,16 +2,16 @@ package yesman.epicfight.api.animation.types;
 
 import java.util.Map;
 
+import net.minecraft.resources.ResourceLocation;
 import yesman.epicfight.api.animation.JointTransform;
 import yesman.epicfight.api.animation.Keyframe;
 import yesman.epicfight.api.animation.Pose;
 import yesman.epicfight.api.animation.TransformSheet;
-import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class HitAnimation extends MainFrameAnimation {
-	public HitAnimation(float convertTime, String path, ModelOld model) {
-		super(convertTime, path, model);
+	public HitAnimation(float convertTime, String path, ResourceLocation armature) {
+		super(convertTime, path, armature);
 		
 		this.stateSpectrumBlueprint.clear()
 			.newTimePair(0.0F, Float.MAX_VALUE)

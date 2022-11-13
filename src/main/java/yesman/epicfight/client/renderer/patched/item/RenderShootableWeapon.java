@@ -10,7 +10,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.AnimatedModels;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
@@ -23,7 +22,7 @@ public class RenderShootableWeapon extends RenderItemBase {
 	@Override
 	public void renderItemInHand(ItemStack stack, LivingEntityPatch<?> entitypatch, InteractionHand hand, MultiBufferSource buffer, PoseStack poseStack, int packedLight) {
 		OpenMatrix4f modelMatrix = this.getCorrectionMatrix(stack, entitypatch, hand);
-		OpenMatrix4f jointTransform = entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT).getArmature().searchJointByName("Tool_L").getAnimatedTransform();
+		OpenMatrix4f jointTransform = entitypatch.getArmature().searchJointByName("Tool_L").getAnimatedTransform();
 		modelMatrix.mulFront(jointTransform);
 		
 		poseStack.pushPose();

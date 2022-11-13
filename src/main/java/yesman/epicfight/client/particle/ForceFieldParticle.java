@@ -16,8 +16,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.AnimatedModels;
+import yesman.epicfight.api.client.model.AnimatedMesh;
+import yesman.epicfight.api.client.model.Meshes;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
@@ -27,7 +27,7 @@ import yesman.epicfight.world.capabilities.entitypatch.boss.enderdragon.DragonCr
 public class ForceFieldParticle extends TexturedCustomModelParticle {
 	private LivingEntityPatch<?> caster;
 	
-	public ForceFieldParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, ClientModel particleMesh, ResourceLocation texture) {
+	public ForceFieldParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, AnimatedMesh particleMesh, ResourceLocation texture) {
 		super(level, x, y, z, xd, yd, zd, particleMesh, texture);
 		this.lifetime = DragonCrystalLinkPhase.CHARGING_TICK;
 		this.hasPhysics = false;
@@ -91,7 +91,7 @@ public class ForceFieldParticle extends TexturedCustomModelParticle {
 	public static class Provider implements ParticleProvider<SimpleParticleType> {
 		@Override
 		public Particle createParticle(SimpleParticleType typeIn, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-			return new ForceFieldParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, Models.AnimatedModels.forceField, EnderDragonRenderer.CRYSTAL_BEAM_LOCATION);
+			return new ForceFieldParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, Meshes.FORCE_FIELD, EnderDragonRenderer.CRYSTAL_BEAM_LOCATION);
 		}
 	}
 }

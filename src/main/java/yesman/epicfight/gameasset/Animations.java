@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import com.mojang.math.Quaternion;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -79,7 +80,6 @@ import yesman.epicfight.api.client.animation.ClientAnimationProperties;
 import yesman.epicfight.api.client.animation.Layer;
 import yesman.epicfight.api.collider.OBBCollider;
 import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
-import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.HitEntityList;
 import yesman.epicfight.api.utils.HitEntityList.Priority;
 import yesman.epicfight.api.utils.math.MathUtils;
@@ -389,18 +389,18 @@ public class Animations {
 		event.getRegistryMap().put(EpicFightMod.MODID, Animations::build);
 	}
 	
-	private static void build(Armatures armatures) {
-		ModelOld biped = armatures.biped;
-		ModelOld crepper = models.creeper;
-		ModelOld enderman = models.enderman;
-		ModelOld spider = models.spider;
-		ModelOld hoglin = models.hoglin;
-		ModelOld iron_golem = models.ironGolem;
-		ModelOld piglin = models.piglin;
-		ModelOld ravager = models.ravager;
-		ModelOld vex = models.vex;
-		ModelOld dragon = models.dragon;
-		ModelOld wither = models.wither;
+	private static void build() {
+		ResourceLocation biped = new ResourceLocation(EpicFightMod.MODID, "animmodels/entity/biped.json");
+		ResourceLocation crepper = new ResourceLocation(EpicFightMod.MODID, "animmodels/entity/creeper.json");
+		ResourceLocation enderman = new ResourceLocation(EpicFightMod.MODID, "animmodels/entity/enderman.json");
+		ResourceLocation spider = new ResourceLocation(EpicFightMod.MODID, "animmodels/entity/spider.json");
+		ResourceLocation hoglin = new ResourceLocation(EpicFightMod.MODID, "animmodels/entity/hoglin.json");
+		ResourceLocation iron_golem = new ResourceLocation(EpicFightMod.MODID, "animmodels/entity/iron_golem.json");
+		ResourceLocation piglin = new ResourceLocation(EpicFightMod.MODID, "animmodels/entity/piglin.json");
+		ResourceLocation ravager = new ResourceLocation(EpicFightMod.MODID, "animmodels/entity/ravager.json");
+		ResourceLocation vex = new ResourceLocation(EpicFightMod.MODID, "animmodels/entity/vex.json");
+		ResourceLocation dragon = new ResourceLocation(EpicFightMod.MODID, "animmodels/entity/dragon.json");
+		ResourceLocation wither = new ResourceLocation(EpicFightMod.MODID, "animmodels/entity/wither.json");
 		
 		BIPED_IDLE = new StaticAnimation(true, "biped/living/idle", biped);
 		BIPED_WALK = new MovementAnimation(true, "biped/living/walk", biped);

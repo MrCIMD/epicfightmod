@@ -10,6 +10,7 @@ import com.google.common.collect.Maps;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import yesman.epicfight.api.client.model.AnimatedMesh.RenderProperties;
 import yesman.epicfight.api.utils.math.Vec2f;
 import yesman.epicfight.api.utils.math.Vec3f;
 
@@ -75,7 +76,7 @@ public class SingleVertex {
 		}
 	}
 	
-	public static AnimatedModel loadVertexInformation(List<SingleVertex> vertices, Map<String, List<Integer>> indices) {
+	public static AnimatedMesh loadVertexInformation(List<SingleVertex> vertices, Map<String, List<Integer>> indices) {
 		List<Float> positions = Lists.<Float>newArrayList();
 		List<Float> normals = Lists.<Float>newArrayList();
 		List<Float> texCoords = Lists.<Float>newArrayList();
@@ -137,7 +138,7 @@ public class SingleVertex {
 			meshMap.put(e.getKey(), new ModelPart(VertexIndicator.create(ArrayUtils.toPrimitive(e.getValue().toArray(new Integer[0])), affectJointCounts, animationIndexList)));
 		}
 		
-		return new AnimatedModel(positionList, normalList, texCoordList, animationIndexList, jointWeightList, affectJointCounts, meshMap);
+		return new AnimatedMesh(positionList, normalList, texCoordList, jointWeightList, null, RenderProperties.DEFAULT, meshMap);
 	}
 	
 	public enum State {

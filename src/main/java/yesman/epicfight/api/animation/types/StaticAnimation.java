@@ -21,9 +21,10 @@ import yesman.epicfight.api.client.animation.JointMask;
 import yesman.epicfight.api.client.animation.JointMask.BindModifier;
 import yesman.epicfight.api.client.animation.Layer;
 import yesman.epicfight.api.client.animation.Layer.LayerType;
+import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.model.JsonModelLoader;
-import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.config.ConfigurationIngame;
+import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
@@ -31,7 +32,7 @@ public class StaticAnimation extends DynamicAnimation {
 	protected final Map<AnimationProperty<?>, Object> properties = Maps.newHashMap();
 	protected final StateSpectrum.Blueprint stateSpectrumBlueprint = new StateSpectrum.Blueprint();
 	protected final ResourceLocation resourceLocation;
-	protected final ModelOld model;
+	protected final ResourceLocation armatureLocation;
 	protected final int namespaceId;
 	protected final int animationId;
 	
@@ -42,14 +43,14 @@ public class StaticAnimation extends DynamicAnimation {
 		this.namespaceId = -1;
 		this.animationId = -1;
 		this.resourceLocation = null;
-		this.model = null;
+		this.armatureLocation = null;
 	}
 	
-	public StaticAnimation(boolean repeatPlay, String path, ModelOld model) {
-		this(ConfigurationIngame.GENERAL_ANIMATION_CONVERT_TIME, repeatPlay, path, model);
+	public StaticAnimation(boolean repeatPlay, String path, ResourceLocation armature) {
+		this(ConfigurationIngame.GENERAL_ANIMATION_CONVERT_TIME, repeatPlay, path, armature);
 	}
 	
-	public StaticAnimation(float convertTime, boolean isRepeat, String path, ModelOld model) {
+	public StaticAnimation(float convertTime, boolean isRepeat, String path, ResourceLocation armature) {
 		super(convertTime, isRepeat);
 		
 		AnimationManager animationManager = EpicFightMod.getInstance().animationManager;
@@ -63,15 +64,15 @@ public class StaticAnimation extends DynamicAnimation {
 		animationManager.getIdMap().put(this.animationId, this);
 		this.resourceLocation = new ResourceLocation(modid, "animmodels/animations/" + folderPath);
 		animationManager.getNameMap().put(new ResourceLocation(animationManager.getModid(), folderPath), this);
-		this.model = model;
+		this.armatureLocation = armature;
 	}
 	
-	public StaticAnimation(float convertTime, boolean repeatPlay, String path, ModelOld model, boolean notRegisteredInAnimationManager) {
+	public StaticAnimation(float convertTime, boolean repeatPlay, String path, ResourceLocation armature, boolean notRegisteredInAnimationManager) {
 		super(convertTime, repeatPlay);
 		this.namespaceId = -1;
 		this.animationId = -1;
 		this.resourceLocation = new ResourceLocation(EpicFightMod.getInstance().animationManager.getModid(), "animmodels/animations/" + path);
-		this.model = model;
+		this.armatureLocation = armature;
 	}
 	
 	public static void load(ResourceManager resourceManager, StaticAnimation animation) {
@@ -187,8 +188,8 @@ public class StaticAnimation extends DynamicAnimation {
 		return this.resourceLocation;
 	}
 	
-	public ModelOld getModel() {
-		return this.model;
+	public Armature getArmature() {
+		return Armatures.getOrCreateArmature(null, this.armatureLocation, Armature::new);
 	}
 	
 	public boolean isBasicAttackAnimation() {

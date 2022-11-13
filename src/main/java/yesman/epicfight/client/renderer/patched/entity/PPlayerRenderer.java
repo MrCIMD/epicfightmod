@@ -9,15 +9,17 @@ import net.minecraft.client.renderer.entity.layers.PlayerItemInHandLayer;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.ClientModel;
+import yesman.epicfight.api.client.model.Meshes;
+import yesman.epicfight.client.mesh.HumanoidMesh;
 import yesman.epicfight.client.renderer.patched.layer.EmptyLayer;
 import yesman.epicfight.client.renderer.patched.layer.PatchedCapeLayer;
 import yesman.epicfight.client.renderer.patched.layer.PatchedItemInHandLayer;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.AbstractClientPlayerPatch;
 
 @OnlyIn(Dist.CLIENT)
-public class PPlayerRenderer extends PHumanoidRenderer<AbstractClientPlayer, AbstractClientPlayerPatch<AbstractClientPlayer>, PlayerModel<AbstractClientPlayer>> {
+public class PPlayerRenderer extends PHumanoidRenderer<AbstractClientPlayer, AbstractClientPlayerPatch<AbstractClientPlayer>, PlayerModel<AbstractClientPlayer>, HumanoidMesh> {
 	public PPlayerRenderer() {
+		super(Meshes.BIPED);
 		this.addPatchedLayer(ArrowLayer.class, new EmptyLayer<>());
 		this.addPatchedLayer(BeeStingerLayer.class, new EmptyLayer<>());
 		this.addPatchedLayer(CapeLayer.class, new PatchedCapeLayer());
@@ -25,13 +27,18 @@ public class PPlayerRenderer extends PHumanoidRenderer<AbstractClientPlayer, Abs
 	}
 	
 	@Override
-	protected void prepareModel(AbstractClientPlayer entity, AbstractClientPlayerPatch<AbstractClientPlayer> entitypatch, ClientModel model) {
-		super.prepareModel(entity, entitypatch, model);
-		model.getMesh().getPart("hat").hidden = !entity.isModelPartShown(PlayerModelPart.HAT);
-		model.getMesh().getPart("jacket").hidden = !entity.isModelPartShown(PlayerModelPart.JACKET);
-		model.getMesh().getPart("leftPants").hidden = !entity.isModelPartShown(PlayerModelPart.LEFT_PANTS_LEG);
-		model.getMesh().getPart("rightPants").hidden = !entity.isModelPartShown(PlayerModelPart.RIGHT_PANTS_LEG);
-		model.getMesh().getPart("leftSleeve").hidden = !entity.isModelPartShown(PlayerModelPart.LEFT_SLEEVE);
-		model.getMesh().getPart("rightSleeve").hidden = !entity.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE);
+	protected void prepareModel(HumanoidMesh mesh, AbstractClientPlayer entity, AbstractClientPlayerPatch<AbstractClientPlayer> entitypatch) {
+		super.prepareModel(mesh, entity, entitypatch);
+		mesh.hat.hidden = !entity.isModelPartShown(PlayerModelPart.HAT);
+		mesh.jacket.hidden = !entity.isModelPartShown(PlayerModelPart.JACKET);
+		mesh.leftPants.hidden = !entity.isModelPartShown(PlayerModelPart.LEFT_PANTS_LEG);
+		mesh.rightPants.hidden = !entity.isModelPartShown(PlayerModelPart.RIGHT_PANTS_LEG);
+		mesh.leftSleeve.hidden = !entity.isModelPartShown(PlayerModelPart.LEFT_SLEEVE);
+		mesh.rightSleeve.hidden = !entity.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE);
+	}
+
+	@Override
+	public HumanoidMesh getMesh(AbstractClientPlayerPatch<AbstractClientPlayer> entitypatch) {
+		return entitypatch.getOriginal().getModelName().equals("slim") ? Meshes.ALEX : Meshes.BIPED;
 	}
 }

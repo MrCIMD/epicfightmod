@@ -76,7 +76,7 @@ public abstract class Animator {
 	/** Get binded position of joint **/
 	public static OpenMatrix4f getBindedJointTransformByIndex(Pose pose, Armature armature, int pathIndex) {
 		armature.initializeTransform();
-		return getBindedJointTransformByIndexInternal(pose, armature.getJointHierarcy(), new OpenMatrix4f(), pathIndex);
+		return getBindedJointTransformByIndexInternal(pose, armature.getRootJoint(), new OpenMatrix4f(), pathIndex);
 	}
 	
 	private static OpenMatrix4f getBindedJointTransformByIndexInternal(Pose pose, Joint joint, OpenMatrix4f parentTransform, int pathIndex) {

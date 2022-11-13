@@ -2,59 +2,47 @@ package yesman.epicfight.api.forgeevent;
 
 import java.util.Map;
 
-import com.google.common.collect.Maps;
-
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.event.IModBusEvent;
-import yesman.epicfight.api.client.model.AnimatedModel;
-import yesman.epicfight.api.client.model.AnimatedModels.AnimatedModelContructor;
+import yesman.epicfight.api.client.model.AnimatedMesh;
+import yesman.epicfight.api.client.model.Meshes;
+import yesman.epicfight.api.client.model.Meshes.AnimatedMeshContructor;
 import yesman.epicfight.api.model.Armature;
-import yesman.epicfight.api.model.JsonModelLoader;
+import yesman.epicfight.gameasset.Armatures;
+import yesman.epicfight.gameasset.Armatures.ArmatureContructor;
 
 public abstract class ModelBuildEvent<T> extends Event implements IModBusEvent {
 	protected final ResourceManager resourceManager;
-	protected final Map<ResourceLocation, T> registerMap = Maps.newHashMap();
+	protected final Map<ResourceLocation, T> registerMap;
 	
-	public ModelBuildEvent(ResourceManager resourceManager) {
+	public ModelBuildEvent(ResourceManager resourceManager, Map<ResourceLocation, T> registerMap) {
 		this.resourceManager = resourceManager;
+		this.registerMap = registerMap;
 	}
 	
-	public Map<ResourceLocation, T> getRegisterMap() {
-		return this.registerMap;
-	}
-	
-	public static class Armatures extends ModelBuildEvent<Armature> {
+	public static class ArmatureBuild extends ModelBuildEvent<Armature> {
 		
-		public Armatures(ResourceManager resourceManager) {
-			super(resourceManager);
+		public ArmatureBuild(ResourceManager resourceManager, Map<ResourceLocation, Armature> registerMap) {
+			super(resourceManager, registerMap);
 		}
 		
-		public Armature get(String modid, String path) {
-			ResourceLocation rl = new ResourceLocation(modid, path);
-			JsonModelLoader modelLoader = new JsonModelLoader(this.resourceManager, rl);
-			Armature armature = modelLoader.getArmature();
-			
-			this.registerMap.put(rl, armature);
-			
-			return armature;
+		public <T extends Armature> T get(String modid, String path, ArmatureContructor<T> constructor) {
+			ResourceLocation rl = new ResourceLocation(modid, "animmodels/" + path + ".json");
+			return Armatures.getOrCreateArmature(this.resourceManager, rl, constructor);
 		}
 	}
 	
-	public static class AnimatedModels extends ModelBuildEvent<AnimatedModel> {
+	public static class MeshBuild extends ModelBuildEvent<AnimatedMesh> {
 		
-		public AnimatedModels(ResourceManager resourceManager) {
-			super(resourceManager);
+		public MeshBuild(ResourceManager resourceManager, Map<ResourceLocation, AnimatedMesh> registerMap) {
+			super(resourceManager, registerMap);
 		}
 		
-		public <T extends AnimatedModel> T get(String modid, String path, AnimatedModelContructor<T> builder) {
-			ResourceLocation rl = new ResourceLocation(modid, path);
-			JsonModelLoader modelLoader = new JsonModelLoader(this.resourceManager, rl);
-			T animatedModel = modelLoader.loadAnimatedModel(builder);
-			this.registerMap.put(rl, animatedModel);
-			
-			return animatedModel;
+		public <T extends AnimatedMesh> T get(String modid, String path, AnimatedMeshContructor<T> constructor) {
+			ResourceLocation rl = new ResourceLocation(modid, "animmodels/" + path + ".json");
+			return Meshes.getOrCreateMesh(this.resourceManager, rl, constructor);
 		}
 	}
 }

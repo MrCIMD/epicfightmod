@@ -13,8 +13,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.AnimatedModels;
+import yesman.epicfight.api.client.model.AnimatedMesh;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
@@ -23,7 +22,7 @@ import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 public class TsunamiSwirlParticle extends CustomModelParticle {
 	private LivingEntityPatch<?> caster;
 	
-	public TsunamiSwirlParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, ClientModel particleMesh) {
+	public TsunamiSwirlParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, AnimatedMesh particleMesh) {
 		super(level, x, y, z, xd, yd, zd, particleMesh);
 		this.lifetime = 16;
 		this.hasPhysics = false;
@@ -87,7 +86,7 @@ public class TsunamiSwirlParticle extends CustomModelParticle {
 	public static class Provider implements ParticleProvider<SimpleParticleType> {
 		@Override
 		public Particle createParticle(SimpleParticleType typeIn, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-			return new TsunamiSwirlParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, Models.AnimatedModels.tsunamiSwirl);
+			return new TsunamiSwirlParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, null);
 		}
 	}
 }

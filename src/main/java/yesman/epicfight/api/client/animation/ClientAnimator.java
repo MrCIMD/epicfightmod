@@ -23,7 +23,6 @@ import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.JointMask.BindModifier;
 import yesman.epicfight.api.client.animation.Layer.Priority;
-import yesman.epicfight.api.client.model.AnimatedModels;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
@@ -133,7 +132,7 @@ public class ClientAnimator extends Animator {
 	}
 	
 	public void setPoseToModel(float partialTicks) {
-		Joint rootJoint = this.entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT).getArmature().getJointHierarcy();
+		Joint rootJoint = this.entitypatch.getArmature().getRootJoint();
 		this.applyPoseToJoint(rootJoint, new OpenMatrix4f(), this.getPose(partialTicks), partialTicks);
 	}
 	
@@ -224,7 +223,7 @@ public class ClientAnimator extends Animator {
 			}
 		}
 		
-		Joint rootJoint = this.entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT).getArmature().getJointHierarcy();
+		Joint rootJoint = this.entitypatch.getArmature().getRootJoint();
 		this.applyBindModifier(composedPose, rootJoint, layerPoses);
 		
 		return composedPose;
@@ -247,7 +246,7 @@ public class ClientAnimator extends Animator {
 			}
 		}
 		
-		Joint rootJoint = this.entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT).getArmature().getJointHierarcy();
+		Joint rootJoint = this.entitypatch.getArmature().getRootJoint();
 		this.applyBindModifier(composedPose, rootJoint, layerPoses);
 		
 		return composedPose;

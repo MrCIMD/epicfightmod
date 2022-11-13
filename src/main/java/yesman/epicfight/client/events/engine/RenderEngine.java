@@ -58,6 +58,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import yesman.epicfight.api.client.forgeevent.PatchedRenderersEvent;
 import yesman.epicfight.api.client.forgeevent.RenderEnderDragonEvent;
+import yesman.epicfight.api.client.model.Meshes;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.client.ClientEngine;
@@ -145,12 +146,12 @@ public class RenderEngine {
 	public void registerRenderer() {
 		this.entityRendererProvider.put(EntityType.CREEPER, PCreeperRenderer::new);
 		this.entityRendererProvider.put(EntityType.ENDERMAN, PEndermanRenderer::new);
-		this.entityRendererProvider.put(EntityType.ZOMBIE, PHumanoidRenderer::new);
+		this.entityRendererProvider.put(EntityType.ZOMBIE, () -> new PHumanoidRenderer<>(Meshes.BIPED_OLD_TEX));
 		this.entityRendererProvider.put(EntityType.ZOMBIE_VILLAGER, PZombieVillagerRenderer::new);
-		this.entityRendererProvider.put(EntityType.ZOMBIFIED_PIGLIN, PHumanoidRenderer::new);
-		this.entityRendererProvider.put(EntityType.HUSK, PHumanoidRenderer::new);
-		this.entityRendererProvider.put(EntityType.SKELETON, PHumanoidRenderer::new);
-		this.entityRendererProvider.put(EntityType.WITHER_SKELETON, PHumanoidRenderer::new);
+		this.entityRendererProvider.put(EntityType.ZOMBIFIED_PIGLIN, () -> new PHumanoidRenderer<>(Meshes.PIGLIN));
+		this.entityRendererProvider.put(EntityType.HUSK, () -> new PHumanoidRenderer<>(Meshes.BIPED_OLD_TEX));
+		this.entityRendererProvider.put(EntityType.SKELETON, () -> new PHumanoidRenderer<>(Meshes.SKELETON));
+		this.entityRendererProvider.put(EntityType.WITHER_SKELETON, () -> new PHumanoidRenderer<>(Meshes.SKELETON));
 		this.entityRendererProvider.put(EntityType.STRAY, PStrayRenderer::new);
 		this.entityRendererProvider.put(EntityType.PLAYER, PPlayerRenderer::new);
 		this.entityRendererProvider.put(EntityType.SPIDER, PSpiderRenderer::new);
@@ -163,8 +164,8 @@ public class RenderEngine {
 		this.entityRendererProvider.put(EntityType.PILLAGER, PIllagerRenderer::new);
 		this.entityRendererProvider.put(EntityType.RAVAGER, PRavagerRenderer::new);
 		this.entityRendererProvider.put(EntityType.VEX, PVexRenderer::new);
-		this.entityRendererProvider.put(EntityType.PIGLIN, PHumanoidRenderer::new);
-		this.entityRendererProvider.put(EntityType.PIGLIN_BRUTE, PHumanoidRenderer::new);
+		this.entityRendererProvider.put(EntityType.PIGLIN, () -> new PHumanoidRenderer<>(Meshes.PIGLIN));
+		this.entityRendererProvider.put(EntityType.PIGLIN_BRUTE, () -> new PHumanoidRenderer<>(Meshes.PIGLIN));
 		this.entityRendererProvider.put(EntityType.HOGLIN, PHoglinRenderer::new);
 		this.entityRendererProvider.put(EntityType.ZOGLIN, PHoglinRenderer::new);
 		this.entityRendererProvider.put(EntityType.ENDER_DRAGON, PEnderDragonRenderer::new);

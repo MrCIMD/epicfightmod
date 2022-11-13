@@ -24,8 +24,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.client.animation.Layer;
-import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.AnimatedModels;
+import yesman.epicfight.api.client.model.AnimatedMesh;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
@@ -35,7 +34,7 @@ import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 @OnlyIn(Dist.CLIENT)
-public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T extends LivingEntityPatch<E>, M extends EntityModel<E>> extends PatchedEntityRenderer<E, T, LivingEntityRenderer<E, M>> {
+public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T extends LivingEntityPatch<E>, M extends EntityModel<E>, AM extends AnimatedMesh> extends PatchedEntityRenderer<E, T, LivingEntityRenderer<E, M>, AM> {
 	
 	protected static Method isBodyVisible;
 	protected static Method getRenderType;
@@ -45,7 +44,7 @@ public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T exte
 		getRenderType = ObfuscationReflectionHelper.findMethod(LivingEntityRenderer.class, "m_7225_", LivingEntity.class, boolean.class, boolean.class, boolean.class);
 	}
 	
-	private Map<Class<?>, PatchedLayer<E, T, M, ? extends RenderLayer<E, M>>> patchedLayers = Maps.newHashMap();
+	private Map<Class<?>, PatchedLayer<E, T, M, ? extends RenderLayer<E, M>, AM>> patchedLayers = Maps.newHashMap();
 	
 	@Override
 	public void render(E entityIn, T entitypatch, LivingEntityRenderer<E, M> renderer, MultiBufferSource buffer, PoseStack poseStack, int packedLight, float partialTicks) {
@@ -56,17 +55,17 @@ public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T exte
 		boolean isVisibleToPlayer = !isVisible && !entityIn.isInvisibleTo(mc.player);
 		boolean isGlowing = mc.shouldEntityAppearGlowing(entityIn);
 		RenderType renderType = this.getRenderType(entityIn, entitypatch, renderer, isVisible, isVisibleToPlayer, isGlowing);
-		ClientModel model = entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT);
-		Armature armature = model.getArmature();
+		Armature armature = entitypatch.getArmature();
 		poseStack.pushPose();
 		this.mulPoseStack(poseStack, armature, entityIn, entitypatch, partialTicks);
 		OpenMatrix4f[] poseMatrices = this.getPoseMatrices(entitypatch, armature, partialTicks);
 		
 		if (renderType != null) {
-			this.prepareModel(entityIn, entitypatch, model);
+			AM mesh = this.getMesh(entitypatch);
+			this.prepareModel(mesh, entityIn, entitypatch);
 			
 			VertexConsumer builder = buffer.getBuffer(renderType);
-			model.drawAnimatedModel(poseStack, builder, packedLight, 1.0F, 1.0F, 1.0F, isVisibleToPlayer ? 0.15F : 1.0F, this.getOverlayCoord(entityIn, entitypatch, partialTicks), poseMatrices);
+			mesh.drawAnimatedModel(poseStack, builder, packedLight, 1.0F, 1.0F, 1.0F, isVisibleToPlayer ? 0.15F : 1.0F, this.getOverlayCoord(entityIn, entitypatch, partialTicks), poseMatrices);
 		}
 		
 		if (!entityIn.isSpectator()) {
@@ -86,8 +85,8 @@ public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T exte
 		poseStack.popPose();
 	}
 	
-	protected void prepareModel(E entity, T entitypatch, ClientModel model) {
-		model.getMesh().initialize();
+	protected void prepareModel(AM mesh, E entity, T entitypatch) {
+		mesh.initialize();
 	}
 	
 	protected void renderLayer(LivingEntityRenderer<E, M> renderer, T entitypatch, E entityIn, OpenMatrix4f[] poses, MultiBufferSource buffer, PoseStack poseStack, int packedLightIn, float partialTicks) {
@@ -115,7 +114,7 @@ public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T exte
 		}
 		
 		OpenMatrix4f modelMatrix = new OpenMatrix4f();
-		modelMatrix.mulFront(entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT).getArmature().searchJointById(this.getRootJointIndex()).getAnimatedTransform());
+		modelMatrix.mulFront(entitypatch.getArmature().searchJointById(this.getRootJointIndex()).getAnimatedTransform());
 		OpenMatrix4f transpose = OpenMatrix4f.transpose(modelMatrix, null);
 		
 		poseStack.pushPose();
@@ -170,7 +169,7 @@ public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T exte
 		}
 	}
 	
-	public void addPatchedLayer(Class<?> originalLayerClass, PatchedLayer<E, T, M, ? extends RenderLayer<E, M>> patchedLayer) {
+	public void addPatchedLayer(Class<?> originalLayerClass, PatchedLayer<E, T, M, ? extends RenderLayer<E, M>, AM> patchedLayer) {
 		this.patchedLayers.put(originalLayerClass, patchedLayer);
 	}
 	

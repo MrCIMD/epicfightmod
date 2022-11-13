@@ -17,13 +17,14 @@ import net.minecraftforge.client.event.RenderNameplateEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event.Result;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
+import yesman.epicfight.api.client.model.AnimatedMesh;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 @OnlyIn(Dist.CLIENT)
-public abstract class PatchedEntityRenderer<E extends LivingEntity, T extends LivingEntityPatch<E>, R extends EntityRenderer<E>> {
+public abstract class PatchedEntityRenderer<E extends LivingEntity, T extends LivingEntityPatch<E>, R extends EntityRenderer<E>, AM extends AnimatedMesh> {
 	protected static Method shouldShowName;
 	protected static Method renderNameTag;
 	
@@ -66,6 +67,8 @@ public abstract class PatchedEntityRenderer<E extends LivingEntity, T extends Li
         MathUtils.rotateStack(poseStack, transpose);
         MathUtils.scaleStack(poseStack, transpose);
 	}
+	
+	public abstract AM getMesh(T entitypatch);
 	
 	protected void setJointTransforms(T entitypatch, Armature armature, float partialTicks) {}
 }

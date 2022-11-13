@@ -25,11 +25,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.types.ActionAnimation;
 import yesman.epicfight.api.animation.types.AimAnimation;
 import yesman.epicfight.api.client.animation.Layer.Priority;
-import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.AnimatedModels;
+import yesman.epicfight.api.client.model.Meshes;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec4f;
+import yesman.epicfight.client.mesh.HumanoidMesh;
 import yesman.epicfight.client.renderer.patched.entity.PatchedLivingEntityRenderer;
 import yesman.epicfight.client.renderer.patched.layer.EmptyLayer;
 import yesman.epicfight.client.renderer.patched.layer.PatchedElytraLayer;
@@ -38,12 +38,12 @@ import yesman.epicfight.client.renderer.patched.layer.WearableItemLayer;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 
 @OnlyIn(Dist.CLIENT)
-public class FirstPersonRenderer extends PatchedLivingEntityRenderer<LocalPlayer, LocalPlayerPatch, PlayerModel<LocalPlayer>> {
+public class FirstPersonRenderer extends PatchedLivingEntityRenderer<LocalPlayer, LocalPlayerPatch, PlayerModel<LocalPlayer>, HumanoidMesh> {
 	public FirstPersonRenderer() {
 		super();
 		this.addPatchedLayer(ElytraLayer.class, new PatchedElytraLayer<>());
 		this.addPatchedLayer(PlayerItemInHandLayer.class, new PatchedItemInHandLayer<>());
-		this.addPatchedLayer(HumanoidArmorLayer.class, new WearableItemLayer<>(true));
+		this.addPatchedLayer(HumanoidArmorLayer.class, new WearableItemLayer<>(Meshes.BIPED, true));
 		this.addPatchedLayer(CustomHeadLayer.class, new EmptyLayer<>());
 		this.addPatchedLayer(ArrowLayer.class, new EmptyLayer<>());
 		this.addPatchedLayer(BeeStingerLayer.class, new EmptyLayer<>());
@@ -58,8 +58,7 @@ public class FirstPersonRenderer extends PatchedLivingEntityRenderer<LocalPlayer
 		double x = Mth.lerp(partialTicks, entityIn.xo, entityIn.getX()) - projView.x();
 		double y = Mth.lerp(partialTicks, entityIn.yo, entityIn.getY()) - projView.y();
 		double z = Mth.lerp(partialTicks, entityIn.zo, entityIn.getZ()) - projView.z();
-		ClientModel model = entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT);
-		Armature armature = model.getArmature();
+		Armature armature = entitypatch.getArmature();
 		armature.initializeTransform();
 		entitypatch.getClientAnimator().setPoseToModel(partialTicks);
 		OpenMatrix4f[] poses = armature.getJointTransforms();
@@ -90,8 +89,10 @@ public class FirstPersonRenderer extends PatchedLivingEntityRenderer<LocalPlayer
 		
 		matStackIn.translate(x, yCorrection, zCorrection);
 		
-		ClientModel firstModel = entityIn.getModelName().equals("slim") ? Models.AnimatedModels.playerFirstPersonAlex : Models.AnimatedModels.playerFirstPerson;
-		firstModel.drawAnimatedModel(matStackIn, buffer.getBuffer(EpicFightRenderTypes.triangles(RenderType.entityCutoutNoCull(entityIn.getSkinTextureLocation()))),
+		HumanoidMesh mesh = this.getMesh(entitypatch);
+		this.prepareModel(mesh, entityIn, entitypatch);
+		
+		mesh.drawAnimatedModel(matStackIn, buffer.getBuffer(EpicFightRenderTypes.triangles(RenderType.entityCutoutNoCull(entityIn.getSkinTextureLocation()))),
 				packedLightIn, 1.0F, 1.0F, 1.0F, 1.0F, OverlayTexture.NO_OVERLAY, poses);
 		
 		if(!entityIn.isSpectator()) {
@@ -99,5 +100,17 @@ public class FirstPersonRenderer extends PatchedLivingEntityRenderer<LocalPlayer
 		}
 		
 		matStackIn.popPose();
+	}
+	
+	@Override
+	public HumanoidMesh getMesh(LocalPlayerPatch entitypatch) {
+		return entitypatch.getOriginal().getModelName().equals("slim") ? Meshes.ALEX : Meshes.BIPED;
+	}
+	
+	@Override
+	protected void prepareModel(HumanoidMesh mesh, LocalPlayer entity, LocalPlayerPatch entitypatch) {
+		mesh.initialize();
+		mesh.head.hidden = true;
+		mesh.hat.hidden = true;
 	}
 }

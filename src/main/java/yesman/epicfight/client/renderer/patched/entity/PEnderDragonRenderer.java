@@ -17,12 +17,12 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.client.animation.Layer;
-import yesman.epicfight.api.client.model.ClientModel;
-import yesman.epicfight.api.client.model.AnimatedModels;
+import yesman.epicfight.api.client.model.Meshes;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
+import yesman.epicfight.client.mesh.DragonMesh;
 import yesman.epicfight.client.renderer.EpicFightRenderTypes;
 import yesman.epicfight.client.renderer.LightningRenderHelper;
 import yesman.epicfight.world.capabilities.entitypatch.boss.enderdragon.DragonCrystalLinkPhase;
@@ -30,14 +30,14 @@ import yesman.epicfight.world.capabilities.entitypatch.boss.enderdragon.EnderDra
 import yesman.epicfight.world.capabilities.entitypatch.boss.enderdragon.PatchedPhases;
 
 @OnlyIn(Dist.CLIENT)
-public class PEnderDragonRenderer extends PatchedEntityRenderer<EnderDragon, EnderDragonPatch, EnderDragonRenderer> {
+public class PEnderDragonRenderer extends PatchedEntityRenderer<EnderDragon, EnderDragonPatch, EnderDragonRenderer, DragonMesh> {
 	private static final ResourceLocation DRAGON_LOCATION = new ResourceLocation("textures/entity/enderdragon/dragon.png");
 	private static final ResourceLocation DRAGON_EXPLODING_LOCATION = new ResourceLocation("textures/entity/enderdragon/dragon_exploding.png");
 	
 	@Override
 	public void render(EnderDragon entityIn, EnderDragonPatch entitypatch, EnderDragonRenderer renderer, MultiBufferSource buffer, PoseStack poseStack, int packedLight, float partialTicks) {
-		ClientModel model = entitypatch.getEntityModel(AnimatedModels.LOGICAL_CLIENT);
-		Armature armature = model.getArmature();
+		DragonMesh mesh = this.getMesh(entitypatch);
+		Armature armature = entitypatch.getArmature();
 		poseStack.pushPose();
         this.mulPoseStack(poseStack, armature, entityIn, entitypatch, partialTicks);
 		OpenMatrix4f[] poses = this.getPoseMatrices(entitypatch, armature, partialTicks);
@@ -46,12 +46,12 @@ public class PEnderDragonRenderer extends PatchedEntityRenderer<EnderDragon, End
 			poseStack.translate(entityIn.getRandom().nextGaussian() * 0.08D, 0.0D, entityIn.getRandom().nextGaussian() * 0.08D);
 			float deathTimeProgression = ((float) entityIn.dragonDeathTime + partialTicks) / 200.0F;
 			VertexConsumer builder = buffer.getBuffer(EpicFightRenderTypes.triangles(RenderType.dragonExplosionAlpha(DRAGON_EXPLODING_LOCATION)));
-			model.drawAnimatedModel(poseStack, builder, packedLight, 1.0F, 1.0F, 1.0F, deathTimeProgression, OverlayTexture.NO_OVERLAY, poses);
+			mesh.drawAnimatedModel(poseStack, builder, packedLight, 1.0F, 1.0F, 1.0F, deathTimeProgression, OverlayTexture.NO_OVERLAY, poses);
 			VertexConsumer builder2 = buffer.getBuffer(EpicFightRenderTypes.triangles(RenderType.entityDecal(DRAGON_LOCATION)));
-			model.drawAnimatedModel(poseStack, builder2, packedLight, 1.0F, 1.0F, 1.0F, 1.0F, this.getOverlayCoord(entityIn, entitypatch, partialTicks), poses);
+			mesh.drawAnimatedModel(poseStack, builder2, packedLight, 1.0F, 1.0F, 1.0F, 1.0F, this.getOverlayCoord(entityIn, entitypatch, partialTicks), poses);
 		} else {
 			VertexConsumer builder = buffer.getBuffer(EpicFightRenderTypes.triangles(RenderType.entityCutoutNoCull(DRAGON_LOCATION)));
-			model.drawAnimatedModel(poseStack, builder, packedLight, 1.0F, 1.0F, 1.0F, 1.0F, this.getOverlayCoord(entityIn, entitypatch, partialTicks), poses);
+			mesh.drawAnimatedModel(poseStack, builder, packedLight, 1.0F, 1.0F, 1.0F, 1.0F, this.getOverlayCoord(entityIn, entitypatch, partialTicks), poses);
 		}
 		
 		if (Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) {
@@ -111,5 +111,10 @@ public class PEnderDragonRenderer extends PatchedEntityRenderer<EnderDragon, End
 		float progression = currentPhase.getPhase() == PatchedPhases.CRYSTAL_LINK ? (chargingTick - (float)((DragonCrystalLinkPhase)currentPhase).getChargingCount()) / chargingTick : 0.0F;
 		
 		return OverlayTexture.pack(OverlayTexture.u(progression), OverlayTexture.v(entity.hurtTime > 5 || entity.deathTime > 0));
+	}
+
+	@Override
+	public DragonMesh getMesh(EnderDragonPatch entitypatch) {
+		return Meshes.DRAGON;
 	}
 }

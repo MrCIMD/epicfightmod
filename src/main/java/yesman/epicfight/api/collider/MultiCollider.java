@@ -15,7 +15,6 @@ import yesman.epicfight.api.animation.property.AnimationProperty.AttackAnimation
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
-import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public abstract class MultiCollider<T extends Collider> extends Collider {
@@ -45,7 +44,7 @@ public abstract class MultiCollider<T extends Collider> extends Collider {
 		
 		for (T collider : colliders) {
 			OpenMatrix4f transformMatrix;
-			Armature armature = entitypatch.getEntityModel(Armatures.LOGICAL_SERVER).getArmature();
+			Armature armature = entitypatch.getArmature();
 			int pathIndex = armature.searchPathIndex(jointName);
 			
 			if (pathIndex == -1) {

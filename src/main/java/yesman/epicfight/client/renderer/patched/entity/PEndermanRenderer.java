@@ -6,18 +6,19 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.AnimatedModels;
+import yesman.epicfight.api.client.model.Meshes;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
+import yesman.epicfight.client.mesh.EndermanMesh;
 import yesman.epicfight.client.renderer.patched.layer.PatchedEyeLayer;
 import yesman.epicfight.world.capabilities.entitypatch.mob.EndermanPatch;
 
 @OnlyIn(Dist.CLIENT)
-public class PEndermanRenderer extends PatchedLivingEntityRenderer<EnderMan, EndermanPatch, EndermanModel<EnderMan>> {
+public class PEndermanRenderer extends PatchedLivingEntityRenderer<EnderMan, EndermanPatch, EndermanModel<EnderMan>, EndermanMesh> {
 	private static final ResourceLocation ENDERMAN_EYE_TEXTURE = new ResourceLocation("textures/entity/enderman/enderman_eyes.png");
 	
 	public PEndermanRenderer() {
-		this.addPatchedLayer(EnderEyesLayer.class, new PatchedEyeLayer<>(ENDERMAN_EYE_TEXTURE, Models.AnimatedModels.enderman));
+		this.addPatchedLayer(EnderEyesLayer.class, new PatchedEyeLayer<>(ENDERMAN_EYE_TEXTURE, Meshes.ENDERMAN));
 	}
 	
 	@Override
@@ -28,5 +29,10 @@ public class PEndermanRenderer extends PatchedLivingEntityRenderer<EnderMan, End
 			OpenMatrix4f head = new OpenMatrix4f().translate(0.0F, 0.25F, 0.0F);
 			this.setJointTransform(16, armature, head);
 		}
+	}
+
+	@Override
+	public EndermanMesh getMesh(EndermanPatch entitypatch) {
+		return Meshes.ENDERMAN;
 	}
 }

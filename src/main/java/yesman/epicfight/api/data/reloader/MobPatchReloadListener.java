@@ -17,6 +17,7 @@ import com.google.gson.JsonElement;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -35,8 +36,14 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
 import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.types.StaticAnimation;
+import yesman.epicfight.api.client.model.AnimatedMesh;
+import yesman.epicfight.api.client.model.Meshes;
+import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.client.ClientEngine;
+import yesman.epicfight.client.mesh.HumanoidMesh;
+import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.main.EpicFightMod;
+import yesman.epicfight.model.armature.HumanoidArmature;
 import yesman.epicfight.network.server.SPDatapackSync;
 import yesman.epicfight.world.capabilities.entitypatch.CustomHumanoidMobPatch;
 import yesman.epicfight.world.capabilities.entitypatch.CustomMobPatch;
@@ -85,7 +92,8 @@ public class MobPatchReloadListener extends SimpleJsonResourceReloadListener {
 				e.printStackTrace();
 			}
 			
-			MOB_PATCH_PROVIDERS.put(entityType, deserialize(tag, false));
+			MOB_PATCH_PROVIDERS.put(entityType, deserialize(entityType, tag, false));
+			
 			EntityPatchProvider.putCustomEntityPatch(entityType, (entity) -> () -> MOB_PATCH_PROVIDERS.get(entity.getType()).get(entity));
 			TAGMAP.put(entityType, filterClientData(tag));
 			
@@ -151,7 +159,6 @@ public class MobPatchReloadListener extends SimpleJsonResourceReloadListener {
 	}
 	
 	public static class CustomMobPatchProvider extends AbstractMobPatchProvider {
-		protected ResourceLocation modelLocation;
 		protected CombatBehaviors.Builder<?> combatBehaviorsBuilder;
 		protected List<Pair<LivingMotion, StaticAnimation>> defaultAnimations;
 		protected Map<StunType, StaticAnimation> stunAnimations;
@@ -164,10 +171,6 @@ public class MobPatchReloadListener extends SimpleJsonResourceReloadListener {
 		@SuppressWarnings("rawtypes")
 		public EntityPatch<?> get(Entity entity) {
 			return new CustomMobPatch(this.faction, this);
-		}
-		
-		public ResourceLocation getModelLocation() {
-			return this.modelLocation;
 		}
 
 		public CombatBehaviors.Builder<?> getCombatBehaviorsBuilder() {
@@ -195,21 +198,21 @@ public class MobPatchReloadListener extends SimpleJsonResourceReloadListener {
 		}
 	}
 	
-	public static AbstractMobPatchProvider deserialize(CompoundTag tag, boolean clientSide) {
+	public static AbstractMobPatchProvider deserialize(EntityType<?> entityType, CompoundTag tag, boolean clientSide) {
 		AbstractMobPatchProvider provider = null;
 		int i = 0;
 		boolean hasBranch = tag.contains(String.format("branch_%d", i));
 		
 		if (hasBranch) {
 			provider = new BranchProvider();
-			((BranchProvider)provider).defaultProvider = deserializeMobPatchProvider(tag, clientSide);
+			((BranchProvider)provider).defaultProvider = deserializeMobPatchProvider(entityType, tag, clientSide);
 		} else {
-			provider = deserializeMobPatchProvider(tag, clientSide);
+			provider = deserializeMobPatchProvider(entityType, tag, clientSide);
 		}
 		
 		while (hasBranch) {
 			CompoundTag branchTag = tag.getCompound(String.format("branch_%d", i));
-			((BranchProvider)provider).providers.add(Pair.of(deserializePredicate(branchTag.getCompound("condition")), deserialize(branchTag, clientSide)));
+			((BranchProvider)provider).providers.add(Pair.of(deserializePredicate(branchTag.getCompound("condition")), deserialize(entityType, branchTag, clientSide)));
 			hasBranch = tag.contains(String.format("branch_%d", ++i));
 		}
 		
@@ -241,7 +244,7 @@ public class MobPatchReloadListener extends SimpleJsonResourceReloadListener {
 		return predicate;
 	}
 	
-	public static AbstractMobPatchProvider deserializeMobPatchProvider(CompoundTag tag, boolean clientSide) {
+	public static AbstractMobPatchProvider deserializeMobPatchProvider(EntityType<?> entityType, CompoundTag tag, boolean clientSide) {
 		boolean disabled = tag.contains("disabled") ? tag.getBoolean("disabled") : false;
 		
 		if (disabled) {
@@ -256,7 +259,16 @@ public class MobPatchReloadListener extends SimpleJsonResourceReloadListener {
 				boolean humanoid = tag.getBoolean("isHumanoid") ? tag.getBoolean("isHumanoid") : false;
 				CustomMobPatchProvider provider = humanoid ? new CustomHumanoidMobPatchProvider() : new CustomMobPatchProvider();
 				provider.attributeValues = deserializeAttributes(tag.getCompound("attributes"));
-				provider.modelLocation = new ResourceLocation(tag.getString("model"));
+				ResourceLocation modelLocation = new ResourceLocation(tag.getString("model"));
+				
+				if (EpicFightMod.isPhysicalClient()) {
+					Minecraft mc = Minecraft.getInstance();
+					Meshes.getOrCreateMesh(mc.getResourceManager(), modelLocation, humanoid ? AnimatedMesh::new : HumanoidMesh::new);
+					Armatures.registerEntityTypeArmature(entityType, Armatures.getOrCreateArmature(mc.getResourceManager(), modelLocation, humanoid ? Armature::new : HumanoidArmature::new));
+				} else {
+					Armatures.registerEntityTypeArmature(entityType, Armatures.getOrCreateArmature(null, modelLocation, humanoid ? Armature::new : HumanoidArmature::new));
+				}
+				
 				provider.defaultAnimations = deserializeDefaultAnimations(tag.getCompound("default_livingmotions"));
 				provider.faction = Faction.valueOf(tag.getString("faction").toUpperCase(Locale.ROOT));
 				provider.scale = tag.getCompound("attributes").contains("scale") ? (float)tag.getCompound("attributes").getDouble("scale") : 1.0F;
@@ -535,7 +547,7 @@ public class MobPatchReloadListener extends SimpleJsonResourceReloadListener {
 			}
 			
 			EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(tag.getString("id")));
-			MOB_PATCH_PROVIDERS.put(entityType, deserialize(tag, true));
+			MOB_PATCH_PROVIDERS.put(entityType, deserialize(entityType, tag, true));
 			EntityPatchProvider.putCustomEntityPatch(entityType, (entity) -> () -> MOB_PATCH_PROVIDERS.get(entity.getType()).get(entity));
 			
 			if (!disabled) {

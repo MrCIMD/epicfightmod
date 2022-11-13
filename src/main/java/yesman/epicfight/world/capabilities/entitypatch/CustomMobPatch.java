@@ -8,9 +8,7 @@ import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.ClientAnimator;
 import yesman.epicfight.api.data.reloader.MobPatchReloadListener;
-import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
-import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.world.damagesource.StunType;
 import yesman.epicfight.world.entity.ai.attribute.EpicFightAttributes;
 import yesman.epicfight.world.entity.ai.goal.AnimatedAttackGoal;
@@ -23,6 +21,7 @@ public class CustomMobPatch<T extends PathfinderMob> extends MobPatch<T> {
 	public CustomMobPatch(Faction faction, MobPatchReloadListener.CustomMobPatchProvider provider) {
 		super(faction);
 		this.provider = provider;
+		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -57,11 +56,6 @@ public class CustomMobPatch<T extends PathfinderMob> extends MobPatch<T> {
 	@Override
 	public void updateMotion(boolean considerInaction) {
 		super.commonAggressiveMobUpdateMotion(considerInaction);
-	}
-	
-	@Override
-	public <M extends ModelOld> M getEntityModel(Armatures<M> modelDB) {
-		return modelDB.get(this.provider.getModelLocation());
 	}
 	
 	@Override

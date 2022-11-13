@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -17,7 +18,6 @@ import yesman.epicfight.api.animation.Keyframe;
 import yesman.epicfight.api.animation.Pose;
 import yesman.epicfight.api.animation.TransformSheet;
 import yesman.epicfight.api.animation.types.StaticAnimation;
-import yesman.epicfight.api.model.ModelOld;
 import yesman.epicfight.api.utils.math.FABRIK;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
@@ -30,8 +30,8 @@ public class EnderDraonWalkAnimation extends StaticAnimation implements Procedur
 	private final IKInfo[] ikInfos;
 	private Map<String, TransformSheet> tipPointTransform;
 	
-	public EnderDraonWalkAnimation(float convertTime, String path, ModelOld model, IKInfo[] ikInfos) {
-		super(convertTime, true, path, model);
+	public EnderDraonWalkAnimation(float convertTime, String path, ResourceLocation armature, IKInfo[] ikInfos) {
+		super(convertTime, true, path, armature);
 		this.ikInfos = ikInfos;
 	}
 	
@@ -39,7 +39,7 @@ public class EnderDraonWalkAnimation extends StaticAnimation implements Procedur
 	public void loadAnimation(ResourceManager resourceManager) {
 		loadBothSide(resourceManager, this);
 		this.tipPointTransform = Maps.newHashMap();
-		this.setIKInfo(this.ikInfos, this.getTransfroms(), this.tipPointTransform, this.getModel().getArmature(), false, false);
+		this.setIKInfo(this.ikInfos, this.getTransfroms(), this.tipPointTransform, this.getArmature(), false, false);
 		this.onLoaded();
 	}
 	
@@ -66,7 +66,7 @@ public class EnderDraonWalkAnimation extends StaticAnimation implements Procedur
 	    		TipPointAnimation tipAnim = enderdragonpatch.getTipPointAnimation(ikInfo.endJoint);
 	    		JointTransform jt = tipAnim.getTipTransform(partialTicks);
 			    Vec3f jointModelpos = OpenMatrix4f.transform3v(toModelPos, jt.translation(), null);
-			    this.applyFabrikToJoint(jointModelpos.multiply(-1.0F, 1.0F, -1.0F), pose, this.getModel().getArmature(), ikInfo.startJoint, ikInfo.endJoint, jt.rotation());
+			    this.applyFabrikToJoint(jointModelpos.multiply(-1.0F, 1.0F, -1.0F), pose, entitypatch.getArmature(), ikInfo.startJoint, ikInfo.endJoint, jt.rotation());
 	    	}
 		}
 		
@@ -174,7 +174,7 @@ public class EnderDraonWalkAnimation extends StaticAnimation implements Procedur
 					pose.putJointData(jointName, this.jointTransforms.get(jointName).getKeyframes()[ikInfo.ikPose].transform().copy());
 				}
 				
-				FABRIK fabrik = new FABRIK(pose, this.getModel().getArmature(), ikInfo.startJoint, ikInfo.endJoint);
+				FABRIK fabrik = new FABRIK(pose, entitypatch.getArmature(), ikInfo.startJoint, ikInfo.endJoint);
 			   	fabrik.run(jointModelpos, 10);
 		       	for (Vec3f vec : fabrik.getChainingPosition()) {
 		       		RenderingTool.drawCube(poseStack, vertexBuilder, vec, 0.3F, 0.0F, 1.0F, 0.0F);

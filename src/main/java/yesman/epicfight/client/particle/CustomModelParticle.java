@@ -13,11 +13,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.ClientModel;
+import yesman.epicfight.api.client.model.AnimatedMesh;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class CustomModelParticle extends Particle {
-	protected final ClientModel particleMesh;
+	protected final AnimatedMesh particleMesh;
 	protected float pitch;
 	protected float pitchO;
 	protected float yaw;
@@ -25,7 +25,7 @@ public abstract class CustomModelParticle extends Particle {
 	protected float scale = 1.0F;
 	protected float scaleO = 1.0F;
 	
-	public CustomModelParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, ClientModel particleMesh) {
+	public CustomModelParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, AnimatedMesh particleMesh) {
 		super(level, x, y, z, xd, yd, zd);
 		this.particleMesh = particleMesh;
 	}

@@ -6,6 +6,8 @@ import java.util.List;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 
 public class Joint {
+	public static final Joint EMPTY = new Joint("empty", -1, new OpenMatrix4f());
+	
 	private final List<Joint> subJoints = new ArrayList<Joint> ();
 	private final int jointId;
 	private final String jointName;
@@ -31,6 +33,7 @@ public class Joint {
 
 	public void initializeAnimationTransform() {
 		this.animatedTransform.setIdentity();
+		
 		for (Joint joint : this.subJoints) {
 			joint.initializeAnimationTransform();
 		}
@@ -98,5 +101,6 @@ public class Joint {
 		for (Joint joint : subJoints) {
 			joint.showInfo();
 		}
-	}**/
+	}
+	**/
 }
