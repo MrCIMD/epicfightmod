@@ -93,10 +93,6 @@ public class JsonModelLoader {
 		}
 	}
 	
-	public boolean isValidSource() {
-		return this.rootJson != null;
-	}
-	
 	@OnlyIn(Dist.CLIENT)
 	public AnimatedMesh.RenderProperties getRenderProperties() {
 		JsonObject properties = this.rootJson.getAsJsonObject("render_properties");

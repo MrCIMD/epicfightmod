@@ -23,104 +23,15 @@ import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.api.utils.math.Vec4f;
 
 @OnlyIn(Dist.CLIENT)
-public class AnimatedMesh extends Mesh {/**
-	public static class RenderProperties {
-		public static final RenderProperties DEFAULT = RenderProperties.builder().build();
-		
-		boolean isTransparent;
-		
-		public RenderProperties(Builder builder) {
-			this.isTransparent = builder.isTransparent;
-		}
-		
-		public boolean isTransparent() {
-			return this.isTransparent;
-		}
-		
-		public static RenderProperties.Builder builder() {
-			return new Builder();
-		}
-		
-		public static class Builder {
-			boolean isTransparent = false;
-			
-			public RenderProperties.Builder transparency(boolean isTransparent) {
-				this.isTransparent = isTransparent;
-				return this;
-			}
-			
-			public RenderProperties build() {
-				return new RenderProperties(this);
-			}
-		}
-	}
-	
-	final float[] positions;
-	final float[] uvs;
-	final float[] normals;
-	final float[] weights;
-	final int totalVertices;
-	final Map<String, ModelPart> parts;
-	final RenderProperties properties;**/
-	
+public class AnimatedMesh extends Mesh {
 	final float[] weights;
 	
 	public AnimatedMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
 		super(arrayMap, parent, properties, parts);
 		
-		//this.positions = (parent == null) ? positions : parent.positions;
-		//this.normals = (parent == null) ? normals : parent.normals;
-		//this.uvs = (parent == null) ? uvs : parent.uvs;
 		this.weights = (parent == null) ? arrayMap.get("weights") : parent.weights;
-		//this.parts = (parent == null) ? parts : parent.parts;
-		//this.properties = properties;
-		/**
-		int totalV = 0;
-		
-		for (ModelPart meshpart : parts.values()) {
-			totalV += meshpart.getVertices().size();
-		}
-		
-		this.totalVertices = totalV;**/
-	}
-	/**
-	protected ModelPart getOrLogException(Map<String, ModelPart> parts, String name) {
-		if (!parts.containsKey(name)) {
-			EpicFightMod.LOGGER.info("Cannot find the mesh part named " + name + " in " + this.getClass().getCanonicalName());
-			return ModelPart.EMPTY;
-		}
-		
-		return parts.get(name);
 	}
 	
-	public ModelPart getPart(String part) {
-		return this.parts.get(part);
-	}
-	
-	public void initialize() {
-		this.parts.values().forEach((part) -> part.hidden = false);
-	}
-
-	public void drawRawModel(PoseStack posetStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord) {
-		Matrix4f matrix4f = posetStack.last().pose();
-		Matrix3f matrix3f = posetStack.last().normal();
-		
-		for (ModelPart part : this.parts.values()) {
-			if (!part.hidden) {
-				for (VertexIndicator vi : part.getVertices()) {
-					int pos = vi.position * 3;
-					int norm = vi.normal * 3;
-					int uv = vi.uv * 2;
-					Vector4f posVec = new Vector4f(this.positions[pos], this.positions[pos + 1], this.positions[pos + 2], 1.0F);
-					Vector3f normVec = new Vector3f(this.normals[norm], this.normals[norm + 1], this.normals[norm + 2]);
-					posVec.transform(matrix4f);
-					normVec.transform(matrix3f);
-					builder.vertex(posVec.x(), posVec.y(), posVec.z(), r, g, b, a, this.uvs[uv], this.uvs[uv + 1], overlayCoord, packedLightIn, normVec.x(), normVec.y(), normVec.z());
-				}
-			}
-		}
-	}
-	**/
 	public void drawModelWithPose(PoseStack posetStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord, Armature armature, OpenMatrix4f[] poses) {
 		Matrix4f matrix4f = posetStack.last().pose();
 		Matrix3f matrix3f = posetStack.last().normal();
