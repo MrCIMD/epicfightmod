@@ -57,8 +57,8 @@ public class ServerAnimator extends Animator {
 	
 	@Override
 	public void poseTick() {
-		this.prevPose = this.currentPose;
-		this.currentPose = this.animationPlayer.getCurrentPose(this.entitypatch, 1.0F);
+		Pose currentPose = this.animationPlayer.getCurrentPose(this.entitypatch, 1.0F);
+		this.entitypatch.getArmature().setPose(currentPose);
 	}
 	
 	@Override

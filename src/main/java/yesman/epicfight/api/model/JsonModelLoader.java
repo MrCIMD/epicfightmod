@@ -37,8 +37,9 @@ import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.AttackAnimation.Phase;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.model.AnimatedMesh;
+import yesman.epicfight.api.client.model.Mesh;
 import yesman.epicfight.api.client.model.Meshes;
-import yesman.epicfight.api.client.model.Meshes.AnimatedMeshContructor;
+import yesman.epicfight.api.client.model.Meshes.MeshContructor;
 import yesman.epicfight.api.client.model.ModelPart;
 import yesman.epicfight.api.client.model.VertexIndicator;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
@@ -113,12 +114,12 @@ public class JsonModelLoader {
 	}
 	
 	@OnlyIn(Dist.CLIENT)
-	public <T extends AnimatedMesh> T loadAnimatedMesh(AnimatedMeshContructor<T> constructor) {
+	public <T extends Mesh> T loadAnimatedMesh(MeshContructor<T> constructor) {
 		ResourceLocation parent = this.getParent();
 		
 		if (parent != null) {
-			AnimatedMesh mesh = Meshes.getOrCreateMesh(this.resourceManager, parent, AnimatedMesh::new);			
-			return constructor.invoke(null, null, null, null, mesh, this.getRenderProperties(), null);
+			T mesh = Meshes.getOrCreateMesh(this.resourceManager, parent, constructor);			
+			return constructor.invoke(null, mesh, this.getRenderProperties(), null);
 		} else {
 			JsonObject obj = this.rootJson.getAsJsonObject("vertices");
 			JsonObject positions = obj.getAsJsonObject("positions");
@@ -157,7 +158,13 @@ public class JsonModelLoader {
 			float[] weightArray = toFloatArray(weights.get("array").getAsJsonArray());
 			int[] vcountArray = toIntArray(vcounts.get("array").getAsJsonArray());
 			
+			Map<String, float[]> arrayMap = Maps.newHashMap();
 			Map<String, ModelPart> meshMap = Maps.newHashMap();
+			
+			arrayMap.put("positions", positionArray);
+			arrayMap.put("normals", normalArray);
+			arrayMap.put("uvs", uvArray);
+			arrayMap.put("weights", weightArray);
 			
 			if (parts != null) {
 				for (Map.Entry<String, JsonElement> e : parts.entrySet()) {
@@ -169,7 +176,7 @@ public class JsonModelLoader {
 				meshMap.put("noGroups", new ModelPart(VertexIndicator.create(toIntArray(indices.get("array").getAsJsonArray()), vcountArray, animationIndexArray)));
 			}
 			
-			return constructor.invoke(positionArray, normalArray, uvArray, weightArray, null, this.getRenderProperties(), meshMap);
+			return constructor.invoke(arrayMap, null, this.getRenderProperties(), meshMap);
 		}
 	}
 	
@@ -179,7 +186,7 @@ public class JsonModelLoader {
 		JsonArray nameAsVertexGroups = obj.getAsJsonArray("joints");
 		Map<String, Joint> jointMap = Maps.newHashMap();
 		Joint joint = this.getJoint(hierarchy, nameAsVertexGroups, jointMap, true);
-		joint.initShortcut(new OpenMatrix4f());
+		joint.initOriginTransform(new OpenMatrix4f());
 		
 		return constructor.invoke(jointMap.size(), joint, jointMap);
 	}
@@ -232,10 +239,9 @@ public class JsonModelLoader {
 		Set<String> allowedJoints = Sets.<String>newLinkedHashSet();
 		
 		if (attack) {
-			
 			for (Phase phase : ((AttackAnimation)animation).phases) {
 				Joint joint = armature.getRootJoint();
-				int pathIndex = armature.searchPathIndex(phase.getColliderJointName());
+				int pathIndex = armature.searchPathIndex(phase.getColliderJoint().getName());
 				
 				while (joint != null) {
 					allowedJoints.add(joint.getName());

@@ -13,7 +13,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.entity.PartEntity;
-import yesman.epicfight.api.animation.Animator;
+import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
@@ -34,15 +34,15 @@ public abstract class Collider {
 		this.worldCenter = OpenMatrix4f.transform(mat, this.modelCenter);
 	}
 	
-	public List<Entity> updateAndSelectCollideEntity(LivingEntityPatch<?> entitypatch, AttackAnimation attackAnimation, float prevElapsedTime, float elapsedTime, String jointName, float attackSpeed) {
+	public List<Entity> updateAndSelectCollideEntity(LivingEntityPatch<?> entitypatch, AttackAnimation attackAnimation, float prevElapsedTime, float elapsedTime, Joint joint, float attackSpeed) {
 		OpenMatrix4f transformMatrix;
 		Armature armature = entitypatch.getArmature();
-		int pathIndex = armature.searchPathIndex(jointName);
+		int pathIndex = armature.searchPathIndex(joint.getName());
 		
 		if (pathIndex == -1) {
 			transformMatrix = new OpenMatrix4f();
 		} else {
-			transformMatrix = Animator.getBindedJointTransformByIndex(attackAnimation.getPoseByTime(entitypatch, elapsedTime, 1.0F), armature, pathIndex);
+			transformMatrix = armature.getBindedJointTransformByIndex(attackAnimation.getPoseByTime(entitypatch, elapsedTime, 1.0F), pathIndex);
 		}
 		
 		OpenMatrix4f toWorldCoord = OpenMatrix4f.createTranslation(-(float)entitypatch.getOriginal().getX(), (float)entitypatch.getOriginal().getY(), -(float)entitypatch.getOriginal().getZ());
@@ -74,14 +74,14 @@ public abstract class Collider {
 	@OnlyIn(Dist.CLIENT)
 	public void draw(PoseStack matrixStackIn, MultiBufferSource buffer, LivingEntityPatch<?> entitypatch, AttackAnimation animation, float prevElapsedTime, float elapsedTime, float partialTicks, float attackSpeed) {
 		Armature armature = entitypatch.getArmature();
-		int pathIndex =  armature.searchPathIndex(animation.getPathIndexByTime(elapsedTime));
+		int pathIndex =  armature.searchPathIndex(animation.getJointOn(elapsedTime).getName());
 		boolean flag3 = entitypatch.getEntityState().attacking();
 		OpenMatrix4f mat = null;
 		
 		if (pathIndex == -1) {
 			mat = new OpenMatrix4f();
 		} else {
-			mat = Animator.getBindedJointTransformByIndex(animation.getPoseByTime(entitypatch, elapsedTime, 0.0F), armature, pathIndex);
+			mat = armature.getBindedJointTransformByIndex(animation.getPoseByTime(entitypatch, elapsedTime, 0.0F), pathIndex);
 		}
 		
 		this.drawInternal(matrixStackIn, buffer, mat, flag3);

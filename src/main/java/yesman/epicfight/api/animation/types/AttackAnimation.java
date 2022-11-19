@@ -12,7 +12,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
@@ -25,6 +24,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.registries.RegistryObject;
 import yesman.epicfight.api.animation.AnimationPlayer;
+import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.animation.JointTransform;
 import yesman.epicfight.api.animation.Keyframe;
 import yesman.epicfight.api.animation.Pose;
@@ -35,6 +35,7 @@ import yesman.epicfight.api.animation.property.AnimationProperty.AttackAnimation
 import yesman.epicfight.api.animation.property.AnimationProperty.AttackPhaseProperty;
 import yesman.epicfight.api.animation.property.AnimationProperty.StaticAnimationProperty;
 import yesman.epicfight.api.collider.Collider;
+import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.HitEntityList;
 import yesman.epicfight.api.utils.math.MathUtils;
@@ -80,22 +81,21 @@ public class AttackAnimation extends ActionAnimation {
 	
 	public final Phase[] phases;
 	
-	public AttackAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, @Nullable Collider collider, String index, String path, ResourceLocation armature) {
-		this(convertTime, path, armature, new Phase(0.0F, antic, preDelay, contact, recovery, Float.MAX_VALUE, index, collider));
+	public AttackAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, @Nullable Collider collider, Joint colliderJoint, String path, Armature armature) {
+		this(convertTime, path, armature, new Phase(0.0F, antic, preDelay, contact, recovery, Float.MAX_VALUE, colliderJoint, collider));
 	}
 	
-	public AttackAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, InteractionHand hand, @Nullable Collider collider, String index, String path, ResourceLocation armature) {
-		this(convertTime, path, armature, new Phase(0.0F, antic, preDelay, contact, recovery, Float.MAX_VALUE, hand, index, collider));
+	public AttackAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, InteractionHand hand, @Nullable Collider collider, Joint colliderJoint, String path, Armature armature) {
+		this(convertTime, path, armature, new Phase(0.0F, antic, preDelay, contact, recovery, Float.MAX_VALUE, hand, colliderJoint, collider));
 	}
 	
-	public AttackAnimation(float convertTime, String path, ResourceLocation armature, Phase... phases) {
+	public AttackAnimation(float convertTime, String path, Armature armature, Phase... phases) {
 		super(convertTime, path, armature);
 		
 		this.addProperty(ActionAnimationProperty.COORD_SET_BEGIN, COMMON_COORD_SETTER);
 		this.addProperty(ActionAnimationProperty.COORD_SET_TICK, COMMON_COORD_SETTER);
 		this.addProperty(ActionAnimationProperty.STOP_MOVEMENT, true);
 		this.phases = phases;
-		
 		this.stateSpectrumBlueprint.clear();
 		
 		for (Phase phase : phases) {
@@ -185,7 +185,7 @@ public class AttackAnimation extends ActionAnimation {
 		entitypatch.getArmature().initializeTransform();
 		float prevPoseTime = prevState.attacking() ? prevElapsedTime : phase.preDelay;
 		float poseTime = state.attacking() ? elapsedTime : phase.contact;
-		List<Entity> list = collider.updateAndSelectCollideEntity(entitypatch, this, prevPoseTime, poseTime, phase.getColliderJointName(), this.getPlaySpeed(entitypatch));
+		List<Entity> list = collider.updateAndSelectCollideEntity(entitypatch, this, prevPoseTime, poseTime, phase.getColliderJoint(), this.getPlaySpeed(entitypatch));
 		
 		if (list.size() > 0) {
 			HitEntityList hitEntities = new HitEntityList(entitypatch, list, phase.getProperty(AttackPhaseProperty.HIT_PRIORITY).orElse(HitEntityList.Priority.DISTANCE));
@@ -361,8 +361,8 @@ public class AttackAnimation extends ActionAnimation {
 		return this;
 	}
 	
-	public String getPathIndexByTime(float elapsedTime) {
-		return this.getPhaseByTime(elapsedTime).jointName;
+	public Joint getJointOn(float elapsedTime) {
+		return this.getPhaseByTime(elapsedTime).joint;
 	}
 	
 	public Phase getPhaseByTime(float elapsedTime) {
@@ -401,23 +401,23 @@ public class AttackAnimation extends ActionAnimation {
 		protected final float contact;
 		protected final float recovery;
 		protected final float end;
-		protected final String jointName;
+		protected final Joint joint;
 		protected final InteractionHand hand;
 		protected /*final*/ Collider collider;
 		
-		public Phase(float start, float antic, float contact, float recovery, float end, String jointName, Collider collider) {
-			this(start, antic, contact, recovery, end, InteractionHand.MAIN_HAND, jointName, collider);
+		public Phase(float start, float antic, float contact, float recovery, float end, Joint joint, Collider collider) {
+			this(start, antic, contact, recovery, end, InteractionHand.MAIN_HAND, joint, collider);
 		}
 		
-		public Phase(float start, float antic, float contact, float recovery, float end, InteractionHand hand, String jointName, Collider collider) {
-			this(start, antic, antic, contact, recovery, end, hand, jointName, collider);
+		public Phase(float start, float antic, float contact, float recovery, float end, InteractionHand hand, Joint joint, Collider collider) {
+			this(start, antic, antic, contact, recovery, end, hand, joint, collider);
 		}
 		
-		public Phase(float start, float antic, float preDelay, float contact, float recovery, float end, String jointName, Collider collider) {
-			this(start, antic, preDelay, contact, recovery, end, InteractionHand.MAIN_HAND, jointName, collider);
+		public Phase(float start, float antic, float preDelay, float contact, float recovery, float end, Joint joint, Collider collider) {
+			this(start, antic, preDelay, contact, recovery, end, InteractionHand.MAIN_HAND, joint, collider);
 		}
 		
-		public Phase(float start, float antic, float preDelay, float contact, float recovery, float end, InteractionHand hand, String jointName, Collider collider) {
+		public Phase(float start, float antic, float preDelay, float contact, float recovery, float end, InteractionHand hand, Joint joint, Collider collider) {
 			this.start = start;
 			this.antic = antic;
 			this.preDelay = preDelay;
@@ -425,7 +425,7 @@ public class AttackAnimation extends ActionAnimation {
 			this.recovery = recovery;
 			this.end = end;
 			this.collider = collider;
-			this.jointName = jointName;
+			this.joint = joint;
 			this.hand = hand;
 		}
 		
@@ -445,8 +445,8 @@ public class AttackAnimation extends ActionAnimation {
 			return (Optional<V>) Optional.ofNullable(this.properties.get(propertyType));
 		}
 		
-		public String getColliderJointName() {
-			return this.jointName;
+		public Joint getColliderJoint() {
+			return this.joint;
 		}
 		
 		public InteractionHand getHand() {

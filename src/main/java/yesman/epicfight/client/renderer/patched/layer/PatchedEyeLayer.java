@@ -29,6 +29,6 @@ public class PatchedEyeLayer<E extends LivingEntity, T extends LivingEntityPatch
 	@Override
 	public void renderLayer(T entitypatch, E entityliving, EyesLayer<E, M> originalRenderer, PoseStack matrixStackIn, MultiBufferSource buffer, int packedLightIn, OpenMatrix4f[] poses, float netYawHead, float pitchHead, float partialTicks) {
 		VertexConsumer ivertexbuilder = buffer.getBuffer(this.renderType);
-		this.mesh.drawAnimatedModel(matrixStackIn, ivertexbuilder, 15728640, 1.0F, 1.0F, 1.0F, 1.0F, OverlayTexture.NO_OVERLAY, poses);
+		this.mesh.drawModelWithPose(matrixStackIn, ivertexbuilder, 15728640, 1.0F, 1.0F, 1.0F, 1.0F, OverlayTexture.NO_OVERLAY, entitypatch.getArmature(), poses);
 	}
 }

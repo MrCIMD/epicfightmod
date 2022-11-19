@@ -12,8 +12,8 @@ public class WitherMesh extends AnimatedMesh {
 	public final ModelPart ribcage;
 	public final ModelPart tail;
 	
-	public WitherMesh(float[] positions, float[] noramls, float[] uvs, float[] weights, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
-		super(positions, noramls, uvs, weights, parent, properties, parts);
+	public WitherMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+		super(arrayMap, parent, properties, parts);
 		
 		this.centerHead = this.getOrLogException(parts, "centerHead");
 		this.leftHead = this.getOrLogException(parts, "leftHead");

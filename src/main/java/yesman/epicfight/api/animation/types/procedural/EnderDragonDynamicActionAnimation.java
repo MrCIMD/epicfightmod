@@ -7,7 +7,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -18,6 +17,7 @@ import yesman.epicfight.api.animation.Keyframe;
 import yesman.epicfight.api.animation.Pose;
 import yesman.epicfight.api.animation.TransformSheet;
 import yesman.epicfight.api.animation.types.ActionAnimation;
+import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.client.renderer.EpicFightRenderTypes;
@@ -29,7 +29,7 @@ public class EnderDragonDynamicActionAnimation extends ActionAnimation implement
 	private final IKInfo[] ikInfos;
 	private Map<String, TransformSheet> tipPointTransform;
 	
-	public EnderDragonDynamicActionAnimation(float convertTime, String path, ResourceLocation armature, IKInfo[] ikInfos) {
+	public EnderDragonDynamicActionAnimation(float convertTime, String path, Armature armature, IKInfo[] ikInfos) {
 		super(convertTime, path, armature);
 		this.ikInfos = ikInfos;
 	}
@@ -58,7 +58,7 @@ public class EnderDragonDynamicActionAnimation extends ActionAnimation implement
 	    	this.correctRootRotation(pose.getJointTransformData().get("Root"), enderdragonpatch, partialTicks);
 	    	
 	    	for (IKInfo ikInfo : this.ikInfos) {
-		    	TipPointAnimation tipAnim = enderdragonpatch.getTipPointAnimation(ikInfo.endJoint);
+		    	TipPointAnimation tipAnim = enderdragonpatch.getTipPointAnimation(ikInfo.endJoint.getName());
 	    		JointTransform jt = tipAnim.getTipTransform(partialTicks);
 		    	Vec3f jointModelpos = OpenMatrix4f.transform3v(toModelPos, jt.translation(), null);
 		    	this.applyFabrikToJoint(jointModelpos.multiply(-1.0F, 1.0F, -1.0F), pose, entitypatch.getArmature(), ikInfo.startJoint, ikInfo.endJoint, jt.rotation());
@@ -76,10 +76,10 @@ public class EnderDragonDynamicActionAnimation extends ActionAnimation implement
 			EnderDragonPatch enderdragonpatch = (EnderDragonPatch)entitypatch;
 			Vec3 entitypos = enderdragonpatch.getOriginal().position();
 			OpenMatrix4f toWorld = OpenMatrix4f.mul(OpenMatrix4f.createTranslation((float)entitypos.x, (float)entitypos.y, (float)entitypos.z), enderdragonpatch.getModelMatrix(1.0F), null);
-			TransformSheet movementAnimation = enderdragonpatch.getAnimator().getPlayerFor(this).getActionAnimationCoord();
+			TransformSheet movementAnimation = enderdragonpatch.getArmature().getActionAnimationCoord();
 			
 			for (IKInfo ikInfo : this.ikInfos) {
-				TransformSheet tipAnim = this.clipAnimation(this.tipPointTransform.get(ikInfo.endJoint), ikInfo);
+				TransformSheet tipAnim = this.clipAnimation(this.tipPointTransform.get(ikInfo.endJoint.getName()), ikInfo);
 				Keyframe[] keyframes = tipAnim.getKeyframes();
 				Vec3f startpos = movementAnimation.getInterpolatedTranslation(0.0F);
 				
@@ -100,7 +100,7 @@ public class EnderDragonDynamicActionAnimation extends ActionAnimation implement
 					kf.transform().translation().set(finalTargetpos);
 				}
 				
-				enderdragonpatch.addTipPointAnimation(ikInfo.endJoint, keyframes[0].transform().translation(), tipAnim, ikInfo);
+				enderdragonpatch.addTipPointAnimation(ikInfo.endJoint.getName(), keyframes[0].transform().translation(), tipAnim, ikInfo);
 			}
 		}
 	}
@@ -115,12 +115,12 @@ public class EnderDragonDynamicActionAnimation extends ActionAnimation implement
 			
 			for (IKInfo ikSetter : this.ikInfos) {
 				if (ikSetter.clipAnimation) {
-					Keyframe[] keyframes = this.getTransfroms().get(ikSetter.endJoint).getKeyframes();
+					Keyframe[] keyframes = this.getTransfroms().get(ikSetter.endJoint.getName()).getKeyframes();
 					float startTime = keyframes[ikSetter.startFrame].time();
 					float endTime = keyframes[ikSetter.endFrame - 1].time();
 					
 					if (startTime <= elapsedTime && elapsedTime < endTime) {
-						TipPointAnimation tipAnim = enderdragonpatch.getTipPointAnimation(ikSetter.endJoint);
+						TipPointAnimation tipAnim = enderdragonpatch.getTipPointAnimation(ikSetter.endJoint.getName());
 						
 						if (!tipAnim.isOnWorking()) {
 							this.startSimple(ikSetter, tipAnim);
@@ -149,10 +149,10 @@ public class EnderDragonDynamicActionAnimation extends ActionAnimation implement
 	       	
 			for (IKInfo ikInfo : this.ikInfos) {
 				VertexConsumer vertexBuilder = buffer.getBuffer(EpicFightRenderTypes.debugQuads());
-				Vec3f worldtargetpos = enderdragonpatch.getTipPointAnimation(ikInfo.endJoint).getTargetPosition();
+				Vec3f worldtargetpos = enderdragonpatch.getTipPointAnimation(ikInfo.endJoint.getName()).getTargetPosition();
 				Vec3f modeltargetpos = OpenMatrix4f.transform3v(toModelPos, worldtargetpos, null).multiply(-1.0F, 1.0F, -1.0F);
 				RenderingTool.drawQuad(poseStack, vertexBuilder, modeltargetpos, 0.5F, 1.0F, 0.0F, 0.0F);
-		       	Vec3f jointWorldPos = enderdragonpatch.getTipPointAnimation(ikInfo.endJoint).getTipPosition(partialTicks);
+		       	Vec3f jointWorldPos = enderdragonpatch.getTipPointAnimation(ikInfo.endJoint.getName()).getTipPosition(partialTicks);
 		       	Vec3f jointModelpos = OpenMatrix4f.transform3v(toModelPos, jointWorldPos, null);
 		       	RenderingTool.drawQuad(poseStack, vertexBuilder, jointModelpos.multiply(-1.0F, 1.0F, -1.0F), 0.4F, 0.0F, 0.0F, 1.0F);
 		       	

@@ -1,18 +1,18 @@
 package yesman.epicfight.api.animation.types;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.client.animation.ClientAnimationProperties;
 import yesman.epicfight.api.client.animation.Layer;
+import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.ActionEvent;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener.EventType;
 
 public class MainFrameAnimation extends StaticAnimation {
-	public MainFrameAnimation(float convertTime, String path, ResourceLocation armature) {
+	public MainFrameAnimation(float convertTime, String path, Armature armature) {
 		super(convertTime, false, path, armature);
 	}
 	

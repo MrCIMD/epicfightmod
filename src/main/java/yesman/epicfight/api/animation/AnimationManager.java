@@ -13,7 +13,6 @@ import net.minecraftforge.fml.ModLoader;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.AnimationDataReader;
 import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
-import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.main.EpicFightMod;
 
 public class AnimationManager extends SimplePreparableReloadListener<Map<Integer, Map<Integer, StaticAnimation>>> {
@@ -74,7 +73,6 @@ public class AnimationManager extends SimplePreparableReloadListener<Map<Integer
 				});
 			});
 		}
-		Animations.buildClient();
 		
 		return this.animationById;
 	}

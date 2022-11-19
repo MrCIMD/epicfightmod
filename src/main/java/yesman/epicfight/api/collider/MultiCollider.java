@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.entity.PartEntity;
-import yesman.epicfight.api.animation.Animator;
+import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.animation.property.AnimationProperty.AttackAnimationProperty;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.model.Armature;
@@ -29,7 +29,7 @@ public abstract class MultiCollider<T extends Collider> extends Collider {
 	protected abstract T createCollider();
 	
 	@Override
-	public List<Entity> updateAndSelectCollideEntity(LivingEntityPatch<?> entitypatch, AttackAnimation attackAnimation, float prevElapsedTime, float elapsedTime, String jointName, float attackSpeed) {
+	public List<Entity> updateAndSelectCollideEntity(LivingEntityPatch<?> entitypatch, AttackAnimation attackAnimation, float prevElapsedTime, float elapsedTime, Joint joint, float attackSpeed) {
 		int numberOf = Math.max(Math.round((this.numberOfColliders + attackAnimation.getProperty(AttackAnimationProperty.EXTRA_COLLIDERS).orElse(0)) * attackSpeed), 1);
 		float partialScale = 1.0F / (numberOf - 1);
 		float interpolation = 0.0F;
@@ -45,14 +45,14 @@ public abstract class MultiCollider<T extends Collider> extends Collider {
 		for (T collider : colliders) {
 			OpenMatrix4f transformMatrix;
 			Armature armature = entitypatch.getArmature();
-			int pathIndex = armature.searchPathIndex(jointName);
+			int pathIndex = armature.searchPathIndex(joint.getName());
 			
 			if (pathIndex == -1) {
 				transformMatrix = new OpenMatrix4f();
 			} else {
 				//transformMatrix = Animator.getBindedJointTransformByIndex(entitypatch.getAnimator().getPose(interpolation), armature, pathIndex);
 				float interpolateTime = prevElapsedTime + (elapsedTime - prevElapsedTime) * interpolation;
-				transformMatrix = Animator.getBindedJointTransformByIndex(attackAnimation.getPoseByTime(entitypatch, interpolateTime, 1.0F), armature, pathIndex);
+				transformMatrix = armature.getBindedJointTransformByIndex(attackAnimation.getPoseByTime(entitypatch, interpolateTime, 1.0F), pathIndex);
 			}
 			
 			double x = original.xOld + (original.getX() - original.xOld) * interpolation;

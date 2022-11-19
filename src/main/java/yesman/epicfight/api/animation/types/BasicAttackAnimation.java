@@ -4,29 +4,30 @@ import java.util.Locale;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
+import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.animation.Pose;
 import yesman.epicfight.api.animation.property.AnimationProperty.ActionAnimationProperty;
 import yesman.epicfight.api.animation.property.AnimationProperty.AttackAnimationProperty;
 import yesman.epicfight.api.collider.Collider;
+import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
 public class BasicAttackAnimation extends AttackAnimation {
-	public BasicAttackAnimation(float convertTime, float antic, float contact, float recovery, @Nullable Collider collider, String index, String path, ResourceLocation armature) {
-		this(convertTime, antic, antic, contact, recovery, collider, index, path, armature);
+	public BasicAttackAnimation(float convertTime, float antic, float contact, float recovery, @Nullable Collider collider, Joint colliderJoint, String path, Armature armature) {
+		this(convertTime, antic, antic, contact, recovery, collider, colliderJoint, path, armature);
 	}
 	
-	public BasicAttackAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, @Nullable Collider collider, String index, String path, ResourceLocation armature) {
-		super(convertTime, antic, preDelay, contact, recovery, collider, index, path, armature);
+	public BasicAttackAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, @Nullable Collider collider, Joint colliderJoint, String path, Armature armature) {
+		super(convertTime, antic, preDelay, contact, recovery, collider, colliderJoint, path, armature);
 		this.addProperty(AttackAnimationProperty.ROTATE_X, true);
 		this.addProperty(ActionAnimationProperty.CANCELABLE_MOVE, true);
 	}
 	
-	public BasicAttackAnimation(float convertTime, float antic, float contact, float recovery, InteractionHand hand, @Nullable Collider collider, String index, String path, ResourceLocation armature) {
-		super(convertTime, antic, antic, contact, recovery, hand, collider, index, path, armature);
+	public BasicAttackAnimation(float convertTime, float antic, float contact, float recovery, InteractionHand hand, @Nullable Collider collider, Joint colliderJoint, String path, Armature armature) {
+		super(convertTime, antic, antic, contact, recovery, hand, collider, colliderJoint, path, armature);
 		this.addProperty(AttackAnimationProperty.ROTATE_X, true);
 		this.addProperty(ActionAnimationProperty.CANCELABLE_MOVE, true);
 	}

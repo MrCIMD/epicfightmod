@@ -19,7 +19,7 @@ public class PHoglinRenderer<E extends Mob & HoglinBase, T extends MobPatch<E>> 
 	
 	@Override
 	protected void setJointTransform(int jointId, Armature modelArmature, OpenMatrix4f mat) {
-		modelArmature.searchJointById(jointId).getAnimatedTransform().mulBack(CORRECTION).mulBack(mat).mulBack(REVERSE);
+		modelArmature.searchJointById(jointId).getPoseTransform().mulBack(CORRECTION).mulBack(mat).mulBack(REVERSE);
 	}
 	
 	@Override

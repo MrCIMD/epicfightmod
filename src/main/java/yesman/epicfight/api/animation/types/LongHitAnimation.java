@@ -1,10 +1,10 @@
 package yesman.epicfight.api.animation.types;
 
-import net.minecraft.resources.ResourceLocation;
 import yesman.epicfight.api.animation.property.AnimationProperty.ActionAnimationProperty;
+import yesman.epicfight.api.model.Armature;
 
 public class LongHitAnimation extends ActionAnimation {
-	public LongHitAnimation(float convertTime, String path, ResourceLocation armature) {
+	public LongHitAnimation(float convertTime, String path, Armature armature) {
 		super(convertTime, path, armature);
 		this.addProperty(ActionAnimationProperty.STOP_MOVEMENT, true);
 		

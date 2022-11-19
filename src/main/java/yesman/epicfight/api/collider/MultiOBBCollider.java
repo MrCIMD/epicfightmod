@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.animation.Animator;
 import yesman.epicfight.api.animation.property.AnimationProperty.AttackAnimationProperty;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.model.Armature;
@@ -16,6 +15,7 @@ import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class MultiOBBCollider extends MultiCollider<OBBCollider> {
+	
 	public MultiOBBCollider(int arrayLength, double posX, double posY, double posZ, double vecX, double vecY, double vecZ) {
 		super(arrayLength, vecX, vecY, vecZ, OBBCollider.getInitialAABB(posX, posY, posZ, vecX, vecY, vecZ));
 		this.bigCollider = new OBBCollider(this.outerAABB, posX, posY, posZ, vecX, vecY, vecZ);
@@ -33,7 +33,7 @@ public class MultiOBBCollider extends MultiCollider<OBBCollider> {
 		float partialScale = 1.0F / (numberOf - 1);
 		float interpolation = 0.0F;
 		Armature armature = entitypatch.getArmature();
-		int pathIndex =  armature.searchPathIndex(animation.getPathIndexByTime(elapsedTime));
+		int pathIndex =  armature.searchPathIndex(animation.getJointOn(elapsedTime).getName());
 		boolean red = entitypatch.getEntityState().attacking();
 		List<OBBCollider> colliders = Lists.newArrayList();
 		
@@ -49,7 +49,7 @@ public class MultiOBBCollider extends MultiCollider<OBBCollider> {
 			if (pathIndex == -1) {
 				mat = new OpenMatrix4f();
 			} else {
-				mat = Animator.getBindedJointTransformByIndex(entitypatch.getAnimator().getPose(interpolation), armature, pathIndex);
+				mat = entitypatch.getArmature().getBindedJointTransformByIndex(entitypatch.getArmature().getPose(interpolation), pathIndex);
 			}
 			
 			obbCollider.drawInternal(matrixStackIn, buffer, mat, red);

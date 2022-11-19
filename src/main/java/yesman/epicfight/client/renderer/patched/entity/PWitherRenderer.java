@@ -54,7 +54,7 @@ public class PWitherRenderer extends PatchedLivingEntityRenderer<WitherBoss, Wit
 			if (transparencyCount == 0) {
 				if (!entitypatch.isGhost()) {
 					VertexConsumer builder = buffer.getBuffer(renderType);
-					mesh.drawAnimatedModel(poseStack, builder, packedLight, 1.0F, 1.0F, 1.0F, 1.0F, this.getOverlayCoord(entityIn, entitypatch, partialTicks), poseMatrices);
+					mesh.drawModelWithPose(poseStack, builder, packedLight, 1.0F, 1.0F, 1.0F, 1.0F, this.getOverlayCoord(entityIn, entitypatch, partialTicks), armature, poseMatrices);
 				}
 			} else {
 				float transparency = (Math.abs(transparencyCount) + partialTicks) / 41.0F;
@@ -65,11 +65,11 @@ public class PWitherRenderer extends PatchedLivingEntityRenderer<WitherBoss, Wit
 				
 				renderType = EpicFightRenderTypes.triangles(RenderType.entityTranslucent(WITHER_LOCATION));//  EpicFightRenderTypes.entityTranslucentTriangles(WITHER_LOCATION);
 				VertexConsumer builder1 = buffer.getBuffer(renderType);
-				mesh.drawAnimatedModel(poseStack, builder1, packedLight, 1.0F, 1.0F, 1.0F, transparency, OverlayTexture.NO_OVERLAY, poseMatrices);
+				mesh.drawModelWithPose(poseStack, builder1, packedLight, 1.0F, 1.0F, 1.0F, transparency, OverlayTexture.NO_OVERLAY, armature, poseMatrices);
 				
 				renderType = EpicFightRenderTypes.triangles(RenderType.entityTranslucent(WITHER_INVULNERABLE_LOCATION));
 				VertexConsumer builder2 = buffer.getBuffer(renderType);
-				mesh.drawAnimatedModel(poseStack, builder2, packedLight, 1.0F, 1.0F, 1.0F, Mth.sin(transparency * 3.1415F), OverlayTexture.NO_OVERLAY, poseMatrices);
+				mesh.drawModelWithPose(poseStack, builder2, packedLight, 1.0F, 1.0F, 1.0F, Mth.sin(transparency * 3.1415F), OverlayTexture.NO_OVERLAY, armature, poseMatrices);
 			}
 			
 			this.renderLayer(renderer, entitypatch, entityIn, poseMatrices, buffer, poseStack, packedLight, partialTicks);

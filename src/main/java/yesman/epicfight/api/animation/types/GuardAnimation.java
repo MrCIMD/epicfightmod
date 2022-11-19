@@ -1,13 +1,13 @@
 package yesman.epicfight.api.animation.types;
 
-import net.minecraft.resources.ResourceLocation;
+import yesman.epicfight.api.model.Armature;
 
 public class GuardAnimation extends MainFrameAnimation {
-	public GuardAnimation(float convertTime, String path, ResourceLocation armature) {
+	public GuardAnimation(float convertTime, String path, Armature armature) {
 		this(convertTime, Float.MAX_VALUE, path, armature);
 	}
 	
-	public GuardAnimation(float convertTime, float lockTime, String path, ResourceLocation armature) {
+	public GuardAnimation(float convertTime, float lockTime, String path, Armature armature) {
 		super(convertTime, path, armature);
 		
 		this.stateSpectrumBlueprint.clear()

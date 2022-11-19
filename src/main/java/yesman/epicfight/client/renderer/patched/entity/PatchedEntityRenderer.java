@@ -46,17 +46,8 @@ public abstract class PatchedEntityRenderer<E extends LivingEntity, T extends Li
 		}
 	}
 	
-	public OpenMatrix4f[] getPoseMatrices(T entitypatch, Armature armature, float partialTicks) {
-		armature.initializeTransform();
-        this.setJointTransforms(entitypatch, armature, partialTicks);
-		entitypatch.getClientAnimator().setPoseToModel(partialTicks);
-		OpenMatrix4f[] poseMatrices = armature.getJointTransforms();
-		
-		return poseMatrices;
-	}
-	
 	protected void setJointTransform(int jointId, Armature modelArmature, OpenMatrix4f mat) {
-		modelArmature.searchJointById(jointId).getAnimatedTransform().mulFront(mat);
+		modelArmature.searchJointById(jointId).getPoseTransform().mulFront(mat);
 	}
 	
 	public void mulPoseStack(PoseStack poseStack, Armature armature, E entityIn, T entitypatch, float partialTicks) {
@@ -68,6 +59,13 @@ public abstract class PatchedEntityRenderer<E extends LivingEntity, T extends Li
         MathUtils.scaleStack(poseStack, transpose);
 	}
 	
+	public OpenMatrix4f[] getPoseMatrices(T entitypatch, Armature armature, float partialTicks) {
+		armature.initializeTransform();
+        this.setJointTransforms(entitypatch, armature, partialTicks);
+		OpenMatrix4f[] poseMatrices = armature.getAllPoseTransform(partialTicks);
+		
+		return poseMatrices;
+	}
 	public abstract AM getMesh(T entitypatch);
 	
 	protected void setJointTransforms(T entitypatch, Armature armature, float partialTicks) {}

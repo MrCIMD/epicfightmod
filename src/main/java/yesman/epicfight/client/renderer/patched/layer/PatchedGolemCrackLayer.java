@@ -39,7 +39,7 @@ public class PatchedGolemCrackLayer extends PatchedLayer<IronGolem, IronGolemPat
 		if (crack != IronGolem.Crackiness.NONE) {
 			VertexConsumer ivertexbuilder = bufferIn.getBuffer(EpicFightRenderTypes.triangles(RenderType.entityCutoutNoCull(CRACK_MAP.get(crack))));
 			
-			this.mesh.drawAnimatedModel(matrixStackIn, ivertexbuilder, packedLightIn, 1.0F, 1.0F, 1.0F, 1.0F, OverlayTexture.NO_OVERLAY, poses);
+			this.mesh.drawModelWithPose(matrixStackIn, ivertexbuilder, packedLightIn, 1.0F, 1.0F, 1.0F, 1.0F, OverlayTexture.NO_OVERLAY, entitypatch.getArmature(), poses);
 		}
 	}
 }

@@ -65,7 +65,7 @@ public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T exte
 			this.prepareModel(mesh, entityIn, entitypatch);
 			
 			VertexConsumer builder = buffer.getBuffer(renderType);
-			mesh.drawAnimatedModel(poseStack, builder, packedLight, 1.0F, 1.0F, 1.0F, isVisibleToPlayer ? 0.15F : 1.0F, this.getOverlayCoord(entityIn, entitypatch, partialTicks), poseMatrices);
+			mesh.drawModelWithPose(poseStack, builder, packedLight, 1.0F, 1.0F, 1.0F, isVisibleToPlayer ? 0.15F : 1.0F, this.getOverlayCoord(entityIn, entitypatch, partialTicks), armature, poseMatrices);
 		}
 		
 		if (!entityIn.isSpectator()) {
@@ -114,7 +114,7 @@ public abstract class PatchedLivingEntityRenderer<E extends LivingEntity, T exte
 		}
 		
 		OpenMatrix4f modelMatrix = new OpenMatrix4f();
-		modelMatrix.mulFront(entitypatch.getArmature().searchJointById(this.getRootJointIndex()).getAnimatedTransform());
+		modelMatrix.mulFront(entitypatch.getArmature().searchJointById(this.getRootJointIndex()).getPoseTransform());
 		OpenMatrix4f transpose = OpenMatrix4f.transpose(modelMatrix, null);
 		
 		poseStack.pushPose();

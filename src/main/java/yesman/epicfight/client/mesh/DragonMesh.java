@@ -17,8 +17,8 @@ public class DragonMesh extends AnimatedMesh {
 	public final ModelPart rightWing;
 	public final ModelPart tail;
 	
-	public DragonMesh(float[] positions, float[] noramls, float[] uvs, float[] weights, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
-		super(positions, noramls, uvs, weights, parent, properties, parts);
+	public DragonMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+		super(arrayMap, parent, properties, parts);
 		
 		this.head = this.getOrLogException(parts, "head");
 		this.neck = this.getOrLogException(parts, "neck");

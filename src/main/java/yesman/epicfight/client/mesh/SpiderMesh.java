@@ -18,8 +18,8 @@ public class SpiderMesh extends AnimatedMesh {
 	public final ModelPart rightLeg3;
 	public final ModelPart rightLeg4;
 	
-	public SpiderMesh(float[] positions, float[] noramls, float[] uvs, float[] weights, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
-		super(positions, noramls, uvs, weights, parent, properties, parts);
+	public SpiderMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+		super(arrayMap, parent, properties, parts);
 		
 		this.head = this.getOrLogException(parts, "head");
 		this.middleStomach = this.getOrLogException(parts, "middleStomach");

@@ -21,8 +21,8 @@ public class HumanoidMesh extends AnimatedMesh {
 	public final ModelPart leftPants;
 	public final ModelPart rightPants;
 	
-	public HumanoidMesh(float[] positions, float[] noramls, float[] uvs, float[] weights, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
-		super(positions, noramls, uvs, weights, parent, properties, parts);
+	public HumanoidMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+		super(arrayMap, parent, properties, parts);
 		
 		this.head = this.getOrLogException(parts, "head");
 		this.torso = this.getOrLogException(parts, "torso");

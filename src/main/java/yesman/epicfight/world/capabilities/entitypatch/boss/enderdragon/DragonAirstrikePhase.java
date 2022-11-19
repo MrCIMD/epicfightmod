@@ -12,10 +12,10 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.phys.Vec3;
-import yesman.epicfight.api.animation.Animator;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
+import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.world.entity.AreaEffectBreath;
@@ -49,7 +49,7 @@ public class DragonAirstrikePhase extends PatchedDragonPhase {
 	public void doClientTick() {
 		super.doClientTick();
 		Vec3 dragonpos = this.dragon.position();
-		OpenMatrix4f mouthpos = Animator.getBindedJointTransformByName(this.dragonpatch.getAnimator().getPose(1.0F), this.dragonpatch.getArmature(), "Mouth_Upper");
+		OpenMatrix4f mouthpos = this.dragonpatch.getArmature().getBindedTransformFor(this.dragonpatch.getArmature().getPose(1.0F), Armatures.DRAGON.upperMouth);
 		
 		float f = (float)this.dragon.getLatencyPos(7, 1.0F)[0];
 		float f1 = (float)(this.dragon.getLatencyPos(5, 1.0F)[1] - this.dragon.getLatencyPos(10, 1.0F)[1]);

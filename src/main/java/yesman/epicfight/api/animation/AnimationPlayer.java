@@ -1,6 +1,5 @@
 package yesman.epicfight.api.animation;
 
-import yesman.epicfight.api.animation.property.AnimationProperty.ActionAnimationCoordSetter;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.config.ConfigurationIngame;
 import yesman.epicfight.gameasset.Animations;
@@ -13,7 +12,6 @@ public class AnimationPlayer {
 	private boolean doNotResetNext;
 	private boolean reversed;
 	private DynamicAnimation play;
-	private TransformSheet actionAnimationCoord = new TransformSheet();
 	
 	public AnimationPlayer() {
 		this.setPlayAnimation(Animations.DUMMY_ANIMATION);
@@ -21,8 +19,7 @@ public class AnimationPlayer {
 	
 	public void tick(LivingEntityPatch<?> entitypatch) {
 		this.prevElapsedTime = this.elapsedTime;
-		this.elapsedTime += ConfigurationIngame.A_TICK * this.getAnimation().getPlaySpeed(entitypatch) *
-				(this.isReversed() && this.getAnimation().canBePlayedReverse() ? -1.0F : 1.0F); 
+		this.elapsedTime += ConfigurationIngame.A_TICK * this.getAnimation().getPlaySpeed(entitypatch) * (this.isReversed() && this.getAnimation().canBePlayedReverse() ? -1.0F : 1.0F); 
 		
 		if (this.elapsedTime >= this.play.getTotalTime()) {
 			if (this.play.isRepeat()) {
@@ -64,14 +61,6 @@ public class AnimationPlayer {
 		}
 		
 		this.play = animation;
-	}
-	
-	public void setActionAnimationCoord(DynamicAnimation animation, LivingEntityPatch<?> entitypatch, ActionAnimationCoordSetter actionAnimationCoordSetter) {
-		actionAnimationCoordSetter.set(animation, entitypatch, this.actionAnimationCoord);
-	}
-	
-	public TransformSheet getActionAnimationCoord() {
-		return this.actionAnimationCoord;
 	}
 	
 	public Pose getCurrentPose(LivingEntityPatch<?> entitypatch, float partialTicks) {

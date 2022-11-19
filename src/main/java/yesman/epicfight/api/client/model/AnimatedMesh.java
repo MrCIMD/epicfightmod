@@ -17,13 +17,13 @@ import com.mojang.math.Vector4f;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.api.utils.math.Vec4f;
-import yesman.epicfight.main.EpicFightMod;
 
 @OnlyIn(Dist.CLIENT)
-public class AnimatedMesh {
+public class AnimatedMesh extends Mesh {/**
 	public static class RenderProperties {
 		public static final RenderProperties DEFAULT = RenderProperties.builder().build();
 		
@@ -61,25 +61,29 @@ public class AnimatedMesh {
 	final float[] weights;
 	final int totalVertices;
 	final Map<String, ModelPart> parts;
-	final RenderProperties properties;
+	final RenderProperties properties;**/
 	
-	public AnimatedMesh(float[] positions, float[] normals, float[] uvs, float[] weights, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
-		this.positions = (parent == null) ? positions : parent.positions;
-		this.normals = (parent == null) ? normals : parent.normals;
-		this.uvs = (parent == null) ? uvs : parent.uvs;
-		this.weights = (parent == null) ? weights : parent.weights;
-		this.parts = (parent == null) ? parts : parent.parts;
-		this.properties = properties;
+	final float[] weights;
+	
+	public AnimatedMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+		super(arrayMap, parent, properties, parts);
 		
+		//this.positions = (parent == null) ? positions : parent.positions;
+		//this.normals = (parent == null) ? normals : parent.normals;
+		//this.uvs = (parent == null) ? uvs : parent.uvs;
+		this.weights = (parent == null) ? arrayMap.get("weights") : parent.weights;
+		//this.parts = (parent == null) ? parts : parent.parts;
+		//this.properties = properties;
+		/**
 		int totalV = 0;
 		
 		for (ModelPart meshpart : parts.values()) {
 			totalV += meshpart.getVertices().size();
 		}
 		
-		this.totalVertices = totalV;
+		this.totalVertices = totalV;**/
 	}
-	
+	/**
 	protected ModelPart getOrLogException(Map<String, ModelPart> parts, String name) {
 		if (!parts.containsKey(name)) {
 			EpicFightMod.LOGGER.info("Cannot find the mesh part named " + name + " in " + this.getClass().getCanonicalName());
@@ -96,7 +100,6 @@ public class AnimatedMesh {
 	public void initialize() {
 		this.parts.values().forEach((part) -> part.hidden = false);
 	}
-	
 
 	public void drawRawModel(PoseStack posetStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord) {
 		Matrix4f matrix4f = posetStack.last().pose();
@@ -117,14 +120,14 @@ public class AnimatedMesh {
 			}
 		}
 	}
-	
-	public void drawAnimatedModel(PoseStack posetStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord, OpenMatrix4f[] poses) {
+	**/
+	public void drawModelWithPose(PoseStack posetStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord, Armature armature, OpenMatrix4f[] poses) {
 		Matrix4f matrix4f = posetStack.last().pose();
 		Matrix3f matrix3f = posetStack.last().normal();
 		OpenMatrix4f[] posesNoTranslation = new OpenMatrix4f[poses.length];
 		
 		for (int i = 0; i < poses.length; i++) {
-			posesNoTranslation[i] = poses[i].removeTranslation();
+			posesNoTranslation[i] = OpenMatrix4f.mul(poses[i], armature.searchJointById(i).getToOrigin(), null).removeTranslation();
 		}
 		
 		for (ModelPart part : this.parts.values()) {
@@ -142,7 +145,7 @@ public class AnimatedMesh {
 						int jointIndex = vi.joint.get(i);
 						int weightIndex = vi.weight.get(i);
 						float weight = this.weights[weightIndex];
-						Vec4f.add(OpenMatrix4f.transform(poses[jointIndex], position, null).scale(weight), totalPos, totalPos);
+						Vec4f.add(OpenMatrix4f.transform(OpenMatrix4f.mul(poses[jointIndex], armature.searchJointById(jointIndex).getToOrigin(), null), position, null).scale(weight), totalPos, totalPos);
 						Vec4f.add(OpenMatrix4f.transform(posesNoTranslation[jointIndex], normal, null).scale(weight), totalNorm, totalNorm);
 					}
 					

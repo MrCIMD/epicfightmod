@@ -8,8 +8,8 @@ import yesman.epicfight.api.client.model.Meshes;
 import yesman.epicfight.api.client.model.ModelPart;
 
 public class PiglinMesh extends HumanoidMesh {
-	public PiglinMesh(float[] positions, float[] noramls, float[] uvs, float[] weights, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
-		super(positions, noramls, uvs, weights, parent, properties, parts);
+	public PiglinMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+		super(arrayMap, parent, properties, parts);
 	}
 	
 	public AnimatedMesh getArmorModel(EquipmentSlot slot) {

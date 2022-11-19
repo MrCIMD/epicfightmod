@@ -12,8 +12,8 @@ public class Joint {
 	private final int jointId;
 	private final String jointName;
 	private final OpenMatrix4f localTransform;
-	private OpenMatrix4f inversedTransform = new OpenMatrix4f();
-	private OpenMatrix4f animatedTransform = new OpenMatrix4f();
+	private OpenMatrix4f toOrigin = new OpenMatrix4f();
+	private OpenMatrix4f poseTransform = new OpenMatrix4f();
 	
 	public Joint(String name, int jointID, OpenMatrix4f localTransform) {
 		this.jointId = jointID;
@@ -27,24 +27,24 @@ public class Joint {
 		}
 	}
 	
-	public void setAnimatedTransform(OpenMatrix4f animatedTransform) {
-		this.animatedTransform.load(animatedTransform);
+	public void setPoseTransform(OpenMatrix4f animatedTransform) {
+		this.poseTransform.load(animatedTransform);
 	}
 
-	public void initializeAnimationTransform() {
-		this.animatedTransform.setIdentity();
+	public void resetPoseTransforms() {
+		this.poseTransform.setIdentity();
 		
 		for (Joint joint : this.subJoints) {
-			joint.initializeAnimationTransform();
+			joint.resetPoseTransforms();
 		}
 	}
 	
-	public void initShortcut(OpenMatrix4f parentTransform) {
+	public void initOriginTransform(OpenMatrix4f parentTransform) {
 		OpenMatrix4f modelTransform = OpenMatrix4f.mul(parentTransform, this.localTransform, null);
-		OpenMatrix4f.invert(modelTransform, this.inversedTransform);
+		OpenMatrix4f.invert(modelTransform, this.toOrigin);
 		
 		for (Joint joint : this.subJoints) {
-			joint.initShortcut(modelTransform);
+			joint.initOriginTransform(modelTransform);
 		}
 	}
 	
@@ -52,12 +52,12 @@ public class Joint {
 		return this.localTransform;
 	}
 
-	public OpenMatrix4f getAnimatedTransform() {
-		return this.animatedTransform;
+	public OpenMatrix4f getPoseTransform() {
+		return this.poseTransform;
 	}
 
-	public OpenMatrix4f getInversedModelTransform() {
-		return this.inversedTransform;
+	public OpenMatrix4f getToOrigin() {
+		return this.toOrigin;
 	}
 	
 	public List<Joint> getSubJoints() {

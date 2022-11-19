@@ -14,8 +14,8 @@ public class EndermanMesh extends AnimatedMesh {
 	public final ModelPart leftLeg;
 	public final ModelPart rightLeg;
 	
-	public EndermanMesh(float[] positions, float[] noramls, float[] uvs, float[] weights, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
-		super(positions, noramls, uvs, weights, parent, properties, parts);
+	public EndermanMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+		super(arrayMap, parent, properties, parts);
 		
 		this.headTop = this.getOrLogException(parts, "headTop");
 		this.headBottom = this.getOrLogException(parts, "headBottom");

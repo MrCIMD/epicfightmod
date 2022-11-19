@@ -80,9 +80,9 @@ public class EntityAfterImageParticle extends CustomModelParticle {
 				EntityAfterImageParticle particle = new EntityAfterImageParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, mesh, matrices, poseStack.last().pose());
 				
 				return particle;
-			} else {
-				return null;
 			}
+			
+			return null;
 		}
 	}
 }

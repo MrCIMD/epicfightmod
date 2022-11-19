@@ -13,8 +13,8 @@ public class RavagerMesh extends AnimatedMesh {
 	public final ModelPart leftBackLeg;
 	public final ModelPart rightBackLeg;
 	
-	public RavagerMesh(float[] positions, float[] noramls, float[] uvs, float[] weights, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
-		super(positions, noramls, uvs, weights, parent, properties, parts);
+	public RavagerMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+		super(arrayMap, parent, properties, parts);
 		
 		this.head = this.getOrLogException(parts, "head");
 		this.body = this.getOrLogException(parts, "body");

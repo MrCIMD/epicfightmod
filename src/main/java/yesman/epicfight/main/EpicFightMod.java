@@ -45,7 +45,6 @@ import yesman.epicfight.events.CapabilityEvent;
 import yesman.epicfight.events.EntityEvents;
 import yesman.epicfight.events.ModBusEvents;
 import yesman.epicfight.events.PlayerEvents;
-import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.network.EpicFightDataSerializers;
@@ -98,7 +97,6 @@ public class EpicFightMod {
     	bus.addListener(EpicFightAttributes::registerNewMobs);
     	bus.addListener(EpicFightAttributes::modifyExistingMobs);
     	bus.addListener(EpicFightCapabilities::registerCapabilities);
-    	bus.addListener(Animations::registerAnimations);
     	bus.addGenericListener(DataSerializerEntry.class, EpicFightDataSerializers::register);
     	bus.addGenericListener(GlobalLootModifierSerializer.class, EpicFightLootModifiers::register);
     	
@@ -131,15 +129,10 @@ public class EpicFightMod {
     	
     	CLIENT_INGAME_CONFIG = new ConfigurationIngame();
         this.animatorProvider = ClientAnimator::getAnimator;
-    	
 		EntityPatchProvider.registerEntityPatchesClient();
 		ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
 		Meshes.build(resourceManager);
-		Armatures.build(resourceManager);
-		
 		this.animationManager.loadAnimationsInit(resourceManager);
-		
-		Animations.buildClient();
 		EpicFightKeyMappings.registerKeys();
 		EpicFightItemProperties.registerItemProperties();
 		
@@ -149,12 +142,19 @@ public class EpicFightMod {
     }
 	
 	private void doServerStuff(final FMLDedicatedServerSetupEvent event) {
-		Armatures.build(null);
 		this.animationManager.loadAnimationsInit(null);
 		this.animatorProvider = ServerAnimator::getAnimator;
 	}
 	
 	private void doCommonStuff(final FMLCommonSetupEvent event) {
+		
+		if (isPhysicalClient()) {
+			ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
+			Armatures.build(resourceManager);
+		} else {
+			Armatures.build(null);
+		}
+		
 		event.enqueueWork(this.animationManager::registerAnimations);
 		event.enqueueWork(SkillArgument::registerArgumentTypes);
 		event.enqueueWork(EpicFightPotions::addRecipes);

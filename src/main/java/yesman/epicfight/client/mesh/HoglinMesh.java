@@ -13,8 +13,8 @@ public class HoglinMesh extends AnimatedMesh {
 	public final ModelPart leftBackLeg;
 	public final ModelPart rightBackLeg;
 	
-	public HoglinMesh(float[] positions, float[] noramls, float[] uvs, float[] weights, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
-		super(positions, noramls, uvs, weights, parent, properties, parts);
+	public HoglinMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+		super(arrayMap, parent, properties, parts);
 		
 		this.head = this.getOrLogException(parts, "head");
 		this.body = this.getOrLogException(parts, "body");

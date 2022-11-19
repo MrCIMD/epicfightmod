@@ -9,8 +9,8 @@ public class VexMesh extends HumanoidMesh {
 	public final ModelPart leftWing;
 	public final ModelPart rightWing;
 	
-	public VexMesh(float[] positions, float[] noramls, float[] uvs, float[] weights, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
-		super(positions, noramls, uvs, weights, parent, properties, parts);
+	public VexMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+		super(arrayMap, parent, properties, parts);
 		
 		this.leftWing = this.getOrLogException(parts, "leftWing");
 		this.rightWing = this.getOrLogException(parts, "rightWing");

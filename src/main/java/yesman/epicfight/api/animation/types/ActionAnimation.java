@@ -3,7 +3,6 @@ package yesman.epicfight.api.animation.types;
 import java.util.Map;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
@@ -21,6 +20,7 @@ import yesman.epicfight.api.animation.Pose;
 import yesman.epicfight.api.animation.TransformSheet;
 import yesman.epicfight.api.animation.property.AnimationProperty.ActionAnimationCoordSetter;
 import yesman.epicfight.api.animation.property.AnimationProperty.ActionAnimationProperty;
+import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.api.utils.math.Vec4f;
@@ -28,11 +28,11 @@ import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class ActionAnimation extends MainFrameAnimation {
 	
-	public ActionAnimation(float convertTime, String path, ResourceLocation armature) {
+	public ActionAnimation(float convertTime, String path, Armature armature) {
 		this(convertTime, Float.MAX_VALUE, path, armature);
 	}
 	
-	public ActionAnimation(float convertTime, float postDelay, String path, ResourceLocation armature) {
+	public ActionAnimation(float convertTime, float postDelay, String path, Armature armature) {
 		super(convertTime, path, armature);
 		
 		this.stateSpectrumBlueprint.clear()
@@ -64,7 +64,7 @@ public class ActionAnimation extends MainFrameAnimation {
 				transformSheet.readFrom(self.jointTransforms.get("Root"));
 			});
 			
-			entitypatch.getAnimator().getPlayerFor(this).setActionAnimationCoord(this, entitypatch, actionCoordSetter);
+			entitypatch.getArmature().setActionAnimationCoord(this, entitypatch, actionCoordSetter);
 		}
 	}
 	
@@ -164,7 +164,7 @@ public class ActionAnimation extends MainFrameAnimation {
 		
 		if (entitypatch.moveHere()) {
 			JointTransform jt = pose.getOrDefaultTransform("Root");
-			Vec3f withPosition = entitypatch.getAnimator().getPlayerFor(this).getActionAnimationCoord().getInterpolatedTranslation(nextStart);
+			Vec3f withPosition = entitypatch.getArmature().getActionAnimationCoord().getInterpolatedTranslation(nextStart);
 			jt.translation().set(withPosition);
 		}
 		
@@ -188,7 +188,7 @@ public class ActionAnimation extends MainFrameAnimation {
 			if (animation instanceof LinkAnimation) {
 				actionAnimationCoordSetter.set(animation, entitypatch, animation.jointTransforms.get("Root"));
 			} else {
-				entitypatch.getAnimator().getPlayerFor(this).setActionAnimationCoord(this, entitypatch, actionAnimationCoordSetter);
+				entitypatch.getArmature().setActionAnimationCoord(this, entitypatch, actionAnimationCoordSetter);
 			}
 		}
 		
@@ -197,7 +197,7 @@ public class ActionAnimation extends MainFrameAnimation {
 		if (animation instanceof LinkAnimation) {
 			rootCoord = animation.jointTransforms.get("Root");
 		} else {
-			rootCoord = entitypatch.getAnimator().getPlayerFor(this).getActionAnimationCoord();
+			rootCoord = entitypatch.getArmature().getActionAnimationCoord();
 			
 			if (rootCoord == null) {
 				rootCoord = animation.jointTransforms.get("Root");

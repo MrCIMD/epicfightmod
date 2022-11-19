@@ -15,6 +15,7 @@ import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.events.engine.RenderEngine;
 import yesman.epicfight.client.mesh.HumanoidMesh;
+import yesman.epicfight.model.armature.HumanoidArmature;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 @OnlyIn(Dist.CLIENT)
@@ -26,25 +27,29 @@ public class PatchedItemInHandLayer<E extends LivingEntity, T extends LivingEnti
 
 	@Override
 	public void renderLayer(T entitypatch, E entityliving, RenderLayer<E, M> originalRenderer, PoseStack matrixStackIn, MultiBufferSource buffer, int packedLightIn, OpenMatrix4f[] poses, float netYawHead, float pitchHead, float partialTicks) {
+		
+		if (!(entitypatch.getArmature() instanceof HumanoidArmature)) {
+			return;
+		}
+		
 		ItemStack mainHandStack = entitypatch.getOriginal().getMainHandItem();
 		RenderEngine renderEngine = ClientEngine.instance.renderEngine;
 		
 		if (mainHandStack.getItem() != Items.AIR) {
 			if (entitypatch.getOriginal().getVehicle() != null) {
 				if (!entitypatch.getHoldingItemCapability(InteractionHand.MAIN_HAND).availableOnHorse()) {
-					renderEngine.getItemRenderer(mainHandStack.getItem()).renderUnusableItemMount(mainHandStack, entitypatch, buffer, matrixStackIn, packedLightIn);
+					renderEngine.getItemRenderer(mainHandStack.getItem()).renderUnusableItemMount(mainHandStack, entitypatch, poses, buffer, matrixStackIn, packedLightIn);
 					return;
 				}
 			}
 			
-			renderEngine.getItemRenderer(mainHandStack.getItem()).renderItemInHand(mainHandStack, entitypatch, InteractionHand.MAIN_HAND, buffer, matrixStackIn, packedLightIn);
+			renderEngine.getItemRenderer(mainHandStack.getItem()).renderItemInHand(mainHandStack, entitypatch, InteractionHand.MAIN_HAND, (HumanoidArmature)entitypatch.getArmature(), poses, buffer, matrixStackIn, packedLightIn);
 		}
-		
 		
 		ItemStack offHandStack = entitypatch.getOriginal().getOffhandItem();
 		
 		if (entitypatch.isOffhandItemValid()) {
-			renderEngine.getItemRenderer(offHandStack.getItem()).renderItemInHand(offHandStack, entitypatch, InteractionHand.OFF_HAND, buffer, matrixStackIn, packedLightIn);
+			renderEngine.getItemRenderer(offHandStack.getItem()).renderItemInHand(offHandStack, entitypatch, InteractionHand.OFF_HAND, (HumanoidArmature)entitypatch.getArmature(), poses, buffer, matrixStackIn, packedLightIn);
 		}
 	}
 }

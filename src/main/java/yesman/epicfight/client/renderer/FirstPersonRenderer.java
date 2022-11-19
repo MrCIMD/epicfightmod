@@ -58,10 +58,10 @@ public class FirstPersonRenderer extends PatchedLivingEntityRenderer<LocalPlayer
 		double x = Mth.lerp(partialTicks, entityIn.xo, entityIn.getX()) - projView.x();
 		double y = Mth.lerp(partialTicks, entityIn.yo, entityIn.getY()) - projView.y();
 		double z = Mth.lerp(partialTicks, entityIn.zo, entityIn.getZ()) - projView.z();
+		
 		Armature armature = entitypatch.getArmature();
 		armature.initializeTransform();
-		entitypatch.getClientAnimator().setPoseToModel(partialTicks);
-		OpenMatrix4f[] poses = armature.getJointTransforms();
+		OpenMatrix4f[] poses = armature.getAllPoseTransform(partialTicks);
 		
 		matStackIn.pushPose();
 		Vec4f headPos = new Vec4f(0, entityIn.getEyeHeight(), 0, 1.0F);
@@ -92,8 +92,8 @@ public class FirstPersonRenderer extends PatchedLivingEntityRenderer<LocalPlayer
 		HumanoidMesh mesh = this.getMesh(entitypatch);
 		this.prepareModel(mesh, entityIn, entitypatch);
 		
-		mesh.drawAnimatedModel(matStackIn, buffer.getBuffer(EpicFightRenderTypes.triangles(RenderType.entityCutoutNoCull(entityIn.getSkinTextureLocation()))),
-				packedLightIn, 1.0F, 1.0F, 1.0F, 1.0F, OverlayTexture.NO_OVERLAY, poses);
+		mesh.drawModelWithPose(matStackIn, buffer.getBuffer(EpicFightRenderTypes.triangles(RenderType.entityCutoutNoCull(entityIn.getSkinTextureLocation()))),
+				packedLightIn, 1.0F, 1.0F, 1.0F, 1.0F, OverlayTexture.NO_OVERLAY, armature, poses);
 		
 		if(!entityIn.isSpectator()) {
 			renderLayer(renderer, entitypatch, entityIn, poses, buffer, matStackIn, packedLightIn, partialTicks);

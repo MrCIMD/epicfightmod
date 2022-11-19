@@ -13,7 +13,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModLoader;
-import yesman.epicfight.api.client.model.AnimatedMesh.RenderProperties;
+import yesman.epicfight.api.client.model.Mesh.RenderProperties;
 import yesman.epicfight.api.forgeevent.ModelBuildEvent;
 import yesman.epicfight.api.model.JsonModelLoader;
 import yesman.epicfight.client.mesh.CreeperMesh;
@@ -36,11 +36,11 @@ public class Meshes implements PreparableReloadListener {
 	public static final Meshes INSTANCE = new Meshes();
 	
 	@FunctionalInterface
-	public static interface AnimatedMeshContructor<M extends AnimatedMesh> {
-		public M invoke(float[] positions, float[] noramls, float[] uvs, float[] weights, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts);
+	public static interface MeshContructor<M extends Mesh> {
+		public M invoke(Map<String, float[]> arrayMap, M parent, RenderProperties properties, Map<String, ModelPart> parts);
 	}
 		
-	private static final Map<ResourceLocation, AnimatedMesh> MESHES = Maps.newHashMap();
+	private static final Map<ResourceLocation, Mesh> MESHES = Maps.newHashMap();
 	
 	public static HumanoidMesh ALEX;
 	public static HumanoidMesh BIPED;
@@ -105,7 +105,7 @@ public class Meshes implements PreparableReloadListener {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <M extends AnimatedMesh> M getOrCreateMesh(ResourceManager rm, ResourceLocation rl, AnimatedMeshContructor<M> constructor) {
+	public static <M extends Mesh> M getOrCreateMesh(ResourceManager rm, ResourceLocation rl, MeshContructor<M> constructor) {
 		return (M) MESHES.computeIfAbsent(rl, (key) -> {
 			JsonModelLoader jsonModelLoader = new JsonModelLoader(rm, rl);
 			return jsonModelLoader.loadAnimatedMesh(constructor);

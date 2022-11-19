@@ -1,11 +1,11 @@
 package yesman.epicfight.api.animation.types;
 
-import net.minecraft.resources.ResourceLocation;
+import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.config.ConfigurationIngame;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class ReboundAnimation extends AimAnimation {
-	public ReboundAnimation(float convertTime, boolean repeatPlay, String path1, String path2, String path3, String path4, ResourceLocation armature) {
+	public ReboundAnimation(float convertTime, boolean repeatPlay, String path1, String path2, String path3, String path4, Armature armature) {
 		super(convertTime, repeatPlay, path1, path2, path3, path4, armature);
 		
 		this.stateSpectrumBlueprint.clear()
@@ -16,7 +16,7 @@ public class ReboundAnimation extends AimAnimation {
 			.addState(EntityState.INACTION, true);
 	}
 	
-	public ReboundAnimation(boolean repeatPlay, String path1, String path2, String path3, String path4, ResourceLocation armature) {
+	public ReboundAnimation(boolean repeatPlay, String path1, String path2, String path3, String path4, Armature armature) {
 		this(ConfigurationIngame.GENERAL_ANIMATION_CONVERT_TIME, repeatPlay, path1, path2, path3, path4, armature);
 	}
 	

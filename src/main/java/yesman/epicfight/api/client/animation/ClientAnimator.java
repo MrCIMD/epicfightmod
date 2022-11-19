@@ -23,7 +23,6 @@ import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.JointMask.BindModifier;
 import yesman.epicfight.api.client.animation.Layer.Priority;
-import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
@@ -131,20 +130,6 @@ public class ClientAnimator extends Animator {
 		return this.compositeLivingAnimations.getOrDefault(motion, Animations.DUMMY_ANIMATION);
 	}
 	
-	public void setPoseToModel(float partialTicks) {
-		Joint rootJoint = this.entitypatch.getArmature().getRootJoint();
-		this.applyPoseToJoint(rootJoint, new OpenMatrix4f(), this.getPose(partialTicks), partialTicks);
-	}
-	
-	public void applyPoseToJoint(Joint joint, OpenMatrix4f parentTransform, Pose pose, float partialTicks) {
-		OpenMatrix4f result = pose.getOrDefaultTransform(joint.getName()).getAnimationBindedMatrix(joint, parentTransform);
-		joint.setAnimatedTransform(result);
-		
-		for (Joint joints : joint.getSubJoints()) {
-			this.applyPoseToJoint(joints, result, pose, partialTicks);
-		}
-	}
-	
 	@Override
 	public void init() {
 		this.entitypatch.initAnimator(this);
@@ -154,8 +139,8 @@ public class ClientAnimator extends Animator {
 	
 	@Override
 	public void poseTick() {
-		this.prevPose = this.currentPose;
-		this.currentPose = this.getComposedLayerPose(1.0F);
+		Pose currentPose = this.getComposedLayerPose(1.0F);
+		this.entitypatch.getArmature().setPose(currentPose);
 	}
 	
 	@Override
