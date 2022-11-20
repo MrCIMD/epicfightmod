@@ -16,7 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.AnimatedMesh;
+import yesman.epicfight.api.client.model.Mesh.RawMesh;
 import yesman.epicfight.api.client.model.Meshes;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
@@ -27,7 +27,7 @@ import yesman.epicfight.world.capabilities.entitypatch.boss.enderdragon.DragonCr
 public class ForceFieldParticle extends TexturedCustomModelParticle {
 	private LivingEntityPatch<?> caster;
 	
-	public ForceFieldParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, AnimatedMesh particleMesh, ResourceLocation texture) {
+	public ForceFieldParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, RawMesh particleMesh, ResourceLocation texture) {
 		super(level, x, y, z, xd, yd, zd, particleMesh, texture);
 		this.lifetime = DragonCrystalLinkPhase.CHARGING_TICK;
 		this.hasPhysics = false;

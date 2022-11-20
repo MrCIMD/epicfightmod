@@ -1,4 +1,4 @@
-package yesman.epicfight.api.animation.types;
+package yesman.epicfight.api.animation.property;
 
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;

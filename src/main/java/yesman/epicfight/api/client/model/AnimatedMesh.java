@@ -17,19 +17,34 @@ import com.mojang.math.Vector4f;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import yesman.epicfight.api.client.model.VertexIndicator.AnimatedVertexIndicator;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.api.utils.math.Vec4f;
+import yesman.epicfight.main.EpicFightMod;
 
 @OnlyIn(Dist.CLIENT)
-public class AnimatedMesh extends Mesh {
+public class AnimatedMesh extends Mesh<AnimatedVertexIndicator> {
+	
+	public static final ModelPart<AnimatedVertexIndicator> EMPTY = new ModelPart<>(null);
+	
 	final float[] weights;
 	
-	public AnimatedMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+	public AnimatedMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart<AnimatedVertexIndicator>> parts) {
 		super(arrayMap, parent, properties, parts);
 		
 		this.weights = (parent == null) ? arrayMap.get("weights") : parent.weights;
+	}
+	
+	@Override
+	protected ModelPart<AnimatedVertexIndicator> getOrLogException(Map<String, ModelPart<AnimatedVertexIndicator>> parts, String name) {
+		if (!parts.containsKey(name)) {
+			EpicFightMod.LOGGER.info("Cannot find the mesh part named " + name + " in " + this.getClass().getCanonicalName());
+			return EMPTY;
+		}
+		
+		return parts.get(name);
 	}
 	
 	public void drawModelWithPose(PoseStack posetStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord, Armature armature, OpenMatrix4f[] poses) {
@@ -41,9 +56,9 @@ public class AnimatedMesh extends Mesh {
 			posesNoTranslation[i] = OpenMatrix4f.mul(poses[i], armature.searchJointById(i).getToOrigin(), null).removeTranslation();
 		}
 		
-		for (ModelPart part : this.parts.values()) {
+		for (ModelPart<AnimatedVertexIndicator> part : this.parts.values()) {
 			if (!part.hidden) {
-				for (VertexIndicator vi : part.getVertices()) {
+				for (AnimatedVertexIndicator vi : part.getVertices()) {
 					int pos = vi.position * 3;
 					int norm = vi.normal * 3;
 					int uv = vi.uv * 2;
@@ -70,7 +85,7 @@ public class AnimatedMesh extends Mesh {
 		}
 	}
 	
-	public void drawAnimatedModelNoTexture(PoseStack posetStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord, OpenMatrix4f[] poses) {
+	public void drawWithPoseNoTexture(PoseStack posetStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord, OpenMatrix4f[] poses) {
 		Matrix4f matrix4f = posetStack.last().pose();
 		Matrix3f matrix3f = posetStack.last().normal();
 		OpenMatrix4f[] posesNoTranslation = new OpenMatrix4f[poses.length];
@@ -79,9 +94,9 @@ public class AnimatedMesh extends Mesh {
 			posesNoTranslation[i] = poses[i].removeTranslation();
 		}
 		
-		for (ModelPart part : this.parts.values()) {
+		for (ModelPart<AnimatedVertexIndicator> part : this.parts.values()) {
 			if (!part.hidden) {
-				for (VertexIndicator vi : part.getVertices()) {
+				for (AnimatedVertexIndicator vi : part.getVertices()) {
 					int pos = vi.position * 3;
 					int norm = vi.normal * 3;
 					Vec4f position = new Vec4f(this.positions[pos], this.positions[pos + 1], this.positions[pos + 2], 1.0F);
@@ -139,12 +154,12 @@ public class AnimatedMesh extends Mesh {
 		int[] indices = new int[this.totalVertices * 3];
 		int[] vcounts = new int[positions.length / 3];
 		List<Integer> vIndexList = Lists.newArrayList();
-		Map<Integer, VertexIndicator> positionMap = Maps.newHashMap();
+		Map<Integer, AnimatedVertexIndicator> positionMap = Maps.newHashMap();
 		int[] vIndices;
 		int i = 0;
 		
-		for (ModelPart part : this.parts.values()) {
-			for (VertexIndicator vertexIndicator : part.getVertices()) {
+		for (ModelPart<AnimatedVertexIndicator> part : this.parts.values()) {
+			for (AnimatedVertexIndicator vertexIndicator : part.getVertices()) {
 				indices[i * 3] = vertexIndicator.position;
 				indices[i * 3 + 1] = vertexIndicator.uv;
 				indices[i * 3 + 2] = vertexIndicator.normal;
@@ -156,7 +171,7 @@ public class AnimatedMesh extends Mesh {
 		
 		for (i = 0; i < vcounts.length; i++) {
 			for (int j = 0; j < vcounts[i]; j++) {
-				VertexIndicator vi = positionMap.get(i);
+				AnimatedVertexIndicator vi = positionMap.get(i);
 				vIndexList.add(vi.joint.get(j));
 				vIndexList.add(vi.weight.get(j));
 			}

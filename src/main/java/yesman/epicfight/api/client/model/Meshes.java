@@ -13,7 +13,9 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModLoader;
+import yesman.epicfight.api.client.model.Mesh.RawMesh;
 import yesman.epicfight.api.client.model.Mesh.RenderProperties;
+import yesman.epicfight.api.client.model.VertexIndicator.AnimatedVertexIndicator;
 import yesman.epicfight.api.forgeevent.ModelBuildEvent;
 import yesman.epicfight.api.model.JsonModelLoader;
 import yesman.epicfight.client.mesh.CreeperMesh;
@@ -36,11 +38,11 @@ public class Meshes implements PreparableReloadListener {
 	public static final Meshes INSTANCE = new Meshes();
 	
 	@FunctionalInterface
-	public static interface MeshContructor<M extends Mesh> {
-		public M invoke(Map<String, float[]> arrayMap, M parent, RenderProperties properties, Map<String, ModelPart> parts);
+	public static interface MeshContructor<V extends VertexIndicator, M extends Mesh<V>> {
+		public M invoke(Map<String, float[]> arrayMap, M parent, RenderProperties properties, Map<String, ModelPart<V>> parts);
 	}
 		
-	private static final Map<ResourceLocation, Mesh> MESHES = Maps.newHashMap();
+	private static final Map<ResourceLocation, Mesh<?>> MESHES = Maps.newHashMap();
 	
 	public static HumanoidMesh ALEX;
 	public static HumanoidMesh BIPED;
@@ -67,45 +69,53 @@ public class Meshes implements PreparableReloadListener {
 	public static AnimatedMesh LEGGINS;
 	public static AnimatedMesh BOOTS;
 	
-	public static AnimatedMesh FORCE_FIELD;
-	public static AnimatedMesh LASER;
+	public static RawMesh FORCE_FIELD;
+	public static RawMesh LASER;
 	
 	public static void build(ResourceManager resourceManager) {
 		MESHES.clear();
 		ModelBuildEvent.MeshBuild event = new ModelBuildEvent.MeshBuild(resourceManager, MESHES);
 		
-		ALEX = event.get(EpicFightMod.MODID, "entity/biped_slim_arm", HumanoidMesh::new);
-		BIPED = event.get(EpicFightMod.MODID, "entity/biped", HumanoidMesh::new);
-		BIPED_OLD_TEX = event.get(EpicFightMod.MODID, "entity/biped_old_texture", HumanoidMesh::new);
-		VILLAGER_ZOMBIE = event.get(EpicFightMod.MODID, "entity/zombie_villager", VillagerMesh::new);
-		CREEPER = event.get(EpicFightMod.MODID, "entity/creeper", CreeperMesh::new);
-		ENDERMAN = event.get(EpicFightMod.MODID, "entity/enderman", EndermanMesh::new);
-		SKELETON = event.get(EpicFightMod.MODID, "entity/skeleton", HumanoidMesh::new);
-		SPIDER = event.get(EpicFightMod.MODID, "entity/spider", SpiderMesh::new);
-		IRON_GOLEM = event.get(EpicFightMod.MODID, "entity/iron_golem", IronGolemMesh::new);
-		ILLAGER = event.get(EpicFightMod.MODID, "entity/illager", VillagerMesh::new);
-		WITCH = event.get(EpicFightMod.MODID, "entity/witch", VillagerMesh::new);
-		RAVAGER = event.get(EpicFightMod.MODID, "entity/ravager", RavagerMesh::new);
-		VEX = event.get(EpicFightMod.MODID, "entity/vex", VexMesh::new);
-		PIGLIN = event.get(EpicFightMod.MODID, "entity/piglin", PiglinMesh::new);
-		HOGLIN = event.get(EpicFightMod.MODID, "entity/hoglin", HoglinMesh::new);
-		DRAGON = event.get(EpicFightMod.MODID, "entity/dragon", DragonMesh::new);
-		WITHER = event.get(EpicFightMod.MODID, "entity/wither", WitherMesh::new);
-		FORCE_FIELD = event.get(EpicFightMod.MODID, "particle/force_field", AnimatedMesh::new);
-		LASER = event.get(EpicFightMod.MODID, "particle/laser", AnimatedMesh::new);
+		ALEX = event.getAnimated(EpicFightMod.MODID, "entity/biped_slim_arm", HumanoidMesh::new);
+		BIPED = event.getAnimated(EpicFightMod.MODID, "entity/biped", HumanoidMesh::new);
+		BIPED_OLD_TEX = event.getAnimated(EpicFightMod.MODID, "entity/biped_old_texture", HumanoidMesh::new);
+		VILLAGER_ZOMBIE = event.getAnimated(EpicFightMod.MODID, "entity/zombie_villager", VillagerMesh::new);
+		CREEPER = event.getAnimated(EpicFightMod.MODID, "entity/creeper", CreeperMesh::new);
+		ENDERMAN = event.getAnimated(EpicFightMod.MODID, "entity/enderman", EndermanMesh::new);
+		SKELETON = event.getAnimated(EpicFightMod.MODID, "entity/skeleton", HumanoidMesh::new);
+		SPIDER = event.getAnimated(EpicFightMod.MODID, "entity/spider", SpiderMesh::new);
+		IRON_GOLEM = event.getAnimated(EpicFightMod.MODID, "entity/iron_golem", IronGolemMesh::new);
+		ILLAGER = event.getAnimated(EpicFightMod.MODID, "entity/illager", VillagerMesh::new);
+		WITCH = event.getAnimated(EpicFightMod.MODID, "entity/witch", VillagerMesh::new);
+		RAVAGER = event.getAnimated(EpicFightMod.MODID, "entity/ravager", RavagerMesh::new);
+		VEX = event.getAnimated(EpicFightMod.MODID, "entity/vex", VexMesh::new);
+		PIGLIN = event.getAnimated(EpicFightMod.MODID, "entity/piglin", PiglinMesh::new);
+		HOGLIN = event.getAnimated(EpicFightMod.MODID, "entity/hoglin", HoglinMesh::new);
+		DRAGON = event.getAnimated(EpicFightMod.MODID, "entity/dragon", DragonMesh::new);
+		WITHER = event.getAnimated(EpicFightMod.MODID, "entity/wither", WitherMesh::new);
+		FORCE_FIELD = event.getRaw(EpicFightMod.MODID, "particle/force_field", RawMesh::new);
+		LASER = event.getRaw(EpicFightMod.MODID, "particle/laser", RawMesh::new);
 		
-		HELMET = event.get(EpicFightMod.MODID, "armor/helmet", AnimatedMesh::new);
-		HELMET_PIGLIN = event.get(EpicFightMod.MODID, "armor/piglin_helmet", AnimatedMesh::new);
-		HELMET_VILLAGER = event.get(EpicFightMod.MODID, "armor/villager_helmet", AnimatedMesh::new);
-		CHESTPLATE = event.get(EpicFightMod.MODID, "armor/chestplate", AnimatedMesh::new);
-		LEGGINS = event.get(EpicFightMod.MODID, "armor/leggins", AnimatedMesh::new);
-		BOOTS = event.get(EpicFightMod.MODID, "armor/boots", AnimatedMesh::new);
+		HELMET = event.getAnimated(EpicFightMod.MODID, "armor/helmet", AnimatedMesh::new);
+		HELMET_PIGLIN = event.getAnimated(EpicFightMod.MODID, "armor/piglin_helmet", AnimatedMesh::new);
+		HELMET_VILLAGER = event.getAnimated(EpicFightMod.MODID, "armor/villager_helmet", AnimatedMesh::new);
+		CHESTPLATE = event.getAnimated(EpicFightMod.MODID, "armor/chestplate", AnimatedMesh::new);
+		LEGGINS = event.getAnimated(EpicFightMod.MODID, "armor/leggins", AnimatedMesh::new);
+		BOOTS = event.getAnimated(EpicFightMod.MODID, "armor/boots", AnimatedMesh::new);
 		
 		ModLoader.get().postEvent(event);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <M extends Mesh> M getOrCreateMesh(ResourceManager rm, ResourceLocation rl, MeshContructor<M> constructor) {
+	public static <M extends RawMesh> M getOrCreateRawMesh(ResourceManager rm, ResourceLocation rl, MeshContructor<VertexIndicator, M> constructor) {
+		return (M) MESHES.computeIfAbsent(rl, (key) -> {
+			JsonModelLoader jsonModelLoader = new JsonModelLoader(rm, rl);
+			return jsonModelLoader.loadMesh(constructor);
+		});
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <M extends AnimatedMesh> M getOrCreateAnimatedMesh(ResourceManager rm, ResourceLocation rl, MeshContructor<AnimatedVertexIndicator, M> constructor) {
 		return (M) MESHES.computeIfAbsent(rl, (key) -> {
 			JsonModelLoader jsonModelLoader = new JsonModelLoader(rm, rl);
 			return jsonModelLoader.loadAnimatedMesh(constructor);

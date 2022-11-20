@@ -11,6 +11,7 @@ import com.google.common.collect.Maps;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.client.model.Mesh.RenderProperties;
+import yesman.epicfight.api.client.model.VertexIndicator.AnimatedVertexIndicator;
 import yesman.epicfight.api.utils.math.Vec2f;
 import yesman.epicfight.api.utils.math.Vec3f;
 
@@ -132,7 +133,7 @@ public class SingleVertex {
 		float[] jointWeightList = ArrayUtils.toPrimitive(jointWeights.toArray(new Float[0]));
 		int[] affectJointCounts = ArrayUtils.toPrimitive(affectCountList.toArray(new Integer[0]));
 		Map<String, float[]> arrayMap = Maps.newHashMap();
-		Map<String, ModelPart> meshMap = Maps.newHashMap();
+		Map<String, ModelPart<AnimatedVertexIndicator>> meshMap = Maps.newHashMap();
 		
 		arrayMap.put("positions", positionList);
 		arrayMap.put("normals", normalList);
@@ -140,7 +141,7 @@ public class SingleVertex {
 		arrayMap.put("weights", jointWeightList);
 		
 		for (Map.Entry<String, List<Integer>> e : indices.entrySet()) {
-			meshMap.put(e.getKey(), new ModelPart(VertexIndicator.create(ArrayUtils.toPrimitive(e.getValue().toArray(new Integer[0])), affectJointCounts, animationIndexList)));
+			meshMap.put(e.getKey(), new ModelPart<AnimatedVertexIndicator>(VertexIndicator.createAnimated(ArrayUtils.toPrimitive(e.getValue().toArray(new Integer[0])), affectJointCounts, animationIndexList)));
 		}
 		
 		return new AnimatedMesh(arrayMap, null, RenderProperties.DEFAULT, meshMap);

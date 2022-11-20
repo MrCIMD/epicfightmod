@@ -11,7 +11,7 @@ import com.mojang.math.Vector4f;
 
 import yesman.epicfight.main.EpicFightMod;
 
-public class Mesh {
+public abstract class Mesh<T extends VertexIndicator> {
 	public static class RenderProperties {
 		public static final RenderProperties DEFAULT = RenderProperties.builder().build();
 		
@@ -48,10 +48,10 @@ public class Mesh {
 	final float[] normals;
 	
 	final int totalVertices;
-	final Map<String, ModelPart> parts;
+	final Map<String, ModelPart<T>> parts;
 	final RenderProperties properties;
 	
-	public Mesh(Map<String, float[]> arrayMap, Mesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+	public Mesh(Map<String, float[]> arrayMap, Mesh<T> parent, RenderProperties properties, Map<String, ModelPart<T>> parts) {
 		this.positions = (parent == null) ? arrayMap.get("positions") : parent.positions;
 		this.normals = (parent == null) ? arrayMap.get("normals") : parent.normals;
 		this.uvs = (parent == null) ? arrayMap.get("uvs") : parent.uvs;
@@ -60,23 +60,16 @@ public class Mesh {
 		
 		int totalV = 0;
 		
-		for (ModelPart meshpart : parts.values()) {
+		for (ModelPart<T> meshpart : parts.values()) {
 			totalV += meshpart.getVertices().size();
 		}
 		
 		this.totalVertices = totalV;
 	}
 	
-	protected ModelPart getOrLogException(Map<String, ModelPart> parts, String name) {
-		if (!parts.containsKey(name)) {
-			EpicFightMod.LOGGER.info("Cannot find the mesh part named " + name + " in " + this.getClass().getCanonicalName());
-			return ModelPart.EMPTY;
-		}
-		
-		return parts.get(name);
-	}
+	protected abstract ModelPart<T> getOrLogException(Map<String, ModelPart<T>> parts, String name);
 	
-	public ModelPart getPart(String part) {
+	public ModelPart<T> getPart(String part) {
 		return this.parts.get(part);
 	}
 	
@@ -88,7 +81,7 @@ public class Mesh {
 		Matrix4f matrix4f = posetStack.last().pose();
 		Matrix3f matrix3f = posetStack.last().normal();
 		
-		for (ModelPart part : this.parts.values()) {
+		for (ModelPart<T> part : this.parts.values()) {
 			if (!part.hidden) {
 				for (VertexIndicator vi : part.getVertices()) {
 					int pos = vi.position * 3;
@@ -101,6 +94,24 @@ public class Mesh {
 					builder.vertex(posVec.x(), posVec.y(), posVec.z(), r, g, b, a, this.uvs[uv], this.uvs[uv + 1], overlayCoord, packedLightIn, normVec.x(), normVec.y(), normVec.z());
 				}
 			}
+		}
+	}
+	
+	public static class RawMesh extends Mesh<VertexIndicator> {
+		
+		public static final ModelPart<VertexIndicator> EMPTY = new ModelPart<>(null);
+		
+		public RawMesh(Map<String, float[]> arrayMap, Mesh<VertexIndicator> parent, RenderProperties properties, Map<String, ModelPart<VertexIndicator>> parts) {
+			super(arrayMap, parent, properties, parts);
+		}
+		
+		protected ModelPart<VertexIndicator> getOrLogException(Map<String, ModelPart<VertexIndicator>> parts, String name) {
+			if (!parts.containsKey(name)) {
+				EpicFightMod.LOGGER.info("Cannot find the mesh part named " + name + " in " + this.getClass().getCanonicalName());
+				return EMPTY;
+			}
+			
+			return parts.get(name);
 		}
 	}
 }

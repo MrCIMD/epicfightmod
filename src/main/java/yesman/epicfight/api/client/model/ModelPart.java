@@ -6,17 +6,16 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class ModelPart {
-	public static final ModelPart EMPTY = new ModelPart(null);
+public class ModelPart<T extends VertexIndicator> {
 	
-	private final List<VertexIndicator> vertices;
+	private final List<T> vertices;
 	public boolean hidden;
 	
-	public ModelPart(List<VertexIndicator> vertices) {
+	public ModelPart(List<T> vertices) {
 		this.vertices = vertices;
 	}
 	
-	public List<VertexIndicator> getVertices() {
+	public List<T> getVertices() {
 		return this.vertices;
 	}
 }

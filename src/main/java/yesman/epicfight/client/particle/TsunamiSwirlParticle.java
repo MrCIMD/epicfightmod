@@ -13,16 +13,16 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import yesman.epicfight.api.client.model.AnimatedMesh;
+import yesman.epicfight.api.client.model.Mesh.RawMesh;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 @OnlyIn(Dist.CLIENT)
-public class TsunamiSwirlParticle extends CustomModelParticle {
+public class TsunamiSwirlParticle extends CustomModelParticle<RawMesh> {
 	private LivingEntityPatch<?> caster;
 	
-	public TsunamiSwirlParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, AnimatedMesh particleMesh) {
+	public TsunamiSwirlParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, RawMesh particleMesh) {
 		super(level, x, y, z, xd, yd, zd, particleMesh);
 		this.lifetime = 16;
 		this.hasPhysics = false;

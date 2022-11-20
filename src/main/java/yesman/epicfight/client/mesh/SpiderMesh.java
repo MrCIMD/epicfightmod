@@ -4,21 +4,22 @@ import java.util.Map;
 
 import yesman.epicfight.api.client.model.AnimatedMesh;
 import yesman.epicfight.api.client.model.ModelPart;
+import yesman.epicfight.api.client.model.VertexIndicator.AnimatedVertexIndicator;
 
 public class SpiderMesh extends AnimatedMesh {
-	public final ModelPart head;
-	public final ModelPart middleStomach;
-	public final ModelPart bottomStomach;
-	public final ModelPart leftLeg1;
-	public final ModelPart leftLeg2;
-	public final ModelPart leftLeg3;
-	public final ModelPart leftLeg4;
-	public final ModelPart rightLeg1;
-	public final ModelPart rightLeg2;
-	public final ModelPart rightLeg3;
-	public final ModelPart rightLeg4;
+	public final ModelPart<AnimatedVertexIndicator> head;
+	public final ModelPart<AnimatedVertexIndicator> middleStomach;
+	public final ModelPart<AnimatedVertexIndicator> bottomStomach;
+	public final ModelPart<AnimatedVertexIndicator> leftLeg1;
+	public final ModelPart<AnimatedVertexIndicator> leftLeg2;
+	public final ModelPart<AnimatedVertexIndicator> leftLeg3;
+	public final ModelPart<AnimatedVertexIndicator> leftLeg4;
+	public final ModelPart<AnimatedVertexIndicator> rightLeg1;
+	public final ModelPart<AnimatedVertexIndicator> rightLeg2;
+	public final ModelPart<AnimatedVertexIndicator> rightLeg3;
+	public final ModelPart<AnimatedVertexIndicator> rightLeg4;
 	
-	public SpiderMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+	public SpiderMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart<AnimatedVertexIndicator>> parts) {
 		super(arrayMap, parent, properties, parts);
 		
 		this.head = this.getOrLogException(parts, "head");

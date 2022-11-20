@@ -23,7 +23,7 @@ import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 @OnlyIn(Dist.CLIENT)
-public class EntityAfterImageParticle extends CustomModelParticle {
+public class EntityAfterImageParticle extends CustomModelParticle<AnimatedMesh> {
 	private OpenMatrix4f[] poseMatrices;
 	private Matrix4f modelMatrix;
 	private float alphaO;
@@ -53,7 +53,7 @@ public class EntityAfterImageParticle extends CustomModelParticle {
 		this.setupPoseStack(poseStack, camera, partialTicks);
 		poseStack.mulPoseMatrix(this.modelMatrix);
 		float alpha = this.alphaO + (this.alpha - this.alphaO) * partialTicks;
-		this.particleMesh.drawAnimatedModelNoTexture(poseStack, vertexConsumer, this.getLightColor(partialTicks), this.rCol, this.gCol, this.bCol, alpha, OverlayTexture.NO_OVERLAY, this.poseMatrices);
+		this.particleMesh.drawWithPoseNoTexture(poseStack, vertexConsumer, this.getLightColor(partialTicks), this.rCol, this.gCol, this.bCol, alpha, OverlayTexture.NO_OVERLAY, this.poseMatrices);
 	}
 	
 	@Override

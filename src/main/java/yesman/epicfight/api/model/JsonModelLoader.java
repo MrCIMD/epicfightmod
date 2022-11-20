@@ -37,11 +37,12 @@ import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.AttackAnimation.Phase;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.model.AnimatedMesh;
-import yesman.epicfight.api.client.model.Mesh;
+import yesman.epicfight.api.client.model.Mesh.RawMesh;
 import yesman.epicfight.api.client.model.Meshes;
 import yesman.epicfight.api.client.model.Meshes.MeshContructor;
 import yesman.epicfight.api.client.model.ModelPart;
 import yesman.epicfight.api.client.model.VertexIndicator;
+import yesman.epicfight.api.client.model.VertexIndicator.AnimatedVertexIndicator;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.api.utils.math.Vec4f;
@@ -53,6 +54,7 @@ public class JsonModelLoader {
 	
 	private static int[] toIntArray(JsonArray array) {
 		List<Integer> result = Lists.newArrayList();
+		
 		for (JsonElement je : array) {
 			result.add(je.getAsInt());
 		}
@@ -89,7 +91,8 @@ public class JsonModelLoader {
 				this.rootJson = Streams.parse(in).getAsJsonObject();
 			}
 		} catch (Exception e) {
-			EpicFightMod.LOGGER.info("Can't read " + resourceLocation.toString() + " because " + e);
+			EpicFightMod.LOGGER.info("Can't read " + resourceLocation.toString());
+			e.printStackTrace();
 		}
 	}
 	
@@ -110,11 +113,71 @@ public class JsonModelLoader {
 	}
 	
 	@OnlyIn(Dist.CLIENT)
-	public <T extends Mesh> T loadAnimatedMesh(MeshContructor<T> constructor) {
+	public <T extends RawMesh> T loadMesh(MeshContructor<VertexIndicator, T> constructor) {
 		ResourceLocation parent = this.getParent();
 		
 		if (parent != null) {
-			T mesh = Meshes.getOrCreateMesh(this.resourceManager, parent, constructor);			
+			T mesh = Meshes.getOrCreateRawMesh(this.resourceManager, parent, constructor);			
+			return constructor.invoke(null, mesh, this.getRenderProperties(), null);
+		} else {
+			JsonObject obj = this.rootJson.getAsJsonObject("vertices");
+			JsonObject positions = obj.getAsJsonObject("positions");
+			JsonObject normals = obj.getAsJsonObject("normals");
+			JsonObject uvs = obj.getAsJsonObject("uvs");
+			JsonObject parts = obj.getAsJsonObject("parts");
+			JsonObject indices = obj.getAsJsonObject("indices");
+			
+			float[] positionArray = toFloatArray(positions.get("array").getAsJsonArray());
+			
+			for (int i = 0; i < positionArray.length / 3; i++) {
+				int k = i * 3;
+				Vec4f posVector = new Vec4f(positionArray[k], positionArray[k+1], positionArray[k+2], 1.0F);
+				OpenMatrix4f.transform(CORRECTION, posVector, posVector);
+				positionArray[k] = posVector.x;
+				positionArray[k+1] = posVector.y;
+				positionArray[k+2] = posVector.z;
+			}
+			
+			float[] normalArray = toFloatArray(normals.get("array").getAsJsonArray());
+			
+			for (int i = 0; i < normalArray.length / 3; i++) {
+				int k = i * 3;
+				Vec4f normVector = new Vec4f(normalArray[k], normalArray[k+1], normalArray[k+2], 1.0F);
+				OpenMatrix4f.transform(CORRECTION, normVector, normVector);
+				normalArray[k] = normVector.x;
+				normalArray[k+1] = normVector.y;
+				normalArray[k+2] = normVector.z;
+			}
+			
+			float[] uvArray = toFloatArray(uvs.get("array").getAsJsonArray());
+			
+			Map<String, float[]> arrayMap = Maps.newHashMap();
+			Map<String, ModelPart<VertexIndicator>> meshMap = Maps.newHashMap();
+			
+			arrayMap.put("positions", positionArray);
+			arrayMap.put("normals", normalArray);
+			arrayMap.put("uvs", uvArray);
+			
+			if (parts != null) {
+				for (Map.Entry<String, JsonElement> e : parts.entrySet()) {
+					meshMap.put(e.getKey(), new ModelPart<>(VertexIndicator.create(toIntArray(e.getValue().getAsJsonObject().get("array").getAsJsonArray()))));
+				}
+			}
+			
+			if (indices != null) {
+				meshMap.put("noGroups", new ModelPart<>(VertexIndicator.create(toIntArray(indices.get("array").getAsJsonArray()))));
+			}
+			
+			return constructor.invoke(arrayMap, null, this.getRenderProperties(), meshMap);
+		}
+	}
+	
+	@OnlyIn(Dist.CLIENT)
+	public <T extends AnimatedMesh> T loadAnimatedMesh(MeshContructor<AnimatedVertexIndicator, T> constructor) {
+		ResourceLocation parent = this.getParent();
+		
+		if (parent != null) {
+			T mesh = Meshes.getOrCreateAnimatedMesh(this.resourceManager, parent, constructor);			
 			return constructor.invoke(null, mesh, this.getRenderProperties(), null);
 		} else {
 			JsonObject obj = this.rootJson.getAsJsonObject("vertices");
@@ -155,7 +218,7 @@ public class JsonModelLoader {
 			int[] vcountArray = toIntArray(vcounts.get("array").getAsJsonArray());
 			
 			Map<String, float[]> arrayMap = Maps.newHashMap();
-			Map<String, ModelPart> meshMap = Maps.newHashMap();
+			Map<String, ModelPart<AnimatedVertexIndicator>> meshMap = Maps.newHashMap();
 			
 			arrayMap.put("positions", positionArray);
 			arrayMap.put("normals", normalArray);
@@ -164,12 +227,12 @@ public class JsonModelLoader {
 			
 			if (parts != null) {
 				for (Map.Entry<String, JsonElement> e : parts.entrySet()) {
-					meshMap.put(e.getKey(), new ModelPart(VertexIndicator.create(toIntArray(e.getValue().getAsJsonObject().get("array").getAsJsonArray()), vcountArray, animationIndexArray)));
+					meshMap.put(e.getKey(), new ModelPart<>(VertexIndicator.createAnimated(toIntArray(e.getValue().getAsJsonObject().get("array").getAsJsonArray()), vcountArray, animationIndexArray)));
 				}
 			}
 			
 			if (indices != null) {
-				meshMap.put("noGroups", new ModelPart(VertexIndicator.create(toIntArray(indices.get("array").getAsJsonArray()), vcountArray, animationIndexArray)));
+				meshMap.put("noGroups", new ModelPart<>(VertexIndicator.createAnimated(toIntArray(indices.get("array").getAsJsonArray()), vcountArray, animationIndexArray)));
 			}
 			
 			return constructor.invoke(arrayMap, null, this.getRenderProperties(), meshMap);

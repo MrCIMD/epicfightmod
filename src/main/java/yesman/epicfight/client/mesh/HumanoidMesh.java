@@ -6,22 +6,23 @@ import net.minecraft.world.entity.EquipmentSlot;
 import yesman.epicfight.api.client.model.AnimatedMesh;
 import yesman.epicfight.api.client.model.Meshes;
 import yesman.epicfight.api.client.model.ModelPart;
+import yesman.epicfight.api.client.model.VertexIndicator.AnimatedVertexIndicator;
 
 public class HumanoidMesh extends AnimatedMesh {
-	public final ModelPart head;
-	public final ModelPart torso;
-	public final ModelPart lefrArm;
-	public final ModelPart rightArm;
-	public final ModelPart leftLeg;
-	public final ModelPart rightLeg;
-	public final ModelPart hat;
-	public final ModelPart jacket;
-	public final ModelPart leftSleeve;
-	public final ModelPart rightSleeve;
-	public final ModelPart leftPants;
-	public final ModelPart rightPants;
+	public final ModelPart<AnimatedVertexIndicator> head;
+	public final ModelPart<AnimatedVertexIndicator> torso;
+	public final ModelPart<AnimatedVertexIndicator> lefrArm;
+	public final ModelPart<AnimatedVertexIndicator> rightArm;
+	public final ModelPart<AnimatedVertexIndicator> leftLeg;
+	public final ModelPart<AnimatedVertexIndicator> rightLeg;
+	public final ModelPart<AnimatedVertexIndicator> hat;
+	public final ModelPart<AnimatedVertexIndicator> jacket;
+	public final ModelPart<AnimatedVertexIndicator> leftSleeve;
+	public final ModelPart<AnimatedVertexIndicator> rightSleeve;
+	public final ModelPart<AnimatedVertexIndicator> leftPants;
+	public final ModelPart<AnimatedVertexIndicator> rightPants;
 	
-	public HumanoidMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+	public HumanoidMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart<AnimatedVertexIndicator>> parts) {
 		super(arrayMap, parent, properties, parts);
 		
 		this.head = this.getOrLogException(parts, "head");

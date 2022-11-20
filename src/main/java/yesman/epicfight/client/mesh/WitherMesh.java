@@ -4,15 +4,16 @@ import java.util.Map;
 
 import yesman.epicfight.api.client.model.AnimatedMesh;
 import yesman.epicfight.api.client.model.ModelPart;
+import yesman.epicfight.api.client.model.VertexIndicator.AnimatedVertexIndicator;
 
 public class WitherMesh extends AnimatedMesh {
-	public final ModelPart centerHead;
-	public final ModelPart leftHead;
-	public final ModelPart rightHead;
-	public final ModelPart ribcage;
-	public final ModelPart tail;
+	public final ModelPart<AnimatedVertexIndicator> centerHead;
+	public final ModelPart<AnimatedVertexIndicator> leftHead;
+	public final ModelPart<AnimatedVertexIndicator> rightHead;
+	public final ModelPart<AnimatedVertexIndicator> ribcage;
+	public final ModelPart<AnimatedVertexIndicator> tail;
 	
-	public WitherMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+	public WitherMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart<AnimatedVertexIndicator>> parts) {
 		super(arrayMap, parent, properties, parts);
 		
 		this.centerHead = this.getOrLogException(parts, "centerHead");

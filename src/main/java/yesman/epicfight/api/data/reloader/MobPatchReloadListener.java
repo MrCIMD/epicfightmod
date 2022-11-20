@@ -263,7 +263,7 @@ public class MobPatchReloadListener extends SimpleJsonResourceReloadListener {
 				
 				if (EpicFightMod.isPhysicalClient()) {
 					Minecraft mc = Minecraft.getInstance();
-					Meshes.getOrCreateMesh(mc.getResourceManager(), modelLocation, humanoid ? AnimatedMesh::new : HumanoidMesh::new);
+					Meshes.getOrCreateAnimatedMesh(mc.getResourceManager(), modelLocation, humanoid ? AnimatedMesh::new : HumanoidMesh::new);
 					Armatures.registerEntityTypeArmature(entityType, Armatures.getOrCreateArmature(mc.getResourceManager(), modelLocation, humanoid ? Armature::new : HumanoidArmature::new));
 				} else {
 					Armatures.registerEntityTypeArmature(entityType, Armatures.getOrCreateArmature(null, modelLocation, humanoid ? Armature::new : HumanoidArmature::new));

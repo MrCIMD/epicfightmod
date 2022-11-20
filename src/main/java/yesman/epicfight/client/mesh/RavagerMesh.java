@@ -4,16 +4,17 @@ import java.util.Map;
 
 import yesman.epicfight.api.client.model.AnimatedMesh;
 import yesman.epicfight.api.client.model.ModelPart;
+import yesman.epicfight.api.client.model.VertexIndicator.AnimatedVertexIndicator;
 
 public class RavagerMesh extends AnimatedMesh {
-	public final ModelPart head;
-	public final ModelPart body;
-	public final ModelPart leftFrontLeg;
-	public final ModelPart rightFrontLeg;
-	public final ModelPart leftBackLeg;
-	public final ModelPart rightBackLeg;
+	public final ModelPart<AnimatedVertexIndicator> head;
+	public final ModelPart<AnimatedVertexIndicator> body;
+	public final ModelPart<AnimatedVertexIndicator> leftFrontLeg;
+	public final ModelPart<AnimatedVertexIndicator> rightFrontLeg;
+	public final ModelPart<AnimatedVertexIndicator> leftBackLeg;
+	public final ModelPart<AnimatedVertexIndicator> rightBackLeg;
 	
-	public RavagerMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+	public RavagerMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart<AnimatedVertexIndicator>> parts) {
 		super(arrayMap, parent, properties, parts);
 		
 		this.head = this.getOrLogException(parts, "head");

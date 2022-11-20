@@ -4,13 +4,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import com.mojang.datafixers.util.Pair;
+
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.RegistryObject;
 import yesman.epicfight.api.animation.TransformSheet;
+import yesman.epicfight.api.animation.property.AnimationEvent.TimeStampedEvent;
 import yesman.epicfight.api.animation.types.ActionAnimation;
-import yesman.epicfight.api.animation.types.AnimationEvent;
-import yesman.epicfight.api.animation.types.AnimationEvent.TimeStampedEvent;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.utils.HitEntityList.Priority;
 import yesman.epicfight.api.utils.math.ValueModifier;
@@ -46,6 +47,11 @@ public abstract class AnimationProperty<T> {
 		 * You can set the fixed play speed of the animation.
 		 */
 		public static final StaticAnimationProperty<Float> PLAY_SPEED = new StaticAnimationProperty<Float> ();
+		
+		/**
+		 * Trail particle information
+		 */
+		public static final StaticAnimationProperty<Pair<Vec3, Vec3>> TRAIL_EFFECT = new StaticAnimationProperty<Pair<Vec3, Vec3>> ();
 	}
 	
 	public static class ActionAnimationProperty<T> extends AnimationProperty<T> {

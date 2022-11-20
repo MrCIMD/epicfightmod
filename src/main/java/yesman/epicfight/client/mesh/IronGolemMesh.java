@@ -4,17 +4,18 @@ import java.util.Map;
 
 import yesman.epicfight.api.client.model.AnimatedMesh;
 import yesman.epicfight.api.client.model.ModelPart;
+import yesman.epicfight.api.client.model.VertexIndicator.AnimatedVertexIndicator;
 
 public class IronGolemMesh extends AnimatedMesh {
-	public final ModelPart head;
-	public final ModelPart chest;
-	public final ModelPart core;
-	public final ModelPart leftArm;
-	public final ModelPart rightArm;
-	public final ModelPart leftLeg;
-	public final ModelPart rightLeg;
+	public final ModelPart<AnimatedVertexIndicator> head;
+	public final ModelPart<AnimatedVertexIndicator> chest;
+	public final ModelPart<AnimatedVertexIndicator> core;
+	public final ModelPart<AnimatedVertexIndicator> leftArm;
+	public final ModelPart<AnimatedVertexIndicator> rightArm;
+	public final ModelPart<AnimatedVertexIndicator> leftLeg;
+	public final ModelPart<AnimatedVertexIndicator> rightLeg;
 	
-	public IronGolemMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+	public IronGolemMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart<AnimatedVertexIndicator>> parts) {
 		super(arrayMap, parent, properties, parts);
 		
 		this.head = this.getOrLogException(parts, "head");

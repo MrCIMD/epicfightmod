@@ -4,20 +4,21 @@ import java.util.Map;
 
 import yesman.epicfight.api.client.model.AnimatedMesh;
 import yesman.epicfight.api.client.model.ModelPart;
+import yesman.epicfight.api.client.model.VertexIndicator.AnimatedVertexIndicator;
 
 public class DragonMesh extends AnimatedMesh {
-	public final ModelPart head;
-	public final ModelPart neck;
-	public final ModelPart torso;
-	public final ModelPart leftLegFront;
-	public final ModelPart rightLegFront;
-	public final ModelPart leftLegBack;
-	public final ModelPart rightLegBack;
-	public final ModelPart leftWing;
-	public final ModelPart rightWing;
-	public final ModelPart tail;
+	public final ModelPart<AnimatedVertexIndicator> head;
+	public final ModelPart<AnimatedVertexIndicator> neck;
+	public final ModelPart<AnimatedVertexIndicator> torso;
+	public final ModelPart<AnimatedVertexIndicator> leftLegFront;
+	public final ModelPart<AnimatedVertexIndicator> rightLegFront;
+	public final ModelPart<AnimatedVertexIndicator> leftLegBack;
+	public final ModelPart<AnimatedVertexIndicator> rightLegBack;
+	public final ModelPart<AnimatedVertexIndicator> leftWing;
+	public final ModelPart<AnimatedVertexIndicator> rightWing;
+	public final ModelPart<AnimatedVertexIndicator> tail;
 	
-	public DragonMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart> parts) {
+	public DragonMesh(Map<String, float[]> arrayMap, AnimatedMesh parent, RenderProperties properties, Map<String, ModelPart<AnimatedVertexIndicator>> parts) {
 		super(arrayMap, parent, properties, parts);
 		
 		this.head = this.getOrLogException(parts, "head");
