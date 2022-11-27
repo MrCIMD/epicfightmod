@@ -50,6 +50,14 @@ public class Armature {
 		return Pose.interpolatePose(this.prevPose, this.currentPose, partialTicks);
 	}
 	
+	public Pose getPrevPose() {
+		return this.prevPose;
+	}
+	
+	public Pose getCurrentPose() {
+		return this.currentPose;
+	}
+	
 	public void setPose(Pose pose) {
 		this.prevPose = this.currentPose;
 		this.currentPose = pose;
@@ -69,7 +77,7 @@ public class Armature {
 	
 	private void getPoseTransform(Joint joint, OpenMatrix4f parentTransform, Pose pose, OpenMatrix4f[] jointMatrices) {
 		OpenMatrix4f result = pose.getOrDefaultTransform(joint.getName()).getAnimationBindedMatrix(joint, parentTransform);
-		jointMatrices[joint.getId()] = result;//OpenMatrix4f.mul(result, joint.getInversedModelTransform(), null);
+		jointMatrices[joint.getId()] = result;
 		
 		for (Joint joints : joint.getSubJoints()) {
 			this.getPoseTransform(joints, result, pose, jointMatrices);

@@ -30,4 +30,5 @@ public class EpicFightParticles {
 	public static final RegistryObject<SimpleParticleType> BOSS_CASTING = PARTICLES.register("boss_casting", () -> new SimpleParticleType(true));
 	public static final RegistryObject<SimpleParticleType> TSUNAMI_SPLASH = PARTICLES.register("tsunami_splash", () -> new SimpleParticleType(true));
 	public static final RegistryObject<SimpleParticleType> TSUNAMI_SWIRL = PARTICLES.register("tsunami_swirl", () -> new SimpleParticleType(true));
+	public static final RegistryObject<SimpleParticleType> SWING_TRAIL = PARTICLES.register("swing_trail", () -> new SimpleParticleType(true));
 }

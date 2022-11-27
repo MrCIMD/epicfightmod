@@ -14,8 +14,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.animation.property.AnimationEvent;
-import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.property.AnimationEvent.TimeStampedEvent;
+import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.property.AnimationProperty.StaticAnimationProperty;
 import yesman.epicfight.api.client.animation.ClientAnimationProperties;
 import yesman.epicfight.api.client.animation.JointMask;
@@ -109,6 +109,18 @@ public class StaticAnimation extends DynamicAnimation {
 				event.executeIfRightSide(entitypatch);
 			}
 		});
+		
+		if (entitypatch.isLogicalClient()) {
+			this.getProperty(StaticAnimationProperty.TRAIL_EFFECT).ifPresent((trailInfo) -> {
+				
+				double eid = Double.longBitsToDouble(entitypatch.getOriginal().getId());
+				double modid = Double.longBitsToDouble(this.namespaceId);
+				double animid = Double.longBitsToDouble(this.animationId);
+				double jointId = Double.longBitsToDouble(trailInfo.joint.getId());
+				
+				entitypatch.getOriginal().level.addParticle(trailInfo.particle, eid, modid, animid, jointId, 0, 0);
+			});
+		}
 	}
 	
 	@Override

@@ -47,9 +47,9 @@ public class AnimatedMesh extends Mesh<AnimatedVertexIndicator> {
 		return parts.get(name);
 	}
 	
-	public void drawModelWithPose(PoseStack posetStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord, Armature armature, OpenMatrix4f[] poses) {
-		Matrix4f matrix4f = posetStack.last().pose();
-		Matrix3f matrix3f = posetStack.last().normal();
+	public void drawModelWithPose(PoseStack poseStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord, Armature armature, OpenMatrix4f[] poses) {
+		Matrix4f matrix4f = poseStack.last().pose();
+		Matrix3f matrix3f = poseStack.last().normal();
 		OpenMatrix4f[] posesNoTranslation = new OpenMatrix4f[poses.length];
 		
 		for (int i = 0; i < poses.length; i++) {
@@ -85,9 +85,9 @@ public class AnimatedMesh extends Mesh<AnimatedVertexIndicator> {
 		}
 	}
 	
-	public void drawWithPoseNoTexture(PoseStack posetStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord, OpenMatrix4f[] poses) {
-		Matrix4f matrix4f = posetStack.last().pose();
-		Matrix3f matrix3f = posetStack.last().normal();
+	public void drawWithPoseNoTexture(PoseStack poseStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord, OpenMatrix4f[] poses) {
+		Matrix4f matrix4f = poseStack.last().pose();
+		Matrix3f matrix3f = poseStack.last().normal();
 		OpenMatrix4f[] posesNoTranslation = new OpenMatrix4f[poses.length];
 		
 		for (int i = 0; i < poses.length; i++) {

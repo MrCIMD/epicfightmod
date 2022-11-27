@@ -4,9 +4,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Quaternion;
 
 import net.minecraft.core.BlockPos;
@@ -49,6 +48,7 @@ import yesman.epicfight.api.animation.property.AnimationProperty.ActionAnimation
 import yesman.epicfight.api.animation.property.AnimationProperty.AttackAnimationProperty;
 import yesman.epicfight.api.animation.property.AnimationProperty.AttackPhaseProperty;
 import yesman.epicfight.api.animation.property.AnimationProperty.StaticAnimationProperty;
+import yesman.epicfight.api.animation.property.TrailInfo;
 import yesman.epicfight.api.animation.types.ActionAnimation;
 import yesman.epicfight.api.animation.types.ActionAnimation.ActionTime;
 import yesman.epicfight.api.animation.types.AimAnimation;
@@ -534,9 +534,12 @@ public class Animations {
 				.addProperty(AttackPhaseProperty.PARTICLE, EpicFightParticles.HIT_BLUNT)
 				.addProperty(AttackAnimationProperty.LOCK_ROTATION, true)
 				.addProperty(StaticAnimationProperty.PLAY_SPEED, 1.0F);
-		SWORD_AUTO1 = new BasicAttackAnimation(0.13F, 0.0F, 0.11F, 0.3F, null, biped.toolR, "biped/combat/sword_auto1", biped);
-		SWORD_AUTO2 = new BasicAttackAnimation(0.13F, 0.0F, 0.11F, 0.3F, null, biped.toolR, "biped/combat/sword_auto2", biped);
-		SWORD_AUTO3 = new BasicAttackAnimation(0.13F, 0.0F, 0.11F, 0.6F, null, biped.toolR, "biped/combat/sword_auto3", biped);
+		SWORD_AUTO1 = new BasicAttackAnimation(0.13F, 0.0F, 0.11F, 0.3F, null, biped.toolR, "biped/combat/sword_auto1", biped)
+				.addProperty(StaticAnimationProperty.TRAIL_EFFECT, TrailInfo.create(new Vec3(0.0D, 0.0D, -0.1D), new Vec3(0.0D, 0.0D, -1.0D), biped.toolR, EpicFightParticles.SWING_TRAIL.get()));
+		SWORD_AUTO2 = new BasicAttackAnimation(0.13F, 0.0F, 0.11F, 0.3F, null, biped.toolR, "biped/combat/sword_auto2", biped)
+				.addProperty(StaticAnimationProperty.TRAIL_EFFECT, TrailInfo.create(new Vec3(0.0D, 0.0D, -0.1D), new Vec3(0.0D, 0.0D, -1.0D), biped.toolR, EpicFightParticles.SWING_TRAIL.get()));
+		SWORD_AUTO3 = new BasicAttackAnimation(0.13F, 0.0F, 0.11F, 0.6F, null, biped.toolR, "biped/combat/sword_auto3", biped)
+				.addProperty(StaticAnimationProperty.TRAIL_EFFECT, TrailInfo.create(new Vec3(0.0D, 0.0D, -0.1D), new Vec3(0.0D, 0.0D, -1.0D), biped.toolR, EpicFightParticles.SWING_TRAIL.get()));
 		SWORD_DASH = new DashAttackAnimation(0.12F, 0.1F, 0.25F, 0.4F, 0.65F, null, biped.toolR, "biped/combat/sword_dash", biped)
 				.addProperty(AttackAnimationProperty.LOCK_ROTATION, true)
 				.addProperty(AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.6F);

@@ -77,9 +77,9 @@ public abstract class Mesh<T extends VertexIndicator> {
 		this.parts.values().forEach((part) -> part.hidden = false);
 	}
 	
-	public void drawRawModel(PoseStack posetStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord) {
-		Matrix4f matrix4f = posetStack.last().pose();
-		Matrix3f matrix3f = posetStack.last().normal();
+	public void drawRawModel(PoseStack poseStack, VertexConsumer builder, int packedLightIn, float r, float g, float b, float a, int overlayCoord) {
+		Matrix4f matrix4f = poseStack.last().pose();
+		Matrix3f matrix3f = poseStack.last().normal();
 		
 		for (ModelPart<T> part : this.parts.values()) {
 			if (!part.hidden) {

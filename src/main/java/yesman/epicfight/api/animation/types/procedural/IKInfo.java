@@ -2,7 +2,7 @@ package yesman.epicfight.api.animation.types.procedural;
 
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
+import com.mojang.datafixers.util.Pair;
 
 import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.utils.math.Vec3f;
@@ -27,8 +27,8 @@ public class IKInfo {
 		this.endJoint = endJoint;
 		this.opponentJoint = opponentJoint;
 		this.clipAnimation = clipFrame != null;
-		this.startFrame = this.clipAnimation ? clipFrame.getLeft() : -1;
-		this.endFrame = this.clipAnimation ? clipFrame.getRight() : -1;
+		this.startFrame = this.clipAnimation ? clipFrame.getFirst() : -1;
+		this.endFrame = this.clipAnimation ? clipFrame.getSecond() : -1;
 		this.ikPose = ikFrame;
 		this.rayLeastHeight = rayLeastHeight;
 		this.touchingGround = touchGround;

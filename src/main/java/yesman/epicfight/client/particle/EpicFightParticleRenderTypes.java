@@ -1,6 +1,7 @@
 package yesman.epicfight.client.particle;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -12,10 +13,13 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import yesman.epicfight.main.EpicFightMod;
 @SuppressWarnings( {"deprecation"} )
 @OnlyIn(Dist.CLIENT)
 public class EpicFightParticleRenderTypes {
@@ -86,6 +90,41 @@ public class EpicFightParticleRenderTypes {
 
 		public String toString() {
 			return "LIGHTING";
+		}
+	};
+	
+	public static final ParticleRenderType TRAIL = new ParticleRenderType() {
+		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
+			RenderSystem.enableBlend();
+			RenderSystem.disableCull();
+		    RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+			RenderSystem.enableDepthTest();
+			RenderSystem.depthMask(true);
+	        RenderSystem.setShader(GameRenderer::getPositionColorTexLightmapShader);
+	        
+	        TextureManager texturemanager = Minecraft.getInstance().getTextureManager();
+	        AbstractTexture abstracttexture = texturemanager.getTexture(new ResourceLocation(EpicFightMod.MODID, "textures/particle/swing_tex.png"));
+	        RenderSystem.bindTexture(abstracttexture.getId());
+	        
+	        RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+		    RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+	        
+	        RenderSystem.setShaderTexture(0, abstracttexture.getId());
+	        
+			bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP);
+		}
+		
+		public void end(Tesselator tesselator) {
+			tesselator.getBuilder().setQuadSortOrigin(0.0F, 0.0F, 0.0F);
+			tesselator.end();
+			RenderSystem.disableBlend();
+			RenderSystem.defaultBlendFunc();
+			RenderSystem.enableCull();
+		}
+		
+		@Override
+		public String toString() {
+			return "AFTER_IMAGE";
 		}
 	};
 	

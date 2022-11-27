@@ -4,8 +4,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-import com.mojang.datafixers.util.Pair;
-
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.RegistryObject;
@@ -51,7 +49,7 @@ public abstract class AnimationProperty<T> {
 		/**
 		 * Trail particle information
 		 */
-		public static final StaticAnimationProperty<Pair<Vec3, Vec3>> TRAIL_EFFECT = new StaticAnimationProperty<Pair<Vec3, Vec3>> ();
+		public static final StaticAnimationProperty<TrailInfo> TRAIL_EFFECT = new StaticAnimationProperty<TrailInfo> ();
 	}
 	
 	public static class ActionAnimationProperty<T> extends AnimationProperty<T> {

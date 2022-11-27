@@ -6,7 +6,7 @@ import org.apache.commons.compress.utils.Lists;
 
 import net.minecraft.world.phys.Vec3;
 
-public class CubicBezier {
+public class CubicBezierCurve {
 	
 	/**
 	 * Get more informations about cubic bezier curve here:
@@ -74,11 +74,25 @@ public class CubicBezier {
 		return Math.pow((1 - t), 3) * start + 3 * t * Math.pow((1 - t), 2) * a + 3 * t * t * (1 - t) * b + t * t * t * end; 
 	}
 	
+	public static List<Vec3> getBezierInterpolatedPoints(List<Vec3> points, int interpolatedResults) {
+		return getBezierInterpolatedPoints(points, 0, points.size() - 1, interpolatedResults);
+	}
 	
-	public static List<Vec3> getBezierInterpolatedPoints(List<Vec3> points, int interpolationCount) {
+	/**
+	 * Requires at least 3 points
+	 * @param points : control points of the bezier curve
+	 * @param sliceBegin : first control point to calculate the interpolation
+	 * @param sliceEnd : last control point to calculate the interpolation
+	 * @param interpolatedResults : the number of interpolated vertices between control points
+	 * @return
+	 */
+	public static List<Vec3> getBezierInterpolatedPoints(List<Vec3> points, int sliceBegin, int sliceEnd, int interpolatedResults) {
 		if (points.size() < 3) {
 			return null;
 		}
+		
+		sliceBegin = Math.max(sliceBegin, 0);
+		sliceEnd = Math.min(sliceEnd, points.size() - 1);
 		
 		int size = points.size();
 		List<Vec3> interpolatedPoints = Lists.newArrayList();
@@ -103,7 +117,7 @@ public class CubicBezier {
 		getBezierEquationCoefficients(y, y_a, y_b);
 		getBezierEquationCoefficients(z, z_a, z_b);
 		
-		for (int i = 0; i < points.size() - 1; i++) {
+		for (int i = sliceBegin; i < sliceEnd; i++) {
 			Vec3 start = points.get(i);
 			Vec3 end = points.get(i + 1);
 			double x_av = x_a.get(i);
@@ -113,8 +127,8 @@ public class CubicBezier {
 			double z_av = z_a.get(i);
 			double z_bv = z_b.get(i);
 			
-			for (int j = 0; j < interpolationCount + 1; j++) {
-				double t = (double)j / (double)interpolationCount;
+			for (int j = 0; j < interpolatedResults + 1; j++) {
+				double t = (double)j / (double)interpolatedResults;
 				
 				interpolatedPoints.add(new Vec3(cubicBezier(start.x, end.x, x_av, x_bv, t)
 											  , cubicBezier(start.y, end.y, y_av, y_bv, t)
