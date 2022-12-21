@@ -101,9 +101,9 @@ public class EpicFightParticleRenderTypes {
 			RenderSystem.enableDepthTest();
 			RenderSystem.depthMask(true);
 	        RenderSystem.setShader(GameRenderer::getPositionColorTexLightmapShader);
-	        
+			
 	        TextureManager texturemanager = Minecraft.getInstance().getTextureManager();
-	        AbstractTexture abstracttexture = texturemanager.getTexture(new ResourceLocation(EpicFightMod.MODID, "textures/particle/swing_tex.png"));
+	        AbstractTexture abstracttexture = texturemanager.getTexture(new ResourceLocation(EpicFightMod.MODID, "textures/particle/swing_trail.png"));
 	        RenderSystem.bindTexture(abstracttexture.getId());
 	        
 	        RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);

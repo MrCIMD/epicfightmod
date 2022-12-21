@@ -147,7 +147,6 @@ public class EpicFightMod {
 	}
 	
 	private void doCommonStuff(final FMLCommonSetupEvent event) {
-		
 		if (isPhysicalClient()) {
 			ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
 			Armatures.build(resourceManager);
@@ -166,7 +165,6 @@ public class EpicFightMod {
 		event.enqueueWork(EpicFightEntities::registerSpawnPlacements);
 		event.enqueueWork(WeaponCapabilityPresets::register);
 		event.enqueueWork(EpicFightMobEffects::addOffhandModifier);
-		event.enqueueWork(SkillManager::buildAll);
     }
 	
 	private void reloadListnerEvent(final AddReloadListenerEvent event) {

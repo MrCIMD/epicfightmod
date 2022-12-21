@@ -132,7 +132,7 @@ public class EntityEvents {
 				
 				if (trueSource instanceof LivingEntity && epicFightDamageSource.getExtraDamages() != null) {
 					for (ExtraDamageInstance extraDamage : epicFightDamageSource.getExtraDamages()) {
-						totalDamage += extraDamage.get((LivingEntity)trueSource, hitEntity, baseDamage);
+						totalDamage += extraDamage.get((LivingEntity)trueSource, epicFightDamageSource.getHurtItem(), hitEntity, baseDamage);
 					}
 				}
 				

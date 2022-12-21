@@ -91,7 +91,7 @@ public class JsonModelLoader {
 				this.rootJson = Streams.parse(in).getAsJsonObject();
 			}
 		} catch (Exception e) {
-			EpicFightMod.LOGGER.info("Can't read " + resourceLocation.toString());
+			EpicFightMod.LOGGER.info("Can't read " + resourceLocation.toString() + " because of " + e);
 			e.printStackTrace();
 		}
 	}
@@ -246,6 +246,8 @@ public class JsonModelLoader {
 		Map<String, Joint> jointMap = Maps.newHashMap();
 		Joint joint = this.getJoint(hierarchy, nameAsVertexGroups, jointMap, true);
 		joint.initOriginTransform(new OpenMatrix4f());
+		
+		EpicFightMod.LOGGER.info(jointMap);
 		
 		return constructor.invoke(jointMap.size(), joint, jointMap);
 	}

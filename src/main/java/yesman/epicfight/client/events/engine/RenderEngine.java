@@ -92,7 +92,6 @@ import yesman.epicfight.client.renderer.patched.item.RenderBow;
 import yesman.epicfight.client.renderer.patched.item.RenderCrossbow;
 import yesman.epicfight.client.renderer.patched.item.RenderItemBase;
 import yesman.epicfight.client.renderer.patched.item.RenderKatana;
-import yesman.epicfight.client.renderer.patched.item.RenderShield;
 import yesman.epicfight.client.renderer.patched.item.RenderTrident;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.main.EpicFightMod;
@@ -139,11 +138,12 @@ public class RenderEngine {
 		this.entityRendererCache = Maps.newHashMap();
 		this.itemRendererMapByInstance = Maps.newHashMap();
 		this.itemRendererMapByClass = Maps.newHashMap();
-		this.firstPersonRenderer = new FirstPersonRenderer();
 		this.overlayManager = new OverlayManager();
 	}
 	
 	public void registerRenderer() {
+		this.firstPersonRenderer = new FirstPersonRenderer();
+		
 		this.entityRendererProvider.put(EntityType.CREEPER, PCreeperRenderer::new);
 		this.entityRendererProvider.put(EntityType.ENDERMAN, PEndermanRenderer::new);
 		this.entityRendererProvider.put(EntityType.ZOMBIE, () -> new PHumanoidRenderer<>(Meshes.BIPED_OLD_TEX));
@@ -173,21 +173,21 @@ public class RenderEngine {
 		this.entityRendererProvider.put(EpicFightEntities.WITHER_SKELETON_MINION.get(), PWitherSkeletonMinionRenderer::new);
 		this.entityRendererProvider.put(EpicFightEntities.WITHER_GHOST_CLONE.get(), WitherGhostCloneRenderer::new);
 		
+		RenderItemBase baseRenderer = new RenderItemBase();
 		RenderBow bowRenderer = new RenderBow();
 		RenderCrossbow crossbowRenderer = new RenderCrossbow();
-		RenderShield shieldRenderer = new RenderShield();
 		RenderTrident tridentRenderer = new RenderTrident();
 		
 		this.itemRendererMapByInstance.clear();
-		this.itemRendererMapByInstance.put(Items.AIR, new RenderItemBase());
+		this.itemRendererMapByInstance.put(Items.AIR, baseRenderer);
 		this.itemRendererMapByInstance.put(Items.BOW, bowRenderer);
-		this.itemRendererMapByInstance.put(Items.SHIELD, shieldRenderer);
+		this.itemRendererMapByInstance.put(Items.SHIELD, baseRenderer);
 		this.itemRendererMapByInstance.put(Items.CROSSBOW, crossbowRenderer);
 		this.itemRendererMapByInstance.put(Items.TRIDENT, tridentRenderer);
 		this.itemRendererMapByInstance.put(EpicFightItems.KATANA.get(), new RenderKatana());
 		this.itemRendererMapByClass.put(BowItem.class, bowRenderer);
 		this.itemRendererMapByClass.put(CrossbowItem.class, crossbowRenderer);
-		this.itemRendererMapByClass.put(ShieldItem.class, shieldRenderer);
+		this.itemRendererMapByClass.put(ShieldItem.class, baseRenderer);
 		this.itemRendererMapByClass.put(TridentItem.class, tridentRenderer);
 		this.aimHelper = new AimHelperRenderer();
 		

@@ -27,14 +27,20 @@ public class SkillBookModifier extends LootModifier {
 	@Override
 	protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context) {
 		Entity entity = context.getParamOrNull(LootContextParams.THIS_ENTITY);
-		if (ConfigManager.SKILLBOOK_MOB_LOOT.get() && entity instanceof Monster) {
+		int dropChanceModifier = 100 + ConfigManager.SKILL_BOOK_MOB_DROP_CHANCE_MODIFIER.get();
+		int dropChanceAntiModifier = 100 - ConfigManager.SKILL_BOOK_MOB_DROP_CHANCE_MODIFIER.get();
+		float dropChance = dropChanceAntiModifier > 0.0F ? (float)(dropChanceModifier) / (float)(dropChanceAntiModifier * 40) : 1.0F;
+		
+		if (entity instanceof Monster) {
 			Random random = new Random();
-			if (random.nextFloat() < 0.025F) {
+			
+			if (random.nextFloat() < dropChance) {
 				ItemStack skillBook = new ItemStack(EpicFightItems.SKILLBOOK.get());
 				SkillBookItem.setContainingSkill(SkillManager.getRandomLearnableSkillName(), skillBook);
 				generatedLoot.add(skillBook);
 			}
 		}
+		
 		return generatedLoot;
 	}
 	

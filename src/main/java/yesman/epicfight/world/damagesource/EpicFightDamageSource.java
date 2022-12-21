@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.math.ValueModifier;
@@ -16,6 +17,15 @@ public interface EpicFightDamageSource {
 	}
 	
 	public DamageSourceElements getDamageSourceElements();
+	
+	default EpicFightDamageSource setHurtItem(ItemStack hurtItem) {
+		this.getDamageSourceElements().hurtItem = hurtItem;
+		return this;
+	}
+	
+	default ItemStack getHurtItem() {
+		return this.getDamageSourceElements().hurtItem;
+	}
 	
 	default EpicFightDamageSource setDamageModifier(ValueModifier damageModifier) {
 		this.getDamageSourceElements().damageModifier = damageModifier;

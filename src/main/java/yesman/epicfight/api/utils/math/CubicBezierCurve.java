@@ -118,6 +118,10 @@ public class CubicBezierCurve {
 		getBezierEquationCoefficients(z, z_a, z_b);
 		
 		for (int i = sliceBegin; i < sliceEnd; i++) {
+			if (interpolatedPoints.size() > 0) {
+				interpolatedPoints.remove(interpolatedPoints.size() - 1);
+			}
+			
 			Vec3 start = points.get(i);
 			Vec3 end = points.get(i + 1);
 			double x_av = x_a.get(i);

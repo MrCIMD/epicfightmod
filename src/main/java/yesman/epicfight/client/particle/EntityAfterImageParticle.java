@@ -76,6 +76,10 @@ public class EntityAfterImageParticle extends CustomModelParticle<AnimatedMesh> 
 				OpenMatrix4f[] matrices = renderer.getPoseMatrices(entitypatch, armature, 1.0F);
 				renderer.mulPoseStack(poseStack, armature, entitypatch.getOriginal(), entitypatch, 1.0F);
 				
+				for (int i = 0; i < matrices.length; i++) {
+					matrices[i] = OpenMatrix4f.mul(matrices[i], armature.searchJointById(i).getToOrigin(), null);
+				}
+				
 				AnimatedMesh mesh = ClientEngine.instance.renderEngine.getEntityRenderer(entitypatch.getOriginal()).getMesh(entitypatch);
 				EntityAfterImageParticle particle = new EntityAfterImageParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, mesh, matrices, poseStack.last().pose());
 				

@@ -1,6 +1,7 @@
 package yesman.epicfight.client.particle;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -17,6 +18,7 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -38,15 +40,16 @@ import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 @OnlyIn(Dist.CLIENT)
 public class TrailParticle extends TextureSheetParticle {
 	private final Joint joint;
+	private final TrailInfo trailInfo;
 	private final StaticAnimation animation;
 	private final LivingEntityPatch<?> entitypatch;
 	private final List<TrailEdge> invisibleTrailEdges;
 	private final List<TrailEdge> visibleTrailEdges;
-	private final int interpolateCount;
-	private final int trailLifetime;
 	private boolean animationEnd;
 	
-	protected TrailParticle(ClientLevel level, LivingEntityPatch<?> entitypatch, Joint joint, StaticAnimation animation, SpriteSet spriteSet) {
+	private float startEdgeCorrection = 0.0F;
+	
+	protected TrailParticle(ClientLevel level, LivingEntityPatch<?> entitypatch, Joint joint, StaticAnimation animation, TrailInfo trailInfo, SpriteSet spriteSet) {
 		super(level, 0, 0, 0);
 		
 		this.joint = joint;
@@ -55,107 +58,155 @@ public class TrailParticle extends TextureSheetParticle {
 		this.invisibleTrailEdges = Lists.newLinkedList();
 		this.visibleTrailEdges = Lists.newLinkedList();
 		this.hasPhysics = false;
-		this.interpolateCount = 5;
-		this.trailLifetime = 2;
+		this.trailInfo = trailInfo;
 		
 		Vec3 entityPos = entitypatch.getOriginal().position();
 		
 		this.setSize(10.0F, 10.0F);
 		this.move(entityPos.x, entityPos.y + entitypatch.getOriginal().getEyeHeight(), entityPos.z);
 		this.setSpriteFromAge(spriteSet);
+		
+		Pose prevPose = this.entitypatch.getArmature().getPrevPose();
+		Pose middlePose = this.entitypatch.getArmature().getPose(0.5F);
+		Pose currentPose = this.entitypatch.getArmature().getCurrentPose();
+		Vec3 posOld = this.entitypatch.getOriginal().getPosition(0.0F);
+		Vec3 posMid = this.entitypatch.getOriginal().getPosition(0.5F);
+		Vec3 posCur = this.entitypatch.getOriginal().getPosition(1.0F);
+		
+		OpenMatrix4f prvmodelTf = OpenMatrix4f.createTranslation((float)posOld.x, (float)posOld.y, (float)posOld.z)
+										.mulBack(OpenMatrix4f.createRotatorDeg(180.0F, Vec3f.Y_AXIS)
+										.mulBack(this.entitypatch.getModelMatrix(0.0F)));
+		OpenMatrix4f middleModelTf = OpenMatrix4f.createTranslation((float)posMid.x, (float)posMid.y, (float)posMid.z)
+										.mulBack(OpenMatrix4f.createRotatorDeg(180.0F, Vec3f.Y_AXIS)
+										.mulBack(this.entitypatch.getModelMatrix(0.5F)));
+		OpenMatrix4f curModelTf = OpenMatrix4f.createTranslation((float)posCur.x, (float)posCur.y, (float)posCur.z)
+										.mulBack(OpenMatrix4f.createRotatorDeg(180.0F, Vec3f.Y_AXIS)
+										.mulBack(this.entitypatch.getModelMatrix(1.0F)));
+		
+		OpenMatrix4f prevJointTf = this.entitypatch.getArmature().getBindedTransformFor(prevPose, this.joint).mulFront(prvmodelTf);
+		OpenMatrix4f middleJointTf = this.entitypatch.getArmature().getBindedTransformFor(middlePose, this.joint).mulFront(middleModelTf);
+		OpenMatrix4f currentJointTf = this.entitypatch.getArmature().getBindedTransformFor(currentPose, this.joint).mulFront(curModelTf);
+		Vec3 prevStartPos = OpenMatrix4f.transform(prevJointTf, trailInfo.start);
+		Vec3 prevEndPos = OpenMatrix4f.transform(prevJointTf, trailInfo.end);
+		Vec3 middleStartPos = OpenMatrix4f.transform(middleJointTf, trailInfo.start);
+		Vec3 middleEndPos = OpenMatrix4f.transform(middleJointTf, trailInfo.end);
+		Vec3 currentStartPos = OpenMatrix4f.transform(currentJointTf, trailInfo.start);
+		Vec3 currentEndPos = OpenMatrix4f.transform(currentJointTf, trailInfo.end);
+		
+		this.invisibleTrailEdges.add(new TrailEdge(prevStartPos, prevEndPos, this.trailInfo.trailLifetime));
+		this.invisibleTrailEdges.add(new TrailEdge(middleStartPos, middleEndPos, this.trailInfo.trailLifetime));
+		this.invisibleTrailEdges.add(new TrailEdge(currentStartPos, currentEndPos, this.trailInfo.trailLifetime));
 	}
 	
 	@Override
 	public void tick() {
 		AnimationPlayer animPlayer = this.entitypatch.getAnimator().getPlayerFor(this.animation);
-		boolean playingSameAnimation = (this.animation == animPlayer.getAnimation().getRealAnimation());
-		
-		if (!playingSameAnimation) {
-			this.animationEnd = true;
-		}
-		
 		this.visibleTrailEdges.removeIf(v -> !v.isAlive());
 		
 		if (this.animationEnd) {
-			if (this.visibleTrailEdges.size() == 0) {
+			if (this.lifetime-- == 0) {
 				this.remove();
 			}
 		} else {
-			if (this.animation != animPlayer.getAnimation().getRealAnimation() || animPlayer.getElapsedTime() > 0.15F) {
-				return;
+			if (this.animation != animPlayer.getAnimation().getRealAnimation() || animPlayer.getElapsedTime() > this.trailInfo.endTime) {
+				this.animationEnd = true;
+				this.lifetime = this.trailInfo.trailLifetime;
 			}
-			
-			TrailInfo trailInfo = this.animation.getProperty(StaticAnimationProperty.TRAIL_EFFECT).get();
-			Pose prevPose = this.entitypatch.getArmature().getPrevPose();
-			Pose middlePose = this.entitypatch.getArmature().getPose(0.5F);
-			Pose currentPose = this.entitypatch.getArmature().getCurrentPose();
-			Vec3 position = this.entitypatch.getOriginal().position();
-			OpenMatrix4f modelTf = OpenMatrix4f.createTranslation((float)position.x, (float)position.y, (float)position.z)
-											.mulBack(OpenMatrix4f.createRotatorDeg(180.0F, Vec3f.Y_AXIS)
-											.mulBack(this.entitypatch.getModelMatrix(1.0F)));
-			OpenMatrix4f prevJointTf = this.entitypatch.getArmature().getBindedTransformFor(prevPose, this.joint).mulFront(modelTf);
-			OpenMatrix4f middleJointTf = this.entitypatch.getArmature().getBindedTransformFor(middlePose, this.joint).mulFront(modelTf);
-			OpenMatrix4f currentJointTf = this.entitypatch.getArmature().getBindedTransformFor(currentPose, this.joint).mulFront(modelTf);
-			Vec3 prevStartPos = OpenMatrix4f.transform(prevJointTf, trailInfo.start);
-			Vec3 prevEndPos = OpenMatrix4f.transform(prevJointTf, trailInfo.end);
-			Vec3 middleStartPos = OpenMatrix4f.transform(middleJointTf, trailInfo.start);
-			Vec3 middleEndPos = OpenMatrix4f.transform(middleJointTf, trailInfo.end);
-			Vec3 currentStartPos = OpenMatrix4f.transform(currentJointTf, trailInfo.start);
-			Vec3 currentEndPos = OpenMatrix4f.transform(currentJointTf, trailInfo.end);
-			
-			List<Vec3> finalStartPositions;
-			
-			List<Vec3> finalEndPositions;
-			boolean visibleTrail;
-			
-			if (animPlayer.getAnimation() instanceof LinkAnimation || animPlayer.getElapsedTime() < 0.05F) {
-				finalStartPositions = Lists.newArrayList();
-				finalEndPositions = Lists.newArrayList();
-				
-				finalStartPositions.add(prevStartPos);
-				finalStartPositions.add(currentStartPos);
-				finalEndPositions.add(prevEndPos);
-				finalEndPositions.add(currentEndPos);
-				
-				if (this.visibleTrailEdges.size() > 0) {
-					this.visibleTrailEdges.clear();
-				}
-				
-				visibleTrail = false;
-			} else {
-				List<Vec3> startPosList = Lists.newArrayList();
-				List<Vec3> endPosList = Lists.newArrayList();
-				TrailEdge edge1;
-				TrailEdge edge2;
-				
-				if (this.visibleTrailEdges.size() == 0) {
-					int lastIdx = this.invisibleTrailEdges.size() - 1;
-					
-					edge1 = this.invisibleTrailEdges.get(lastIdx - 1);
-					edge2 = this.invisibleTrailEdges.get(lastIdx);
-				} else {
-					edge1 = this.visibleTrailEdges.get(this.visibleTrailEdges.size() - this.interpolateCount - 1);
-					edge2 = this.visibleTrailEdges.get(this.visibleTrailEdges.size() - 1);
-				}
-				
-				startPosList.add(edge1.start);
-				endPosList.add(edge1.end);
-				startPosList.add(edge2.start);
-				endPosList.add(edge2.end);
-				startPosList.add(middleStartPos);
-				endPosList.add(middleEndPos);
-				
-				startPosList.add(currentStartPos);
-				endPosList.add(currentEndPos);
-				
-				finalStartPositions = CubicBezierCurve.getBezierInterpolatedPoints(startPosList, 1, 3, this.interpolateCount);
-				finalEndPositions = CubicBezierCurve.getBezierInterpolatedPoints(endPosList, 1, 3, this.interpolateCount);
-				
-				visibleTrail = true;
-			}
-			
-			makeTrailEdges(finalStartPositions, finalEndPositions, visibleTrail ? this.visibleTrailEdges : this.invisibleTrailEdges);
 		}
+		
+		boolean isTrailInvisible = animPlayer.getAnimation() instanceof LinkAnimation || animPlayer.getElapsedTime() <= this.trailInfo.startTime;
+		boolean isFirstTrail = this.visibleTrailEdges.size() == 0;
+		boolean needCorrection = (!isTrailInvisible && isFirstTrail);
+
+		if (needCorrection) {
+			float startCorrection = (this.trailInfo.startTime - animPlayer.getPrevElapsedTime()) / (animPlayer.getElapsedTime() - animPlayer.getPrevElapsedTime());
+			this.startEdgeCorrection = this.trailInfo.interpolateCount * 2 * startCorrection;
+		}
+		
+		TrailInfo trailInfo = this.trailInfo;
+		Pose prevPose = this.entitypatch.getArmature().getPrevPose();
+		Pose middlePose = this.entitypatch.getArmature().getPose(0.5F);
+		Pose currentPose = this.entitypatch.getArmature().getCurrentPose();
+		Vec3 posOld = this.entitypatch.getOriginal().getPosition(0.0F);
+		Vec3 posMid = this.entitypatch.getOriginal().getPosition(0.5F);
+		Vec3 posCur = this.entitypatch.getOriginal().getPosition(1.0F);
+		
+		OpenMatrix4f prvmodelTf = OpenMatrix4f.createTranslation((float)posOld.x, (float)posOld.y, (float)posOld.z)
+										.mulBack(OpenMatrix4f.createRotatorDeg(180.0F, Vec3f.Y_AXIS)
+										.mulBack(this.entitypatch.getModelMatrix(0.0F)));
+		OpenMatrix4f middleModelTf = OpenMatrix4f.createTranslation((float)posMid.x, (float)posMid.y, (float)posMid.z)
+										.mulBack(OpenMatrix4f.createRotatorDeg(180.0F, Vec3f.Y_AXIS)
+										.mulBack(this.entitypatch.getModelMatrix(0.5F)));
+		OpenMatrix4f curModelTf = OpenMatrix4f.createTranslation((float)posCur.x, (float)posCur.y, (float)posCur.z)
+										.mulBack(OpenMatrix4f.createRotatorDeg(180.0F, Vec3f.Y_AXIS)
+										.mulBack(this.entitypatch.getModelMatrix(1.0F)));
+		
+		OpenMatrix4f prevJointTf = this.entitypatch.getArmature().getBindedTransformFor(prevPose, this.joint).mulFront(prvmodelTf);
+		OpenMatrix4f middleJointTf = this.entitypatch.getArmature().getBindedTransformFor(middlePose, this.joint).mulFront(middleModelTf);
+		OpenMatrix4f currentJointTf = this.entitypatch.getArmature().getBindedTransformFor(currentPose, this.joint).mulFront(curModelTf);
+		Vec3 prevStartPos = OpenMatrix4f.transform(prevJointTf, trailInfo.start);
+		Vec3 prevEndPos = OpenMatrix4f.transform(prevJointTf, trailInfo.end);
+		Vec3 middleStartPos = OpenMatrix4f.transform(middleJointTf, trailInfo.start);
+		Vec3 middleEndPos = OpenMatrix4f.transform(middleJointTf, trailInfo.end);
+		Vec3 currentStartPos = OpenMatrix4f.transform(currentJointTf, trailInfo.start);
+		Vec3 currentEndPos = OpenMatrix4f.transform(currentJointTf, trailInfo.end);
+		
+		List<Vec3> finalStartPositions;
+		List<Vec3> finalEndPositions;
+		boolean visibleTrail;
+		
+		if (isTrailInvisible) {
+			finalStartPositions = Lists.newArrayList();
+			finalEndPositions = Lists.newArrayList();
+			finalStartPositions.add(prevStartPos);
+			finalStartPositions.add(middleStartPos);
+			finalEndPositions.add(prevEndPos);
+			finalEndPositions.add(middleEndPos);
+			
+			this.invisibleTrailEdges.clear();
+			visibleTrail = false;
+		} else {
+			List<Vec3> startPosList = Lists.newArrayList();
+			List<Vec3> endPosList = Lists.newArrayList();
+			TrailEdge edge1;
+			TrailEdge edge2;
+			
+			if (isFirstTrail) {
+				int lastIdx = this.invisibleTrailEdges.size() - 1;
+				edge1 = this.invisibleTrailEdges.get(lastIdx);
+				edge2 = new TrailEdge(prevStartPos, prevEndPos, -1);
+			} else {
+				edge1 = this.visibleTrailEdges.get(this.visibleTrailEdges.size() - (this.trailInfo.interpolateCount / 2 + 1));
+				edge2 = this.visibleTrailEdges.get(this.visibleTrailEdges.size() - 1);
+				edge2.lifetime++;
+			}
+			
+			startPosList.add(edge1.start);
+			endPosList.add(edge1.end);
+			startPosList.add(edge2.start);
+			endPosList.add(edge2.end);
+			startPosList.add(middleStartPos);
+			endPosList.add(middleEndPos);
+			startPosList.add(currentStartPos);
+			endPosList.add(currentEndPos);
+			
+			finalStartPositions = CubicBezierCurve.getBezierInterpolatedPoints(startPosList, 1, 3, this.trailInfo.interpolateCount);
+			finalEndPositions = CubicBezierCurve.getBezierInterpolatedPoints(endPosList, 1, 3, this.trailInfo.interpolateCount);
+			
+			if (!isFirstTrail) {
+				finalStartPositions.remove(0);
+				finalEndPositions.remove(0);
+			}
+			
+			//if (this.visibleTrailEdges.size() > 0) {
+				//this.visibleTrailEdges.remove(this.visibleTrailEdges.size() - 1);
+			//}
+			
+			visibleTrail = true;
+		}
+		
+		this.makeTrailEdges(finalStartPositions, finalEndPositions, visibleTrail ? this.visibleTrailEdges : this.invisibleTrailEdges);
+		
 	}
 	
 	@Override
@@ -168,21 +219,36 @@ public class TrailParticle extends TextureSheetParticle {
 		int light = this.getLightColor(partialTick);
 		this.setupPoseStack(poseStack, camera, partialTick);
 		Matrix4f matrix4f = poseStack.last().pose();
+		int edges = this.visibleTrailEdges.size() - 1;
+		boolean startFade = this.visibleTrailEdges.get(0).lifetime == 1;
+		boolean endFade = this.visibleTrailEdges.get(edges).lifetime == this.trailInfo.trailLifetime;
+		//int inCountEdges = (startFade || endFade) ? edges - this.trailInfo.interpolateCount * 2 : edges;
+		//int fromEdges = endFade ? edges - this.trailInfo.interpolateCount * 2 : edges;
+		//int toEdges = startFade ? edges - this.trailInfo.interpolateCount * 2 : edges;
 		
-		int edges = this.visibleTrailEdges.size();
-		int parts = (this.interpolateCount + 1) * 2;
-		float bigInterval = (1.0F / (float)edges) * parts;
+		float startEdge = (startFade ? this.trailInfo.interpolateCount * 2 * partialTick : 0.0F) + this.startEdgeCorrection;
+		float endEdge = endFade ? edges - (this.trailInfo.interpolateCount * 2) * (1.0F - partialTick) : edges - 1;
 		
-		float startU = this.visibleTrailEdges.get(0).lifetime > 1 ? 0.0F : - bigInterval * partialTick;
-		float endU = this.visibleTrailEdges.get(edges - 1).lifetime < this.trailLifetime ? 1.0F : 1.0F + bigInterval * (1 - partialTick);
+		//System.out.println(startEdge +" "+ endEdge);
+		//System.out.println(startEdge +" "+ this.trailInfo.startTime);
+		//System.out.println(endEdge +" "+ endFade +" "+ edges);
 		
-		float interval = (endU - startU) / (edges - 1);
 		
-		//System.out.println( (startU + interval * (edges - 1)) +" "+ endU );
+		//float endEdge = endFade ? fromEdges + (toEdges - fromEdges) * partialTick : edges;
+		//float gapDistance = (1.0F / inCountEdges) * this.trailInfo.interpolateCount * 2;
+		//float startU = startFade ? -partialTick * gapDistance : 0.0F;
+		//float endU = endFade ? 1.0F + gapDistance * (1.0F - partialTick) : 1.0F;
 		
-		//System.out.println();
+		float interval = 1.0F / (endEdge - startEdge);//1.0F / endEdge;
+		float fading = Mth.clamp(this.animationEnd ? (this.lifetime + (1.0F - partialTick)) / this.trailInfo.trailLifetime : 1.0F, 0.0F, 1.0F);
 		
-		for (int i = 0; i < edges - 1; i++) {
+		//int edgeCount = (int)endEdge + 1;
+		
+		float partialStartEdge = interval * (startEdge % 1.0F);
+		float from = -partialStartEdge;
+		float to = -partialStartEdge + interval;
+		
+		for (int i = (int)(startEdge); i < (int)endEdge + 1; i++) {
 			TrailEdge e1 = this.visibleTrailEdges.get(i);
 			TrailEdge e2 = this.visibleTrailEdges.get(i + 1);
 			Vector4f pos1 = new Vector4f((float)e1.start.x, (float)e1.start.y, (float)e1.start.z, 1.0F);
@@ -195,25 +261,22 @@ public class TrailParticle extends TextureSheetParticle {
 			pos3.transform(matrix4f);
 			pos4.transform(matrix4f);
 			
-			float from = startU + interval * i;
-			float to = startU + interval * (i+1);
+			float alphaFrom = Mth.clamp(from, 0.0F, 1.0F);
+			float alphaTo = Mth.clamp(to, 0.0F, 1.0F);
 			
-			vertexConsumer.vertex(pos1.x(), pos1.y(), pos1.z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(from, 1.0F).uv2(light).endVertex();
-			vertexConsumer.vertex(pos2.x(), pos2.y(), pos2.z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(from, 0.0F).uv2(light).endVertex();
-			vertexConsumer.vertex(pos3.x(), pos3.y(), pos3.z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(to, 0.0F).uv2(light).endVertex();
-			vertexConsumer.vertex(pos4.x(), pos4.y(), pos4.z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(to, 1.0F).uv2(light).endVertex();
+			//if (e2.lifetime == this.trailInfo.trailLifetime) {
+			vertexConsumer.vertex(pos1.x(), pos1.y(), pos1.z()).color(this.rCol, this.gCol, this.bCol, this.alpha * alphaFrom * fading).uv(from, 1.0F).uv2(light).endVertex();
+			vertexConsumer.vertex(pos2.x(), pos2.y(), pos2.z()).color(this.rCol, this.gCol, this.bCol, this.alpha * alphaFrom * fading).uv(from, 0.0F).uv2(light).endVertex();
+			vertexConsumer.vertex(pos3.x(), pos3.y(), pos3.z()).color(this.rCol, this.gCol, this.bCol, this.alpha * alphaTo * fading).uv(to, 0.0F).uv2(light).endVertex();
+			vertexConsumer.vertex(pos4.x(), pos4.y(), pos4.z()).color(this.rCol, this.gCol, this.bCol, this.alpha * alphaTo * fading).uv(to, 1.0F).uv2(light).endVertex();
 			
-			/**
-			
-			vertexConsumer.vertex(pos1.x(), pos1.y(), pos1.z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(-1, 1.0F).uv2(light).endVertex();
-			vertexConsumer.vertex(pos2.x(), pos2.y(), pos2.z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(-1, -1.0F).uv2(light).endVertex();
-			vertexConsumer.vertex(pos3.x(), pos3.y(), pos3.z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(1, -1.0F).uv2(light).endVertex();
-			vertexConsumer.vertex(pos4.x(), pos4.y(), pos4.z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(1, 1.0F).uv2(light).endVertex();
-			
-			**/
-			
-			//System.out.println(startU +" "+from+" "+to +" "+ endU);
+			from += interval;
+			to += interval;
+			//}
 		}
+		//} catch (Exception e) {
+			//e.printStackTrace();
+		//}
 	}
 	
 	@Override
@@ -234,7 +297,7 @@ public class TrailParticle extends TextureSheetParticle {
 	
 	private void makeTrailEdges(List<Vec3> startPositions, List<Vec3> endPositions, List<TrailEdge> dest) {
 		for (int i = 0; i < startPositions.size(); i++) {
-			dest.add(new TrailEdge(startPositions.get(i), endPositions.get(i), this.trailLifetime));
+			dest.add(new TrailEdge(startPositions.get(i), endPositions.get(i), this.trailInfo.trailLifetime));
 		}
 	}
 	
@@ -252,14 +315,16 @@ public class TrailParticle extends TextureSheetParticle {
 			int modid = (int)Double.doubleToLongBits(y);
 			int animid = (int)Double.doubleToLongBits(z);
 			int jointId = (int)Double.doubleToLongBits(xSpeed);
+			int idx = (int)Double.doubleToLongBits(ySpeed);
 			Entity entity = level.getEntity(eid);
 			
 			if (entity != null) {
 				LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entity, LivingEntityPatch.class);
 				StaticAnimation animation = EpicFightMod.getInstance().animationManager.findAnimationById(modid, animid);
+				Optional<List<TrailInfo>> trailInfo = animation.getProperty(StaticAnimationProperty.TRAIL_EFFECT);
 				
-				if (entitypatch != null && animation != null && animation.getProperty(StaticAnimationProperty.TRAIL_EFFECT).isPresent()) {
-					return new TrailParticle(level, entitypatch, entitypatch.getArmature().searchJointById(jointId), animation, this.spriteSet);
+				if (entitypatch != null && animation != null && trailInfo.isPresent()) {
+					return new TrailParticle(level, entitypatch, entitypatch.getArmature().searchJointById(jointId), animation, trailInfo.get().get(idx), this.spriteSet);
 				}
 			}
 			

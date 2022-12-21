@@ -67,6 +67,8 @@ public class AnimationManager extends SimplePreparableReloadListener<Map<Integer
 	@Override
 	protected Map<Integer, Map<Integer, StaticAnimation>> prepare(ResourceManager resourceManager, ProfilerFiller profilerIn) {
 		if (EpicFightMod.isPhysicalClient()) {
+			this.registerAnimations();
+			
 			this.animationById.values().forEach((map) -> {
 				map.values().forEach((animation) -> {
 					this.setAnimationProperties(resourceManager, animation);

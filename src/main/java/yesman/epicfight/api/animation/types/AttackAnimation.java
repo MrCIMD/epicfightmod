@@ -99,31 +99,35 @@ public class AttackAnimation extends ActionAnimation {
 		this.stateSpectrumBlueprint.clear();
 		
 		for (Phase phase : phases) {
-			
-			float preDelay = phase.preDelay;
-			
-			if (preDelay == 0.0F) {
-				preDelay += 0.01F;
-			}
-			
-			this.stateSpectrumBlueprint
-				.newTimePair(phase.start,preDelay)
-				.addState(EntityState.PHASE_LEVEL, 1)
-				.newTimePair(phase.start, phase.contact + 0.01F)
-				.addState(EntityState.CAN_SKILL_EXECUTION, false)
-				.newTimePair(phase.start, phase.recovery)
-				.addState(EntityState.MOVEMENT_LOCKED, true)
-				.addState(EntityState.CAN_BASIC_ATTACK, false)
-				.newTimePair(phase.start, phase.end)
-				.addState(EntityState.INACTION, true)
-				.newTimePair(phase.antic, phase.recovery)
-				.addState(EntityState.TURNING_LOCKED, true)
-				.newTimePair(preDelay, phase.contact + 0.01F)
-				.addState(EntityState.ATTACKING, true)
-				.addState(EntityState.PHASE_LEVEL, 2)
-				.newTimePair(phase.contact + 0.01F, phase.end)
-				.addState(EntityState.PHASE_LEVEL, 3);
+			this.bindPhaseState(phase);
 		}
+	}
+	
+	protected void bindPhaseState(Phase phase) {
+		float preDelay = phase.preDelay;
+		
+		if (preDelay == 0.0F) {
+			preDelay += 0.01F;
+		}
+		
+		this.stateSpectrumBlueprint
+			.newTimePair(phase.start, preDelay)
+			.addState(EntityState.PHASE_LEVEL, 1)
+			.newTimePair(phase.start, phase.contact + 0.01F)
+			.addState(EntityState.CAN_SKILL_EXECUTION, false)
+			.newTimePair(phase.start, phase.recovery)
+			.addState(EntityState.MOVEMENT_LOCKED, true)
+			.addState(EntityState.CAN_BASIC_ATTACK, false)
+			.newTimePair(phase.start, phase.end)
+			.addState(EntityState.INACTION, true)
+			.newTimePair(phase.antic, phase.end)
+			.addState(EntityState.TURNING_LOCKED, true)
+			.newTimePair(preDelay, phase.contact + 0.01F)
+			.addState(EntityState.ATTACKING, true)
+			.addState(EntityState.PHASE_LEVEL, 2)
+			.newTimePair(phase.contact + 0.01F, phase.end)
+			.addState(EntityState.PHASE_LEVEL, 3)
+			;
 	}
 	
 	@Override
@@ -148,8 +152,10 @@ public class AttackAnimation extends ActionAnimation {
 						entitypatch.rotateTo(target, entitypatch.getYRotLimit(), false);
 					}
 				}
-			} else if (prevState.attacking() || state.attacking() || (prevState.getLevel() < 2 && state.getLevel() > 2)) {
-				if (!prevState.attacking()) {
+			}
+			
+			if (prevState.attacking() || state.attacking() || (prevState.getLevel() < 2 && state.getLevel() > 2)) {
+				if (!prevState.attacking() || phase != this.getPhaseByTime(prevElapsedTime)) {
 					entitypatch.playSound(this.getSwingSound(entitypatch, phase), 0.0F, 0.0F);
 					entitypatch.currentlyAttackedEntity.clear();
 				}
@@ -224,15 +230,6 @@ public class AttackAnimation extends ActionAnimation {
 		}
 	}
 	
-	@Override
-	protected void onLoaded() {
-		if (!this.getProperty(AttackAnimationProperty.LOCK_ROTATION).orElse(false)) {
-			this.stateSpectrumBlueprint.newTimePair(0.0F, Float.MAX_VALUE).addStateRemoveOld(EntityState.TURNING_LOCKED, false);
-		}
-		
-		super.onLoaded();
-	}
-	
 	public Collider getCollider(LivingEntityPatch<?> entitypatch, float elapsedTime) {
 		Phase phase = this.getPhaseByTime(elapsedTime);
 		
@@ -266,7 +263,6 @@ public class AttackAnimation extends ActionAnimation {
 	}
 	
 	protected EpicFightDamageSource getEpicFightDamageSource(LivingEntityPatch<?> entitypatch, Entity target, Phase phase) {
-		
 		EpicFightDamageSource extendedSource = entitypatch.getDamageSource(this, phase.hand);
 		
 		phase.getProperty(AttackPhaseProperty.DAMAGE_MODIFIER).ifPresent((opt) -> {

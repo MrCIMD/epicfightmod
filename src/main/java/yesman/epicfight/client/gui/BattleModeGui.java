@@ -108,18 +108,22 @@ public class BattleModeGui extends ModIngameGui {
 		
 		for (int i = 0; i < SkillCategory.ENUM_MANAGER.universalValues().size(); i++) {
 			SkillContainer container = playerpatch.getSkill(i);
+			
 			if (container != null && !container.isEmpty()) {
 				SkillCategory slot = container.getSkill().getCategory();
+				
 				if (slot == SkillCategories.WEAPON_INNATE) {
 					this.drawWeaponInnateIcon(playerpatch, container, matStack, partialTicks);
 				} else {
 					RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 					Skill skill = container.getSkill();
+					
 					if (skill != null && skill.shouldDraw(container)) {
 						if (!this.skillIcons.contains(container)) {
 							this.skillIcons.removeIf((showingContainer) -> showingContainer.getSkill().getCategory() == skill.getCategory());
 							this.skillIcons.add(container);
 						}
+						
 						Vec3f pos = POSITION_MAP.get(this.skillIcons.indexOf(container));
 						RenderSystem.enableBlend();
 						skill.drawOnGui(this, container, matStack, pos.x, pos.y, pos.z, width, height);
@@ -153,8 +157,9 @@ public class BattleModeGui extends ModIngameGui {
 		
 		boolean creative = playerpatch.getOriginal().isCreative();
 		boolean fullstack = creative || container.isFull();
-		float cooldownRatio = fullstack ? 1.0F : container.getResource(partialTicks);
+		//System.out.println( container.isFull() );
 		boolean isCompatibleWeapon = !container.isDisabled();
+		float cooldownRatio = fullstack ? 1.0F : container.getResource(partialTicks);
 		int vertexNum = 0;
 		float iconSize = 32.0F;
 		float iconSizeDiv = iconSize * 0.5F;

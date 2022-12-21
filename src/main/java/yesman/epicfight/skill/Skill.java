@@ -155,6 +155,7 @@ public abstract class Skill {
 	
 	public void setConsumption(SkillContainer container, float value) {
 		container.resource = Math.min(Math.max(value, 0), this.consumption);
+		
 		if (value >= this.consumption) {
 			if (container.stack < this.maxStackSize) {
 				container.stack++;	

@@ -56,6 +56,27 @@
 	
 	"epicfight.skillNotFound": "Unknown skill: %s",
 	
+	"epicfight.weapon_category.not_weapon": "Not Weapon",
+	"epicfight.weapon_category.axe": "Axe",
+	"epicfight.weapon_category.fist": "Fist",
+	"epicfight.weapon_category.greatsword": "Greatsword",
+	"epicfight.weapon_category.hoe": "Hoe",
+	"epicfight.weapon_category.pickaxe": "Pickaxe",
+	"epicfight.weapon_category.shovel": "Shovel",
+	"epicfight.weapon_category.sword": "Sword",
+	"epicfight.weapon_category.katana": "Katana",
+	"epicfight.weapon_category.spear": "Spear",
+	"epicfight.weapon_category.tachi": "Tachi",
+	"epicfight.weapon_category.trident": "Trident",
+	"epicfight.weapon_category.longsword": "Longsword",
+	"epicfight.weapon_category.dagger": "Dagger",
+	"epicfight.weapon_category.shield": "Shield",
+	"epicfight.weapon_category.ranged": "Ranged",
+	
+	"epicfight.skill_category.dodge": "Dodge",
+	"epicfight.skill_category.passive": "Passive",
+	"epicfight.skill_category.guard": "Guard",
+	
 	"gameMode.epicfight.mining": "Mining",
 	"gameMode.epicfight.battle": "Battle",
 	

@@ -78,7 +78,7 @@ public class SkillContainer {
 	}
 	
 	public void setResource(float value) {
-		if(this.containingSkill != null) {
+		if (this.containingSkill != null) {
 			this.containingSkill.setConsumption(this, value);
 		} else {
 			this.prevResource = 0;
@@ -205,8 +205,8 @@ public class SkillContainer {
 	}
 	
 	public float getResource(float partialTicks) {
-		return this.containingSkill != null && this.containingSkill.consumption > 0 ? (this.prevResource + ((this.resource - this.prevResource)
-				* partialTicks)) / this.containingSkill.consumption : 0;
+		return this.containingSkill != null && this.containingSkill.consumption > 0 ? (this.prevResource + ((this.resource - this.prevResource) * partialTicks))
+				/ this.containingSkill.consumption : 0;
 	}
 	
 	public float getNeededResource() {

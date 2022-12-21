@@ -29,7 +29,6 @@ import yesman.epicfight.network.server.SPDatapackSync;
 import yesman.epicfight.skill.Skill;
 
 public class SkillManager extends SimpleJsonResourceReloadListener {
-	
 	private static final Map<ResourceLocation, Skill> SKILLS = Maps.newHashMap();
 	private static final Map<ResourceLocation, Skill> LEARNABLE_SKILLS = Maps.newHashMap();
 	private static final Map<ResourceLocation, CompoundTag> PARAMETER_MAP = Maps.newHashMap();
@@ -97,6 +96,8 @@ public class SkillManager extends SimpleJsonResourceReloadListener {
 	
 	@Override
 	protected void apply(Map<ResourceLocation, JsonElement> objectIn, ResourceManager resourceManager, ProfilerFiller profileFiller) {
+		SkillManager.buildAll();
+		
 		for (Map.Entry<ResourceLocation, JsonElement> entry : objectIn.entrySet()) {
 			CompoundTag tag = null;
 			

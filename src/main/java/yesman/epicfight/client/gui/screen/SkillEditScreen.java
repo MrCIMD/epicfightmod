@@ -46,9 +46,11 @@ public class SkillEditScreen extends Screen {
 		for (SkillCategory skillCategory : SkillCategory.ENUM_MANAGER.universalValues()) {
 			if (this.skills.hasCategory(skillCategory) && skillCategory.learnable()) {
 				CategoryButton categoryButton = new CategoryButton(i, j, 18, 18, this.skills.skillContainers[skillCategory.universalOrdinal()].getSkill(), (button) -> {
+					
 					for (Button shownButton : this.learnedSkillButtons) {
 						this.children().remove(shownButton);
 					}
+					
 					this.learnedSkillButtons.clear();
 					
 					int k = this.width / 2 - 53;
@@ -68,8 +70,9 @@ public class SkillEditScreen extends Screen {
 					for (Button shownButton : this.learnedSkillButtons) {
 						this.addWidget(shownButton);
 					}
+					
 				}, (button, PoseStack, x, y) -> {
-					this.renderTooltip(PoseStack, this.minecraft.font.split(new TextComponent(skillCategory.toString()), Math.max(this.width / 2 - 43, 170)), x, y);
+					this.renderTooltip(PoseStack, this.minecraft.font.split(new TextComponent(SkillCategory.ENUM_MANAGER.toTranslated(skillCategory)), Math.max(this.width / 2 - 43, 170)), x, y);
 				});
 				
 				this.categoryButtons.add(categoryButton);

@@ -33,6 +33,32 @@ public class BasicAttackAnimation extends AttackAnimation {
 	}
 	
 	@Override
+	protected void bindPhaseState(Phase phase) {
+		float preDelay = phase.preDelay;
+		
+		if (preDelay == 0.0F) {
+			preDelay += 0.01F;
+		}
+		
+		this.stateSpectrumBlueprint
+			.newTimePair(phase.start, preDelay)
+			.addState(EntityState.PHASE_LEVEL, 1)
+			.newTimePair(phase.start, phase.contact + 0.01F)
+			.addState(EntityState.CAN_SKILL_EXECUTION, false)
+			.newTimePair(phase.start, phase.recovery)
+			.addState(EntityState.MOVEMENT_LOCKED, true)
+			.addState(EntityState.CAN_BASIC_ATTACK, false)
+			.newTimePair(phase.start, phase.end)
+			.addState(EntityState.INACTION, true)
+			.newTimePair(preDelay, phase.contact + 0.01F)
+			.addState(EntityState.ATTACKING, true)
+			.addState(EntityState.PHASE_LEVEL, 2)
+			.newTimePair(phase.contact + 0.01F, phase.end)
+			.addState(EntityState.PHASE_LEVEL, 3)
+			.addState(EntityState.TURNING_LOCKED, true);
+	}
+	
+	@Override
 	public void setLinkAnimation(Pose pose1, float timeModifier, LivingEntityPatch<?> entitypatch, LinkAnimation dest) {
 		float extTime = Math.max(this.convertTime + timeModifier, 0);
 		
@@ -54,7 +80,6 @@ public class BasicAttackAnimation extends AttackAnimation {
 			float basisSpeed = Float.parseFloat(String.format(Locale.US, "%.2f", (1.0F / this.totalTime)));
 			this.addProperty(AttackAnimationProperty.BASIS_ATTACK_SPEED, basisSpeed);
 		}
-		
 	}
 	
 	@Override

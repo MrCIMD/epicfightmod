@@ -10,7 +10,6 @@ import net.minecraftforge.network.PacketDistributor;
 import yesman.epicfight.api.data.reloader.ItemCapabilityReloadListener;
 import yesman.epicfight.api.data.reloader.MobPatchReloadListener;
 import yesman.epicfight.api.data.reloader.SkillManager;
-import yesman.epicfight.config.ConfigManager;
 import yesman.epicfight.data.loot.EpicFightLootTables;
 import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.network.EpicFightNetworkManager;
@@ -24,9 +23,7 @@ import yesman.epicfight.world.gamerule.EpicFightGamerules;
 public class WorldEvents {
 	@SubscribeEvent
 	public static void onLootTableRegistry(final LootTableLoadEvent event) {
-		if (ConfigManager.SKILLBOOK_CHEST_LOOT.get()) {
-			EpicFightLootTables.modifyVanillaLootPools(event);
-		}
+		EpicFightLootTables.modifyVanillaLootPools(event);
     }
 	
 	@SubscribeEvent

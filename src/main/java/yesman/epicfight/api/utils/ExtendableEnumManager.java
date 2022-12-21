@@ -8,12 +8,19 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 
+import net.minecraft.network.chat.TranslatableComponent;
 import yesman.epicfight.main.EpicFightMod;
 
 public class ExtendableEnumManager<T> {
+	
+	private final Map<Integer, T> enumMapByOrdinal = Maps.newLinkedHashMap();
+	private final Map<String, T> enumMapByName = Maps.newLinkedHashMap();
+	private final String namespace;
 	private int lastOrdinal = 0;
-	private Map<Integer, T> enumMapByOrdinal = Maps.newLinkedHashMap();
-	private Map<String, T> enumMapByName = Maps.newLinkedHashMap();
+	
+	public ExtendableEnumManager(String namespace) {
+		this.namespace = namespace;
+	}
 	
 	public void loadPreemptive(Class<?> targetClss) {
 		try {
@@ -43,5 +50,10 @@ public class ExtendableEnumManager<T> {
 	
 	public Collection<T> universalValues() {
 		return this.enumMapByOrdinal.values();
+	}
+	
+	public String toTranslated(ExtendableEnum e) {
+		TranslatableComponent t = new TranslatableComponent(EpicFightMod.MODID + "." + this.namespace + "." + e.toString().toLowerCase(Locale.ROOT));
+		return t.getString();
 	}
 }

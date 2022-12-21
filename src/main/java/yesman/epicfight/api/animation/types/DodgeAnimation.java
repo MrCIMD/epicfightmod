@@ -36,8 +36,8 @@ public class DodgeAnimation extends ActionAnimation {
 			});
 		
 		this.addProperty(ActionAnimationProperty.AFFECT_SPEED, true);
-		this.addEvents(StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create(Animations.ReuseableEvents.RESTORE_BOUNDING_BOX, AnimationEvent.Side.BOTH));
-		this.addEvents(StaticAnimationProperty.EVENTS, AnimationEvent.create(Animations.ReuseableEvents.RESIZE_BOUNDING_BOX, AnimationEvent.Side.BOTH).params(EntityDimensions.scalable(width, height)));
+		this.addEvents(StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create(Animations.ReusableSources.RESTORE_BOUNDING_BOX, AnimationEvent.Side.BOTH));
+		this.addEvents(StaticAnimationProperty.EVENTS, AnimationEvent.create(Animations.ReusableSources.RESIZE_BOUNDING_BOX, AnimationEvent.Side.BOTH).params(EntityDimensions.scalable(width, height)));
 	}
 	
 	@Override

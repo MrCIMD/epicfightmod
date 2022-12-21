@@ -89,7 +89,7 @@ public class AbstractClientPlayerPatch<T extends AbstractClientPlayer> extends P
 			} else {
 				if (original.isUnderWater() && (original.yCloak - original.yCloakO) < -0.005)
 					currentLivingMotion = LivingMotions.FLOAT;
-				else if (original.yCloak - original.yCloakO < -0.25F || this.airborne)
+				else if (original.yCloak - original.yCloakO < -0.4F || this.airborne)
 					currentLivingMotion = LivingMotions.FALL;
 				else if (this.isMoving()) {
 					if (original.isShiftKeyDown())

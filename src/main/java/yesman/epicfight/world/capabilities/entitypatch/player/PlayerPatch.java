@@ -231,6 +231,7 @@ public abstract class PlayerPatch<T extends Player> extends LivingEntityPatch<T>
 		EpicFightDamageSource damagesource = EpicFightDamageSource.commonEntityDamageSource("player", this.original, animation);
 		damagesource.setImpact(this.getImpact(hand));
 		damagesource.setArmorNegation(this.getArmorNegation(hand));
+		damagesource.setHurtItem(this.getOriginal().getItemInHand(hand));
 		
 		return damagesource;
 	}

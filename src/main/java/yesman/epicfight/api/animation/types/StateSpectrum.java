@@ -68,7 +68,7 @@ public class StateSpectrum {
 		}
 	}
 	
-	static class Blueprint {
+	public static class Blueprint {
 		StatesInTime currentState;
 		Set<StatesInTime> timePairs = Sets.newHashSet();
 		
@@ -86,6 +86,18 @@ public class StateSpectrum {
 		public <T> Blueprint addStateRemoveOld(StateFactor<T> factor, T val) {
 			for (StatesInTime timePair : this.timePairs) {
 				timePair.states.removeIf((pair) -> pair.getFirst().equals(factor));
+			}
+			
+			return this.addState(factor, val);
+		}
+		
+		public <T> Blueprint addStateIfNotExist(StateFactor<T> factor, T val) {
+			for (StatesInTime timePair : this.timePairs) {
+				for (Pair<StateFactor<?>, ?> s : timePair.states) {
+					if (s.getFirst().equals(factor)) {
+						return this;
+					}
+				}
 			}
 			
 			return this.addState(factor, val);

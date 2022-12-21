@@ -120,12 +120,12 @@ public class TransformSheet {
 			}
 		}
 		
-		float progression = bezierCurve((currentTime - this.keyframes[prev].time()) / (this.keyframes[next].time() - this.keyframes[prev].time()));
+		float progression = ((currentTime - this.keyframes[prev].time()) / (this.keyframes[next].time() - this.keyframes[prev].time()));
 		
 		return new InterpolationInfo(prev, next, progression);
 	}
 	
-	//Blender bezier f-curve code
+	/**Blender bezier f-curve code
 	private static float bezierCurve(float t) {
 		
 		float p1 = 0.0F;
@@ -140,7 +140,7 @@ public class TransformSheet {
 		v4 = p4 - p1 + 3.0f * (p2 - p3);
 		
 		return v1 + t * v2 + t * t * v3 + t * t * t * v4;
-	}
+	}**/
 	
 	@Override
 	public String toString() {

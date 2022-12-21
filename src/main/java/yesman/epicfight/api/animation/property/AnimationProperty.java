@@ -1,5 +1,6 @@
 package yesman.epicfight.api.animation.property;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -49,7 +50,7 @@ public abstract class AnimationProperty<T> {
 		/**
 		 * Trail particle information
 		 */
-		public static final StaticAnimationProperty<TrailInfo> TRAIL_EFFECT = new StaticAnimationProperty<TrailInfo> ();
+		public static final StaticAnimationProperty<List<TrailInfo>> TRAIL_EFFECT = new StaticAnimationProperty<List<TrailInfo>> ();
 	}
 	
 	public static class ActionAnimationProperty<T> extends AnimationProperty<T> {
@@ -95,11 +96,6 @@ public abstract class AnimationProperty<T> {
 	}
 	
 	public static class AttackAnimationProperty<T> extends AnimationProperty<T> {
-		/**
-		 * This property determines if the player's camera is fixed during the attacking phase.
-		 */
-		public static final AttackAnimationProperty<Boolean> LOCK_ROTATION = new AttackAnimationProperty<Boolean> ();
-		
 		/**
 		 * This property determines the animation can be rotated vertically based on the player's view.
 		 */

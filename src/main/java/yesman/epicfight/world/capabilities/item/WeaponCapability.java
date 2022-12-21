@@ -65,7 +65,7 @@ public class WeaponCapability extends CapabilityItem {
 	
 	@Override
 	public final Skill getInnateSkill(PlayerPatch<?> playerpatch, ItemStack itemstack) {
-		return this.innateSkill.get(this.getStyle(playerpatch)).apply(itemstack);
+		return this.innateSkill.getOrDefault(this.getStyle(playerpatch), (s) -> null).apply(itemstack);
 	}
 	
 	@Override

@@ -30,8 +30,6 @@ public class AirSlashAnimation extends AttackAnimation {
 		this.addProperty(AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.5F);
 		this.addProperty(ActionAnimationProperty.STOP_MOVEMENT, false);
 		this.addProperty(ActionAnimationProperty.MOVE_VERTICAL, true);
-		
-		this.stateSpectrumBlueprint.addStateRemoveOld(EntityState.TURNING_LOCKED, true);
 	}
 	
 	@Override

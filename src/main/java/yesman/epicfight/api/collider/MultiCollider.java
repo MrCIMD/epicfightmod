@@ -50,7 +50,6 @@ public abstract class MultiCollider<T extends Collider> extends Collider {
 			if (pathIndex == -1) {
 				transformMatrix = new OpenMatrix4f();
 			} else {
-				//transformMatrix = Animator.getBindedJointTransformByIndex(entitypatch.getAnimator().getPose(interpolation), armature, pathIndex);
 				float interpolateTime = prevElapsedTime + (elapsedTime - prevElapsedTime) * interpolation;
 				transformMatrix = armature.getBindedJointTransformByIndex(attackAnimation.getPoseByTime(entitypatch, interpolateTime, 1.0F), pathIndex);
 			}

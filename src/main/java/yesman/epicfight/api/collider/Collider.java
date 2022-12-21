@@ -15,6 +15,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.entity.PartEntity;
 import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.animation.types.AttackAnimation;
+import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
@@ -75,7 +76,10 @@ public abstract class Collider {
 	public void draw(PoseStack matrixStackIn, MultiBufferSource buffer, LivingEntityPatch<?> entitypatch, AttackAnimation animation, float prevElapsedTime, float elapsedTime, float partialTicks, float attackSpeed) {
 		Armature armature = entitypatch.getArmature();
 		int pathIndex =  armature.searchPathIndex(animation.getJointOn(elapsedTime).getName());
-		boolean flag3 = entitypatch.getEntityState().attacking();
+		EntityState state = animation.getState(elapsedTime);
+		EntityState prevState = animation.getState(prevElapsedTime);
+		
+		boolean flag3 = prevState.attacking() || state.attacking() || (prevState.getLevel() < 2 && state.getLevel() > 2);
 		OpenMatrix4f mat = null;
 		
 		if (pathIndex == -1) {

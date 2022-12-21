@@ -10,6 +10,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.property.AnimationProperty.AttackAnimationProperty;
 import yesman.epicfight.api.animation.types.AttackAnimation;
+import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
@@ -34,7 +35,11 @@ public class MultiOBBCollider extends MultiCollider<OBBCollider> {
 		float interpolation = 0.0F;
 		Armature armature = entitypatch.getArmature();
 		int pathIndex =  armature.searchPathIndex(animation.getJointOn(elapsedTime).getName());
-		boolean red = entitypatch.getEntityState().attacking();
+		
+		EntityState state = animation.getState(elapsedTime);
+		EntityState prevState = animation.getState(prevElapsedTime);
+		boolean red = prevState.attacking() || state.attacking() || (prevState.getLevel() < 2 && state.getLevel() > 2);
+		
 		List<OBBCollider> colliders = Lists.newArrayList();
 		
 		for (int i = 0; i < numberOf; i++) {

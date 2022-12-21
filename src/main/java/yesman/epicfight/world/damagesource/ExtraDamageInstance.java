@@ -10,7 +10,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 
 public class ExtraDamageInstance {
-	public static final ExtraDamage TARGET_LOST_HEALTH = new ExtraDamage((attacker, target, baseDamage, params) -> {
+	public static final ExtraDamage TARGET_LOST_HEALTH = new ExtraDamage((attacker, itemstack, target, baseDamage, params) -> {
 			return (target.getMaxHealth() - target.getHealth()) * (float)params[0];
 		}, (itemstack, tooltips, baseDamage, params) -> {
 			tooltips.append(new TranslatableComponent("damage.epicfight.target_lost_health", 
@@ -18,8 +18,8 @@ public class ExtraDamageInstance {
 				).withStyle(ChatFormatting.DARK_GRAY));
 		});
 	
-	public static final ExtraDamage SWEEPING_EDGE_ENCHANTMENT = new ExtraDamage((attacker, target, baseDamage, params) -> {
-			int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.SWEEPING_EDGE, attacker);
+	public static final ExtraDamage SWEEPING_EDGE_ENCHANTMENT = new ExtraDamage((attacker, itemstack, target, baseDamage, params) -> {
+			int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SWEEPING_EDGE, itemstack);
 			float modifier = (i > 0) ? (float)i / (float)(i + 1.0F) : 0.0F;
 			
 			return baseDamage * modifier;
@@ -58,8 +58,8 @@ public class ExtraDamageInstance {
 		return params;
 	}
 	
-	public float get(LivingEntity attacker, LivingEntity target, float baseDamage) {
-		return this.calculator.extraDamage.getBonusDamage(attacker, target, baseDamage, this.params);
+	public float get(LivingEntity attacker, ItemStack hurtItem, LivingEntity target, float baseDamage) {
+		return this.calculator.extraDamage.getBonusDamage(attacker, hurtItem, target, baseDamage, this.params);
 	}
 	
 	public void setTooltips(ItemStack itemstack, MutableComponent tooltip, double baseDamage) {
@@ -68,7 +68,7 @@ public class ExtraDamageInstance {
 	
 	@FunctionalInterface
 	public interface ExtraDamageFunction {
-		float getBonusDamage(LivingEntity attacker, LivingEntity target, float baseDamage, float[] params);
+		float getBonusDamage(LivingEntity attacker, ItemStack hurtItem, LivingEntity target, float baseDamage, float[] params);
 	}
 	
 	@FunctionalInterface

@@ -314,7 +314,7 @@ public class GuardSkill extends Skill {
 	@OnlyIn(Dist.CLIENT)
 	@Override
 	public List<Object> getTooltipArgs(List<Object> list) {
-		list.add(String.format("%s, %s, %s, %s, %s, %s, %s", this.guardMotions.keySet().toArray(new Object[0])).toLowerCase());
+		list.add(String.format("%s, %s, %s, %s, %s, %s, %s", this.guardMotions.keySet().stream().map((category) -> WeaponCategory.ENUM_MANAGER.toTranslated(category)).toArray()));
 		
 		return list;
 	}
