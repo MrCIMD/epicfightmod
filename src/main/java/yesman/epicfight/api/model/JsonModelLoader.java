@@ -247,8 +247,6 @@ public class JsonModelLoader {
 		Joint joint = this.getJoint(hierarchy, nameAsVertexGroups, jointMap, true);
 		joint.initOriginTransform(new OpenMatrix4f());
 		
-		EpicFightMod.LOGGER.info(jointMap);
-		
 		return constructor.invoke(jointMap.size(), joint, jointMap);
 	}
 	

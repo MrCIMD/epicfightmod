@@ -9,8 +9,6 @@ import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import com.mojang.math.Vector4f;
 
-import yesman.epicfight.main.EpicFightMod;
-
 public abstract class Mesh<T extends VertexIndicator> {
 	public static class RenderProperties {
 		public static final RenderProperties DEFAULT = RenderProperties.builder().build();
@@ -107,7 +105,7 @@ public abstract class Mesh<T extends VertexIndicator> {
 		
 		protected ModelPart<VertexIndicator> getOrLogException(Map<String, ModelPart<VertexIndicator>> parts, String name) {
 			if (!parts.containsKey(name)) {
-				EpicFightMod.LOGGER.info("Cannot find the mesh part named " + name + " in " + this.getClass().getCanonicalName());
+				//EpicFightMod.LOGGER.info("Cannot find the mesh part named " + name + " in " + this.getClass().getCanonicalName());
 				return EMPTY;
 			}
 			

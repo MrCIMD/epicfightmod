@@ -62,10 +62,12 @@ public abstract class LivingEntityPatch<T extends LivingEntity> extends EntityPa
 	public static final EntityDataAccessor<Float> STUN_SHIELD = new EntityDataAccessor<Float> (251, EntityDataSerializers.FLOAT);
 	public static final EntityDataAccessor<Float> MAX_STUN_SHIELD = new EntityDataAccessor<Float> (252, EntityDataSerializers.FLOAT);
 	
-	private Entity lastTryHurtEntity;
 	private ResultType lastResultType;
 	private float lastDealDamage;
 	private float stunTimeReduction;
+	
+	private Entity lastTryHurtEntity;
+	private Entity entityBeingInteract;
 	
 	protected Armature armature;
 	protected EntityState state = EntityState.DEFAULT;
@@ -565,6 +567,10 @@ public abstract class LivingEntityPatch<T extends LivingEntity> extends EntityPa
 		}
 		
 		return this.original.isAlliedTo(entityIn) && this.original.getTeam() != null && !this.original.getTeam().isAllowFriendlyFire();
+	}
+	
+	public boolean canPush(Entity entity) {
+		return entity.is(this.entityBeingInteract);
 	}
 	
 	public Vec3 getLastAttackPosition() {

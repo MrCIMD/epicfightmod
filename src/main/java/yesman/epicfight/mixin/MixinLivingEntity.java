@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.AttackResult.ResultType;
@@ -13,7 +14,6 @@ import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 @Mixin(value = LivingEntity.class)
 public abstract class MixinLivingEntity {
-	
 	@Inject(at = @At(value = "TAIL"), method = "blockUsingShield(Lnet/minecraft/world/entity/LivingEntity;)V", cancellable = true)
 	private void epicfight_blockUsingShield(LivingEntity p_21200_, CallbackInfo info) {
 		LivingEntity self = (LivingEntity)((Object)this);
@@ -26,6 +26,16 @@ public abstract class MixinLivingEntity {
 			if (selfEntitypatch != null) {
 				opponentEntitypatch.onAttackBlocked(opponentEntitypatch.getAnimationDamageSource().cast(), selfEntitypatch);
 			}
+		}
+	}
+	
+	@Inject(at = @At(value = "HEAD"), method = "push(Lnet/minecraft/world/entity/Entity;)V", cancellable = true)
+	private void epicfight_push(Entity p_20293_, CallbackInfo info) {
+		LivingEntity self = (LivingEntity)((Object)this);
+		LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(self, LivingEntityPatch.class);
+		
+		if (entitypatch != null && !entitypatch.canPush(p_20293_)) {
+			info.cancel();
 		}
 	}
 }

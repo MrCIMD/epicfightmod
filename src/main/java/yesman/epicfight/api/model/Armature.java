@@ -13,7 +13,6 @@ import yesman.epicfight.api.animation.TransformSheet;
 import yesman.epicfight.api.animation.property.AnimationProperty.ActionAnimationCoordSetter;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
-import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class Armature {
@@ -39,7 +38,7 @@ public class Armature {
 	
 	protected Joint getOrLogException(Map<String, Joint> jointMap, String name) {
 		if (!jointMap.containsKey(name)) {
-			EpicFightMod.LOGGER.info("Cannot find the joint named " + name + " in " + this.getClass().getCanonicalName());
+			//EpicFightMod.LOGGER.info("Cannot find the joint named " + name + " in " + this.getClass().getCanonicalName());
 			return Joint.EMPTY;
 		}
 		
