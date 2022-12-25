@@ -4,6 +4,7 @@ import com.mojang.math.Vector3f;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.Mth;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.animation.JointTransform;
 import yesman.epicfight.api.animation.Pose;
@@ -73,9 +74,10 @@ public class AimAnimation extends StaticAnimation {
 			JointTransform head = pose.getOrDefaultTransform("Head");
 			float f = 90.0F;
 			float ratio = (f - Math.abs(entitypatch.getOriginal().getXRot())) / f;
-			float yawOffset = entitypatch.getOriginal().getVehicle() != null ? entitypatch.getOriginal().getYRot() : entitypatch.getOriginal().yBodyRot;
-			MathUtils.mulQuaternion(Vector3f.YP.rotationDegrees((yawOffset - entitypatch.getOriginal().getYRot()) * ratio), head.rotation(), head.rotation());
-			chest.frontResult(JointTransform.getRotation(Vector3f.YP.rotationDegrees((entitypatch.getOriginal().getYRot() - yawOffset) * ratio)), OpenMatrix4f::mulAsOriginFront);
+			float yawOffset = entitypatch.getOriginal().getVehicle() != null ? entitypatch.getOriginal().getYHeadRot() : entitypatch.getOriginal().yBodyRot;
+			MathUtils.mulQuaternion(Vector3f.YP.rotationDegrees(Mth.wrapDegrees(yawOffset - entitypatch.getOriginal().getYHeadRot()) * ratio), head.rotation(), head.rotation());
+			chest.frontResult(JointTransform.getRotation(Vector3f.YP.rotationDegrees(
+					Mth.wrapDegrees(entitypatch.getOriginal().getYHeadRot() - yawOffset) * ratio)), OpenMatrix4f::mulAsOriginFront);
 		}
 	}
 	
