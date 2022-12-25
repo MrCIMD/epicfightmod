@@ -5,23 +5,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.compress.utils.Lists;
-
 import com.google.common.collect.Maps;
 
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.AnimationPlayer;
-import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationEvent.TimeStampedEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.property.AnimationProperty.StaticAnimationProperty;
-import yesman.epicfight.api.animation.property.TrailInfo;
 import yesman.epicfight.api.client.animation.ClientAnimationProperties;
 import yesman.epicfight.api.client.animation.JointMask;
 import yesman.epicfight.api.client.animation.JointMask.BindModifier;
@@ -114,22 +109,6 @@ public class StaticAnimation extends DynamicAnimation {
 				event.executeIfRightSide(entitypatch);
 			}
 		});
-		
-		if (entitypatch.isLogicalClient()) {
-			this.getProperty(StaticAnimationProperty.TRAIL_EFFECT).ifPresent((trailInfos) -> {
-				int idx = 0;
-				
-				for (TrailInfo trailInfo : trailInfos) {
-					double eid = Double.longBitsToDouble(entitypatch.getOriginal().getId());
-					double modid = Double.longBitsToDouble(this.namespaceId);
-					double animid = Double.longBitsToDouble(this.animationId);
-					double jointId = Double.longBitsToDouble(trailInfo.joint.getId());
-					double index = Double.longBitsToDouble(idx++);
-					
-					entitypatch.getOriginal().level.addParticle(trailInfo.particle, eid, modid, animid, jointId, index, 0);
-				}
-			});
-		}
 	}
 	
 	@Override
@@ -240,16 +219,6 @@ public class StaticAnimation extends DynamicAnimation {
 	
 	public <V extends AnimationEvent> StaticAnimation addEvents(TimeStampedEvent... events) {
 		this.properties.put(StaticAnimationProperty.TIME_STAMPED_EVENTS, events);
-		return this;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public StaticAnimation addTrailParticle(double startX, double startY, double startZ, double endX, double endY, double endZ,
-			 					    float startT, float endT, int lifeTime, int interpolations, Joint joint, SimpleParticleType particle) {
-		
-		List<TrailInfo> trailInfos = (List<TrailInfo>) this.properties.computeIfAbsent(StaticAnimationProperty.TRAIL_EFFECT, (k) -> Lists.newArrayList());
-		trailInfos.add(TrailInfo.create(startX, startY, startZ, endX, endY, endZ, startT, endT, lifeTime, interpolations, joint, particle));
-		
 		return this;
 	}
 	

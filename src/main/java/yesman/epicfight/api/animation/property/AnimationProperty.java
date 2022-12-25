@@ -1,6 +1,5 @@
 package yesman.epicfight.api.animation.property;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -46,11 +45,6 @@ public abstract class AnimationProperty<T> {
 		 * You can set the fixed play speed of the animation.
 		 */
 		public static final StaticAnimationProperty<Float> PLAY_SPEED = new StaticAnimationProperty<Float> ();
-		
-		/**
-		 * Trail particle information
-		 */
-		public static final StaticAnimationProperty<List<TrailInfo>> TRAIL_EFFECT = new StaticAnimationProperty<List<TrailInfo>> ();
 	}
 	
 	public static class ActionAnimationProperty<T> extends AnimationProperty<T> {

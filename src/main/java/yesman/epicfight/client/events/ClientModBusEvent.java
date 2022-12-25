@@ -26,7 +26,6 @@ import yesman.epicfight.client.particle.GroundSlamParticle;
 import yesman.epicfight.client.particle.HitBluntParticle;
 import yesman.epicfight.client.particle.HitCutParticle;
 import yesman.epicfight.client.particle.LaserParticle;
-import yesman.epicfight.client.particle.TrailParticle;
 import yesman.epicfight.client.particle.TsunamiSplashParticle;
 import yesman.epicfight.client.particle.TsunamiSwirlParticle;
 import yesman.epicfight.client.renderer.entity.DroppedNetherStarRenderer;
@@ -65,7 +64,6 @@ public class ClientModBusEvent {
     	particleEngine.register(EpicFightParticles.BOSS_CASTING.get(), new DustParticle.ContractiveMetaParticle.Provider());
     	particleEngine.register(EpicFightParticles.TSUNAMI_SPLASH.get(), TsunamiSplashParticle.Provider::new);
     	particleEngine.register(EpicFightParticles.TSUNAMI_SWIRL.get(), new TsunamiSwirlParticle.Provider());
-    	particleEngine.register(EpicFightParticles.SWING_TRAIL.get(), TrailParticle.Provider::new);
     }
 	
 	@SubscribeEvent

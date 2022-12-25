@@ -36,7 +36,6 @@ import yesman.epicfight.skill.StaminaPillagerSkill;
 import yesman.epicfight.skill.StepSkill;
 import yesman.epicfight.skill.SwordmasterSkill;
 import yesman.epicfight.skill.TechnicianSkill;
-import yesman.epicfight.skill.ThunderPunishment;
 import yesman.epicfight.skill.WeaponInnateSkill;
 import yesman.epicfight.world.damagesource.ExtraDamageInstance;
 import yesman.epicfight.world.damagesource.StunType;
@@ -74,8 +73,6 @@ public class EpicFightSkills {
 	public static Skill LIECHTENAUER;
 	public static Skill EVISCERATE;
 	public static Skill BLADE_RUSH;
-	public static Skill THUNDER_PUNISHMENT;
-	public static Skill TSUNAMI;
 	/** etc skills **/
 	public static Skill CHARGING_JUMP;
 	public static Skill GROUND_SLAM;
@@ -109,8 +106,6 @@ public class EpicFightSkills {
 		SkillManager.register(LiechtenauerSkill::new, WeaponInnateSkill.createWeaponInnateBuilder().setActivateType(ActivateType.DURATION_INFINITE), EpicFightMod.MODID, "liechtenauer");
 		SkillManager.register(EviscerateSkill::new, WeaponInnateSkill.createWeaponInnateBuilder(), EpicFightMod.MODID, "eviscerate");
 		SkillManager.register(BladeRushSkill::new, WeaponInnateSkill.createWeaponInnateBuilder().setActivateType(ActivateType.TOGGLE), EpicFightMod.MODID, "blade_rush");
-		SkillManager.register(ThunderPunishment::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/thunder_punishment")), EpicFightMod.MODID, "thunder_punishment");
-		SkillManager.register(ThunderPunishment::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation(EpicFightMod.MODID, "biped/skill/tsunami")), EpicFightMod.MODID, "tsunami");
 	}
 	
 	@SubscribeEvent
@@ -259,23 +254,5 @@ public class EpicFightSkills {
 					.addProperty(AttackPhaseProperty.PARTICLE, EpicFightParticles.BLADE_RUSH_SKILL)
 				.registerPropertiesToAnimation();
 		BLADE_RUSH = bladeRush;
-		
-		WeaponInnateSkill thunderPunishment = onBuild.build(EpicFightMod.MODID, "thunder_punishment");
-		thunderPunishment.newProperty()
-					.addProperty(AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(1))
-					.newProperty()
-					.addProperty(AttackPhaseProperty.ARMOR_NEGATION_MODIFIER, ValueModifier.adder(100.0F))
-					.addProperty(AttackPhaseProperty.STUN_TYPE, StunType.KNOCKDOWN)
-				.registerPropertiesToAnimation();
-		THUNDER_PUNISHMENT = thunderPunishment;
-		
-		WeaponInnateSkill tsunami = onBuild.build(EpicFightMod.MODID, "tsunami");
-		tsunami.newProperty()
-					.addProperty(AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(1))
-					.newProperty()
-					.addProperty(AttackPhaseProperty.ARMOR_NEGATION_MODIFIER, ValueModifier.adder(100.0F))
-					.addProperty(AttackPhaseProperty.STUN_TYPE, StunType.KNOCKDOWN)
-				.registerPropertiesToAnimation();
-		TSUNAMI = tsunami;
 	}
 }
