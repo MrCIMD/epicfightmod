@@ -22,6 +22,6 @@ description='''
 [[dependencies.epicfight]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.18.2,1.19)"
+    versionRange="[1.18.2,1.19.2)"
     ordering="NONE"
     side="BOTH"
